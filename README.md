@@ -2,6 +2,8 @@
 
 This SDK is still a work in progress.
 
+The Protobuf format is based on this [open pull request](https://github.com/JemDay/spec/tree/jd-proto) from JemDay.
+
 **This is not an officially supported Google product.**
 
 # Samples
