@@ -3,6 +3,9 @@
 #include <iostream>
 
 void CreateEvent(io::cloudevents::v1::CloudEvent* event){
+    // TODO (Michelle): Abstract this out to a Buider with validation.
+
+    
     // std::map<std::string, std::string* (*)()> KEYTOFUNC;
     // KEYTOFUNC["id"] = &event.mutable_id;
     // KEYTOFUNC["source"] = &event.mutable_source;
@@ -27,6 +30,26 @@ void CreateEvent(io::cloudevents::v1::CloudEvent* event){
     std::cout << "Enter " << "type" << ": ";
     getline(std::cin, *event -> mutable_type());
 
+    std::string data_present;
+    std::cout << "Would you like to enter data?: " << "(y/n)";
+    getline(std::cin, data_present);
+    if (data_present=="y") {
+        std::string datatype;
+        std::cout << "Enter " << "datatype" << ": (bytes/ string/ other)";
+        getline(std::cin, datatype);
+        std::cout << "Enter " << "data" << ": ";
+        if (datatype == "bytes") {
+            // TODO (Michelle): Fix reading binary from cin
+            //getline(std::cin, *event -> mutable_binary_data());
+            std::cerr << "Not yet supported." << std::endl;
+        } else if (datatype=="string") {
+            getline(std::cin, *event -> mutable_text_data());
+        } else {
+            std::cerr << "Not yet supported." << std::endl;
+            // TODO (Michelle): Fix any
+            //getline(std::cin, event.add_proto_data() -> PackFrom());
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
