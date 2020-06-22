@@ -2,10 +2,49 @@
 #include <fstream>
 #include <iostream>
 
-void CreateEvent(io::cloudevents::v1::CloudEvent* event){
+void GetUserInput(std::string prompt, std::string& res) {
+    std::cout << prompt << ": ";
+    getline(std::cin, res);
+}
+
+void OutputToInterface(std::string content, int type) {
+    switch(type) {
+        case 0: std::cout << content << std::endl; break;
+        case -1: std::cerr << content << std::endl; break;
+        default: {
+            std::cerr << "Did not recognize output type code " << type << std::endl;
+            std::cerr << "Output content: " << content << std::endl;
+        }
+    }
+}
+
+int ValidateFile(std::string file_path){
+    std::fstream input(file_path, std::ios::in | std::ios::binary);
+    if (input) {
+        std::string cont;
+        GetUserInput("File already exists. Overwrite? (y/n)", cont);
+        if (cont != "y"){
+            OutputToInterface("Terminating.", 0);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
+    std::fstream output(file_path, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!event -> SerializeToOstream(&output)) {
+        OutputToInterface("Could not write to file given.", -1);
+        return -1;
+    }
+    return 0;
+}
+
+int CreateEvent(io::cloudevents::v1::CloudEvent* event){
     // TODO (Michelle): Abstract this out to a Buider with validation.
 
-    
+    // TODO (Michelle): figure out how to map key to function cleanly
     // std::map<std::string, std::string* (*)()> KEYTOFUNC;
     // KEYTOFUNC["id"] = &event.mutable_id;
     // KEYTOFUNC["source"] = &event.mutable_source;
@@ -18,72 +57,69 @@ void CreateEvent(io::cloudevents::v1::CloudEvent* event){
     //     getline(std::cin, KEYTOFUNC[key]);
     // }
 
-    std::cout << "Enter " << "id" << ": ";
-    getline(std::cin, *event -> mutable_id());
+    GetUserInput("Enter id", *event -> mutable_id());
+    GetUserInput("Enter source", *event -> mutable_source());
+    GetUserInput("Enter spec_version", *event -> mutable_spec_version());
+    GetUserInput("Enter type", *event -> mutable_type());
 
-    std::cout << "Enter " << "source" << ": ";
-    getline(std::cin, *event -> mutable_source());
+    std::string has_data;
+    GetUserInput("Would you like to enter data (y/n)", has_data);
+    if (has_data=="y") {
+        std::string data_type;
+        // TODO (Michelle): Support Any data
+        GetUserInput("Enter data type (bytes/ string)", data_type);
+        const static std::unordered_map<std::string,int> data_type_to_case{
+            {"bytes",1},
+            {"string",2},
+            {"other", 3}
+        };
 
-    std::cout << "Enter " << "spec_version" << ": ";
-    getline(std::cin, *event -> mutable_spec_version());
-
-    std::cout << "Enter " << "type" << ": ";
-    getline(std::cin, *event -> mutable_type());
-
-    std::string data_present;
-    std::cout << "Would you like to enter data?: " << "(y/n)";
-    getline(std::cin, data_present);
-    if (data_present=="y") {
-        std::string datatype;
-        std::cout << "Enter " << "datatype" << ": (bytes/ string/ other)";
-        getline(std::cin, datatype);
-        std::cout << "Enter " << "data" << ": ";
-        if (datatype == "bytes") {
-            // TODO (Michelle): Fix reading binary from cin
-            //getline(std::cin, *event -> mutable_binary_data());
-            std::cerr << "Not yet supported." << std::endl;
-        } else if (datatype=="string") {
-            getline(std::cin, *event -> mutable_text_data());
-        } else {
-            std::cerr << "Not yet supported." << std::endl;
-            // TODO (Michelle): Fix any
-            //getline(std::cin, event.add_proto_data() -> PackFrom());
+        if (data_type_to_case.find(data_type) == data_type_to_case.end()) {
+            OutputToInterface("Data type not recognized", -1);
+            return -1;
+        }
+        
+        switch(data_type_to_case.at(data_type)){
+            case 1: GetUserInput("Enter data", *event -> mutable_binary_data()); break;
+            case 2: GetUserInput("Enter data", *event -> mutable_text_data()); break;
+            case 3: OutputToInterface("Other data not yet supported", -1); break;
+            default: {
+                OutputToInterface("Data type not handled", -1);
+                return -1;
+            }
         }
     }
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    int program_status = 0;
     
     // ensure that a write file is specified
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " FILE" << std::endl;
+        OutputToInterface("Incorrect Usage. Please specify a write file.", -1);
         return -1;
     }
 
-    // ensure streams are ok
     io::cloudevents::v1::CloudEvent event;
 
-    std::fstream input(argv[1], std::ios::in | std::ios::binary);
-    if (input) {
-        std::cout << "File already exists. Overwrite? (y/n)" << std::endl;
-        std::string cont;
-        getline(std::cin,cont);
-        if (cont != "y"){
-            std::cout << "Terminating." << std::endl;
-            return -1;
-        }
+    program_status = ValidateFile(argv[1]);
+    if (program_status != 0) {
+        return program_status;
     }
-
+    
     // create an event
     // TODO (Michelle): handle optional and extension attrs
-    CreateEvent(&event);
+    program_status = CreateEvent(&event);
+    if (program_status != 0) {
+        return program_status;
+    }
 
     // write to file
-    std::fstream output(argv[1], std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!event.SerializeToOstream(&output)) {
-        std::cerr << "Could not write to file given." << std::endl;
-        return -1;
+    program_status = WriteToFile(argv[1], &event);
+    if (program_status != 0) {
+        return program_status;
     }
 
     google::protobuf::ShutdownProtobufLibrary();
