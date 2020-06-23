@@ -14,7 +14,8 @@ cc_library(
     #deps = ["//source/common/common:assert_lib"],
 )
 
-#envoy_cc_test(
+# TODO (Michelle): fix tests
+# cc_test(
 #    name = "statusor_test",
 #    srcs = ["statusor_test.cc"],
 #    deps = [

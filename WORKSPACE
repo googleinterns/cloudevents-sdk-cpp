@@ -28,18 +28,6 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 rules_proto_dependencies()
 rules_proto_toolchains()
 
-
-#http_archive(
-#    name = "com_google_absl",
-#    sha256 = "006931f9705484041eed65189038f87931a87cff200bb296f94b3d42339c4cd9",
-#    strip_prefix = "abseil-cpp-8ff1374008259719b54a8cb128ef951c02da164c",
-#    urls = [
-#        "https://mirror.bazel.build/github.com/abseil/abseil-cpp/archive/8ff1374008259719b54a8cb128ef951c02da164c.tar.gz",
-#        "https://github.com/abseil/abseil-cpp/archive/8ff1374008259719b54a8cb128ef951c02da164c.tar.gz",
-#    ],
-#    build_file = clean_dep("//third_party:com_google_absl.BUILD"),
-#)
-
 http_archive(
     name = "com_google_absl",
     # Commit from 2020-03-03
