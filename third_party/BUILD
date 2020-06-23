@@ -9,6 +9,7 @@ cc_library(
         "statusor.h",
         "statusor_internals.h",
     ],
+    visibility = ["//visibility:public"],
     deps = ["@com_google_absl//absl/status"]
     #deps = ["//source/common/common:assert_lib"],
 )
