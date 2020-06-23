@@ -24,15 +24,18 @@ http_archive(
     ],
 )
 
-http_archive(
-    name = "rules_foreign_cc",
-    sha256 = "7ca49ac5b0bc8f5a2c9a7e87b7f86aca604bda197259c9b96f8b7f0a4f38b57b",
-    strip_prefix = "rules_foreign_cc-f54b7ae56dcf1b81bcafed3a08d58fc08ac095a7",
-    urls = [
-        "https://github.com/bazelbuild/rules_foreign_cc/archive/f54b7ae56dcf1b81bcafed3a08d58fc08ac095a7.tar.gz",
-    ],
-)
-
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 rules_proto_dependencies()
 rules_proto_toolchains()
+
+
+#http_archive(
+#    name = "com_google_absl",
+#    sha256 = "006931f9705484041eed65189038f87931a87cff200bb296f94b3d42339c4cd9",
+#    strip_prefix = "abseil-cpp-8ff1374008259719b54a8cb128ef951c02da164c",
+#    urls = [
+#        "https://mirror.bazel.build/github.com/abseil/abseil-cpp/archive/8ff1374008259719b54a8cb128ef951c02da164c.tar.gz",
+#        "https://github.com/abseil/abseil-cpp/archive/8ff1374008259719b54a8cb128ef951c02da164c.tar.gz",
+#    ],
+#    build_file = clean_dep("//third_party:com_google_absl.BUILD"),
+#)
