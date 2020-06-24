@@ -1,4 +1,5 @@
 #include "proto/spec.pb.h"
+#include "third_party/statusor/statusor.h"
 #include <fstream>
 #include <iostream>
 
@@ -15,30 +16,28 @@ void OutputToInterface(std::string content, bool isError = false) {
     }
 }
 
-int ValidateFile(std::string file_path){
+absl::Status ValidateFile(std::string file_path){
     std::fstream input(file_path, std::ios::in | std::ios::binary);
     if (input) {
         std::string cont;
         GetUserInput("File already exists. Overwrite? (y/n)", cont);
-        if (cont != "y") {
-            OutputToInterface("Terminating.");
-            return -1;
+        if (cont != "y"){
+            return absl::CancelledError();
         }
     }
-    return 0;
+    return absl::OkStatus();
 }
 
 
-int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
+absl::Status WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
     std::fstream output(file_path, std::ios::out | std::ios::trunc | std::ios::binary);
     if (!event -> SerializeToOstream(&output)) {
-        OutputToInterface("Could not write to file given.", true);
-        return -1;
+        return absl::InvalidArgumentError("Could not write to file given.");
     }
-    return 0;
+    return absl::OkStatus();
 }
 
-int CreateEvent(io::cloudevents::v1::CloudEvent* event){
+absl::Status PopulateEvent(io::cloudevents::v1::CloudEvent* event){
     // TODO (#7): Abstract this out to a Buider with validation.
 
     GetUserInput("Enter id", *event -> mutable_id());
@@ -58,27 +57,25 @@ int CreateEvent(io::cloudevents::v1::CloudEvent* event){
             {"other", 3}
         };
 
-        if (data_type_to_case.find(data_type ) == data_type_to_case.end()) {
-            OutputToInterface("Data type not recognized", true);
-            return -1;
+        if (data_type_to_case.find(data_type) == data_type_to_case.end()) {
+            return absl::InvalidArgumentError("Data type not recognized.");
         }
         
         switch(data_type_to_case.at(data_type)){
             case 1: GetUserInput("Enter data", *event -> mutable_binary_data()); break;
             case 2: GetUserInput("Enter data", *event -> mutable_text_data()); break;
-            case 3: OutputToInterface("Other data not yet supported", true); break;
+            case 3: return absl::UnimplementedError("Other data type not supported yet.");
             default: {
-                OutputToInterface("Data type not handled", true);
-                return -1;
+                return absl::InternalError("Data type mapping resulted in unknown case.");
             }
         }
     }
-    return 0;
+    return absl::OkStatus();
 }
 
 int main(int argc, char* argv[]) {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
-    int program_status = 0;
+    absl::Status program_status;
     
     // ensure that a write file is specified
     if (argc != 2) {
@@ -89,21 +86,24 @@ int main(int argc, char* argv[]) {
     io::cloudevents::v1::CloudEvent event;
 
     program_status = ValidateFile(argv[1]);
-    if (program_status != 0) {
-        return program_status;
+    if (!program_status.ok()) {
+        OutputToInterface(program_status.ToString(), -1);
+        return -1;
     }
     
     // create an event
     // TODO (#8): handle optional and extension attrs
-    program_status = CreateEvent(&event);
-    if (program_status != 0) {
-        return program_status;
+    program_status = PopulateEvent(&event);
+    if (!program_status.ok()) {
+        OutputToInterface(program_status.ToString(), -1);
+        return -1;
     }
 
     // write to file
     program_status = WriteToFile(argv[1], &event);
-    if (program_status != 0) {
-        return program_status;
+    if (!program_status.ok()) {
+        OutputToInterface(program_status.ToString(), -1);
+        return -1;
     }
 
     google::protobuf::ShutdownProtobufLibrary();
