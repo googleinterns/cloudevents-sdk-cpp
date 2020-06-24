@@ -7,9 +7,9 @@ void GetUserInput(std::string prompt, std::string& res) {
     getline(std::cin, res);
 }
 
-void OutputToInterface(std::string content, bool isError) {
+void OutputToInterface(std::string content, bool isError = false) {
     if ( isError ) {
-        std::cout << content << std::endl;
+        std::cerr << content << std::endl;
     } else {
         std::cout << content << std::endl;
     }
@@ -21,7 +21,7 @@ int ValidateFile(std::string file_path){
         std::string cont;
         GetUserInput("File already exists. Overwrite? (y/n)", cont);
         if ( cont != "y" ){
-            OutputToInterface("Terminating.", 0);
+            OutputToInterface("Terminating.");
             return -1;
         }
     }
@@ -32,7 +32,7 @@ int ValidateFile(std::string file_path){
 int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
     std::fstream output(file_path, std::ios::out | std::ios::trunc | std::ios::binary);
     if ( !event -> SerializeToOstream(&output) ) {
-        OutputToInterface("Could not write to file given.", -1);
+        OutputToInterface("Could not write to file given.", true);
         return -1;
     }
     return 0;
@@ -59,16 +59,16 @@ int CreateEvent(io::cloudevents::v1::CloudEvent* event){
         };
 
         if ( data_type_to_case.find(data_type ) == data_type_to_case.end()) {
-            OutputToInterface("Data type not recognized", -1);
+            OutputToInterface("Data type not recognized", true);
             return -1;
         }
         
         switch(data_type_to_case.at(data_type)){
             case 1: GetUserInput("Enter data", *event -> mutable_binary_data()); break;
             case 2: GetUserInput("Enter data", *event -> mutable_text_data()); break;
-            case 3: OutputToInterface("Other data not yet supported", -1); break;
+            case 3: OutputToInterface("Other data not yet supported", true); break;
             default: {
-                OutputToInterface("Data type not handled", -1);
+                OutputToInterface("Data type not handled", true);
                 return -1;
             }
         }
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
     
     // ensure that a write file is specified
     if ( argc != 2 ) {
-        OutputToInterface("Incorrect Usage. Please specify a write file.", -1);
+        OutputToInterface("Incorrect Usage. Please specify a write file.", true);
         return -1;
     }
 
