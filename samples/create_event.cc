@@ -7,14 +7,11 @@ void GetUserInput(std::string prompt, std::string& res) {
     getline(std::cin, res);
 }
 
-void OutputToInterface(std::string content, int type) {
-    switch(type) {
-        case 0: std::cout << content << std::endl; break;
-        case -1: std::cerr << content << std::endl; break;
-        default: {
-            std::cerr << "Did not recognize output type code " << type << std::endl;
-            std::cerr << "Output content: " << content << std::endl;
-        }
+void OutputToInterface(std::string content, bool isError) {
+    if ( isError ) {
+        std::cout << content << std::endl;
+    } else {
+        std::cout << content << std::endl;
     }
 }
 
