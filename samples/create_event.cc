@@ -39,7 +39,7 @@ int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
 }
 
 int CreateEvent(io::cloudevents::v1::CloudEvent* event){
-    // TODO (Michelle): Abstract this out to a Buider with validation.
+    // TODO (#7): Abstract this out to a Buider with validation.
 
     GetUserInput("Enter id", *event -> mutable_id());
     GetUserInput("Enter source", *event -> mutable_source());
@@ -50,7 +50,7 @@ int CreateEvent(io::cloudevents::v1::CloudEvent* event){
     GetUserInput("Would you like to enter data (y/n)", has_data);
     if (has_data=="y") {
         std::string data_type;
-        // TODO (Michelle): Support Any data
+        // TODO (#6): Support Any data
         GetUserInput("Enter data type (bytes/ string)", data_type);
         const static std::unordered_map<std::string,int> data_type_to_case{
             {"bytes",1},
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     }
     
     // create an event
-    // TODO (Michelle): handle optional and extension attrs
+    // TODO (#8): handle optional and extension attrs
     program_status = CreateEvent(&event);
     if (program_status != 0) {
         return program_status;
