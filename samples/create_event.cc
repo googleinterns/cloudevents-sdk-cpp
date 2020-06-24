@@ -17,10 +17,10 @@ void OutputToInterface(std::string content, bool isError) {
 
 int ValidateFile(std::string file_path){
     std::fstream input(file_path, std::ios::in | std::ios::binary);
-    if (input) {
+    if ( input ) {
         std::string cont;
         GetUserInput("File already exists. Overwrite? (y/n)", cont);
-        if (cont != "y"){
+        if ( cont != "y" ){
             OutputToInterface("Terminating.", 0);
             return -1;
         }
@@ -31,7 +31,7 @@ int ValidateFile(std::string file_path){
 
 int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
     std::fstream output(file_path, std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!event -> SerializeToOstream(&output)) {
+    if ( !event -> SerializeToOstream(&output) ) {
         OutputToInterface("Could not write to file given.", -1);
         return -1;
     }
@@ -48,7 +48,7 @@ int CreateEvent(io::cloudevents::v1::CloudEvent* event){
 
     std::string has_data;
     GetUserInput("Would you like to enter data (y/n)", has_data);
-    if (has_data=="y") {
+    if ( has_data=="y" ) {
         std::string data_type;
         // TODO (Michelle): Support Any data
         GetUserInput("Enter data type (bytes/ string)", data_type);
@@ -58,7 +58,7 @@ int CreateEvent(io::cloudevents::v1::CloudEvent* event){
             {"other", 3}
         };
 
-        if (data_type_to_case.find(data_type) == data_type_to_case.end()) {
+        if ( data_type_to_case.find(data_type ) == data_type_to_case.end()) {
             OutputToInterface("Data type not recognized", -1);
             return -1;
         }
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
     int program_status = 0;
     
     // ensure that a write file is specified
-    if (argc != 2) {
+    if ( argc != 2 ) {
         OutputToInterface("Incorrect Usage. Please specify a write file.", -1);
         return -1;
     }
@@ -89,20 +89,20 @@ int main(int argc, char* argv[]) {
     io::cloudevents::v1::CloudEvent event;
 
     program_status = ValidateFile(argv[1]);
-    if (program_status != 0) {
+    if ( program_status != 0 ) {
         return program_status;
     }
     
     // create an event
     // TODO (Michelle): handle optional and extension attrs
     program_status = CreateEvent(&event);
-    if (program_status != 0) {
+    if ( program_status != 0 ) {
         return program_status;
     }
 
     // write to file
     program_status = WriteToFile(argv[1], &event);
-    if (program_status != 0) {
+    if ( program_status != 0 ) {
         return program_status;
     }
 
