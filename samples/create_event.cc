@@ -44,19 +44,6 @@ int WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent* event){
 int CreateEvent(io::cloudevents::v1::CloudEvent* event){
     // TODO (Michelle): Abstract this out to a Buider with validation.
 
-    // TODO (Michelle): figure out how to map key to function cleanly
-    // std::map<std::string, std::string* (*)()> KEYTOFUNC;
-    // KEYTOFUNC["id"] = &event.mutable_id;
-    // KEYTOFUNC["source"] = &event.mutable_source;
-    // KEYTOFUNC["spec_verion"] = &event.mutable_spec_verion;
-    // KEYTOFUNC["type"] = &event.mutable_type;
-
-    // for (const std::string& key : {"id", "source", "spec_version", "type"}){
-    //     std::string res;
-    //     std::cout << "Enter " << key << ": ";
-    //     getline(std::cin, KEYTOFUNC[key]);
-    // }
-
     GetUserInput("Enter id", *event -> mutable_id());
     GetUserInput("Enter source", *event -> mutable_source());
     GetUserInput("Enter spec_version", *event -> mutable_spec_version());
