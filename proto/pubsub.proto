@@ -1,0 +1,76 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package google.pubsub.v1;
+
+// import "google/api/annotations.proto";
+// import "google/api/client.proto";
+// import "google/api/field_behavior.proto";
+// import "google/api/resource.proto";
+// import "google/protobuf/duration.proto";
+// import "google/protobuf/empty.proto";
+// import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+// option cc_enable_arenas = true;
+// option csharp_namespace = "Google.Cloud.PubSub.V1";
+// option go_package = "google.golang.org/genproto/googleapis/pubsub/v1;pubsub";
+// option java_multiple_files = true;
+// option java_outer_classname = "PubsubProto";
+// option java_package = "com.google.pubsub.v1";
+// option php_namespace = "Google\\Cloud\\PubSub\\V1";
+// option ruby_package = "Google::Cloud::PubSub::V1";
+
+// A message that is published by publishers and consumed by subscribers. The
+// message must contain either a non-empty data field or at least one attribute.
+// Note that client libraries represent this object differently
+// depending on the language. See the corresponding
+// <a href="https://cloud.google.com/pubsub/docs/reference/libraries">client
+// library documentation</a> for more information. See
+// <a href="https://cloud.google.com/pubsub/quotas">Quotas and limits</a>
+// for more information about message limits.
+message PubsubMessage {
+  // The message data field. If this field is empty, the message must contain
+  // at least one attribute.
+  bytes data = 1;
+
+  // Attributes for this message. If this field is empty, the message must
+  // contain non-empty data. This can be used to filter messages on the
+  // subscription.
+  map<string, string> attributes = 2;
+
+  // ID of this message, assigned by the server when the message is published.
+  // Guaranteed to be unique within the topic. This value may be read by a
+  // subscriber that receives a `PubsubMessage` via a `Pull` call or a push
+  // delivery. It must not be populated by the publisher in a `Publish` call.
+  string message_id = 3;
+
+  // The time at which the message was published, populated by the server when
+  // it receives the `Publish` call. It must not be populated by the
+  // publisher in a `Publish` call.
+  google.protobuf.Timestamp publish_time = 4;
+
+  // If non-empty, identifies related messages for which publish order should be
+  // respected. If a `Subscription` has `enable_message_ordering` set to `true`,
+  // messages published with the same non-empty `ordering_key` value will be
+  // delivered to subscribers in the order in which they are received by the
+  // Pub/Sub system. All `PubsubMessage`s published in a given `PublishRequest`
+  // must specify the same `ordering_key` value.
+  // <b>EXPERIMENTAL:</b> This feature is part of a closed alpha release. This
+  // API might be changed in backward-incompatible ways and is not recommended
+  // for production use. It is not subject to any SLA or deprecation policy.
+  string ordering_key = 5;
+}
