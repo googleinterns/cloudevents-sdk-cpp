@@ -10,7 +10,7 @@ The Protobuf format is based on this [open pull request](https://github.com/JemD
 Run-able code samples are available in the `/samples` folder.
 
 ### Setup
-Install Bazel. Instuctions found in (Bazel documentation)(https://docs.bazel.build/versions/master/install-ubuntu.html).
+Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
 
 ### Run
 1. Create executable <br/>
