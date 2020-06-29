@@ -1,8 +1,11 @@
 # C++ SDK for [CloudEvents](https://github.com/cloudevents/spec)
 
-This SDK is still a work in progress.
+This SDK is still a work in progress. In particular, the protos it is built on is in Alpha status.
 
-The Protobuf format is based on this [open pull request](https://github.com/JemDay/spec/tree/jd-proto) from JemDay.
+The CloudEvent proto is based on this [open pull request](https://github.com/JemDay/spec/tree/jd-proto) from JemDay.
+<br/>
+
+The PubsubMessage proto is based on this [pubsub proto file from Google API service platform](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto#L188).
 
 **This is not an officially supported Google product.**
 
