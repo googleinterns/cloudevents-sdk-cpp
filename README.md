@@ -17,3 +17,7 @@ Install Bazel. Instuctions found in (Bazel documentation)(https://docs.bazel.bui
 `bazel build //sample:create_event`
 2. Run executable <br/>
 `bazel-bin/sample/create_event`
+
+
+# Dependencies
+Rene Nyffenegger's [base64 byte library](https://github.com/ReneNyffenegger/cpp-base64).
