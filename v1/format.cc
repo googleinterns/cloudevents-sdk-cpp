@@ -9,7 +9,7 @@ StructuredCloudEvent::StructuredCloudEvent(CloudEvent* cloud_event, CloudEventFo
     : format_(format), cloud_event_(cloud_event), serialized_cloud_event_(serialized_cloud_event)
 {}
 
-CloudEventFormat GetCloudEventFormat(){
+CloudEventFormat StructuredCloudEvent::GetCloudEventFormat(){
     return format_;
 }
 
