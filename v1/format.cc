@@ -27,9 +27,5 @@ StructuredCloudEvent Marshaller::CreateStructuredCloudEvent(CloudEvent* cloud_ev
     return StructuredCloudEvent(cloud_event, format, serialized_cloud_event);
 }
 
-// JsonMarshaller
-StructuredCloudEvent* JsonMarshaller::Serialize(CloudEvent cloud_event) {
-    
-}
 
 } // structured_cloud_events
