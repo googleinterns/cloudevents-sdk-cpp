@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/googleinterns/cloudevents-sdk-cpp.svg?branch=master)](https://travis-ci.org/googleinterns/cloudevents-sdk-cpp)
+
 # C++ SDK for [CloudEvents](https://github.com/cloudevents/spec)
 
 This SDK is still a work in progress.
