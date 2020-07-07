@@ -17,6 +17,6 @@ std::string StructuredCloudEvent::GetSerializedCloudEvent() {
 
 StructuredCloudEvent Marshaller::CreateStructuredCloudEvent(CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event) {
     return StructuredCloudEvent(cloud_event, format, serialized_cloud_event);
-};
+}
 
 } // structured_cloud_events
