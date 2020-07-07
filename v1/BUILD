@@ -8,6 +8,7 @@ cc_library(
     deps = [
         "//proto:cloud_event_cc_proto",
         "//third_party/base64:base64_lib",
+        "//third_party/statusor:statusor_lib",
     ],
 )
 

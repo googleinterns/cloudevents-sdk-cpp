@@ -3,6 +3,7 @@
 
 #include "proto/cloud_event.pb.h"
 #include "third_party/base64/base64.h"
+#include "third_party/statusor/statusor.h"
 
 namespace structured_cloud_events {
 
@@ -26,14 +27,14 @@ class Marshaller {
     private: 
         StructuredCloudEvent CreateStructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
     public:
-        virtual StructuredCloudEvent* Serialize(io::cloudevents::v1::CloudEvent cloud_event) = 0;
-        virtual StructuredCloudEvent* Deserialize(std::string serialized_cloud_event) = 0;
+        virtual absl::StatusOr<StructuredCloudEvent*> Serialize(io::cloudevents::v1::CloudEvent cloud_event) = 0;
+        virtual absl::StatusOr<StructuredCloudEvent*> Deserialize(std::string serialized_cloud_event) = 0;
 };
 
 // class JsonMarshaller: public Marshaller {
 //     public: 
-//         StructuredCloudEvent* Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
-//         CloudEvent* Deserialize(StructuredCloudEvent) override;
+//         absl::StatusOr<StructuredCloudEvent*> Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
+//         absl::StatusOr<StructuredCloudEvent*> Deserialize(StructuredCloudEvent) override;
 // };
 
 } // structured_cloud_events
