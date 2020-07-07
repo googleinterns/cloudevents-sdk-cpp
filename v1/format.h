@@ -16,6 +16,7 @@ class StructuredCloudEvent {
         StructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
         friend class Marshaller;
     public:
+        CloudEventFormat GetCloudEventFormat();
         io::cloudevents::v1::CloudEvent* GetCloudEvent();
         std::string GetSerializedCloudEvent();
 };
@@ -29,9 +30,9 @@ class Marshaller {
         virtual StructuredCloudEvent* Deserialize(std::string serialized_cloud_event) = 0;
 };
 
-// class JsonMarshaller: Marshaller {
+// class JsonMarshaller: public Marshaller {
 //     public: 
-//         StructuredCloudEvent* Serialize(CloudEvent cloud_event) override;
+//         StructuredCloudEvent* Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
 //         CloudEvent* Deserialize(StructuredCloudEvent) override;
 // };
 
