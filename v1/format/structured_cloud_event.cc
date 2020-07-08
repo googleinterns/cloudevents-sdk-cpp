@@ -49,8 +49,10 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
     switch (cloud_event.data_oneof_case()) {
         case CloudEvent::DataOneofCase::kBinaryData:
             root["data_base64"] = cloud_event.binary_data();
+            break;
         case CloudEvent::DataOneofCase::kTextData:
             root["data"] = cloud_event.text_data();
+            break;
         case CloudEvent::DataOneofCase::kProtoData:
             // TODO (#17): Handle CloudEvent Any in JsonMarshaller
             // Json::Value data_json_p = root["data"];
@@ -58,7 +60,6 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
             // data_proto.UnpackTo(&data_msg);
             // google::protobuf::util::MessageToJsonString(, &data_json_p);
             return absl::UnimplementedError("protobuf::Any not supported yet.");
-        default:
             break;
     }
 
