@@ -5,7 +5,8 @@
 #include "third_party/base64/base64.h"
 #include "third_party/statusor/statusor.h"
 
-namespace structured_cloud_events {
+namespace cloud_events {
+namespace format {
 
 enum CloudEventFormat {Json};
 
@@ -34,6 +35,7 @@ class Marshaller {
 //         absl::StatusOr<StructuredCloudEvent> Deserialize(StructuredCloudEvent) override;
 // };
 
-} // structured_cloud_events
+} // format
+} // cloud_events
 
 #endif

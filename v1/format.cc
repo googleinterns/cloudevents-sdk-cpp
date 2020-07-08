@@ -1,6 +1,7 @@
 #include "format.h"
 
-namespace structured_cloud_events {
+namespace cloud_events {
+namespace format {
 using ::io::cloudevents::v1::CloudEvent;
 
 // StructuredCloudEvent
@@ -22,4 +23,5 @@ std::string StructuredCloudEvent::GetSerializedCloudEvent() {
 } 
 
 
-} // structured_cloud_events
+} //} // format
+} // cloud_events
