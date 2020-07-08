@@ -60,6 +60,28 @@ TEST(JsonMarshaller, Serialize) {
     ASSERT_EQ(sce2.value().GetCloudEventFormat(), CloudEventFormat::JSON);
     ASSERT_EQ(sce2.value().GetSerializedCloudEvent(), "{\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"2.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}");
 
+    CloudEvent ce3;
+    ce3.set_id("9999999");
+    ce3.set_source("/test/qwertyuiop");
+    ce3.set_spec_version("3.xxxxx");
+    ce3.set_type("not_a_type");
+    ce3.set_binary_data("binary_data_wow");
+    absl::StatusOr<StructuredCloudEvent> sce3 = m.Serialize(ce3);
+    ASSERT_TRUE(sce3);
+    ASSERT_EQ(sce3.value().GetCloudEventFormat(), CloudEventFormat::JSON);
+    ASSERT_EQ(sce3.value().GetSerializedCloudEvent(), "{\n\t\"data_base64\" : \"binary_data_wow\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"3.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}");
+
+    CloudEvent ce4;
+    ce4.set_id("9999999");
+    ce4.set_source("/test/qwertyuiop");
+    ce4.set_spec_version("4.xxxxx");
+    ce4.set_type("not_a_type");
+    ce4.set_text_data("this is text");
+    absl::StatusOr<StructuredCloudEvent> sce4 = m.Serialize(ce4);
+    ASSERT_TRUE(sce4);
+    ASSERT_EQ(sce4.value().GetCloudEventFormat(), CloudEventFormat::JSON);
+    ASSERT_EQ(sce4.value().GetSerializedCloudEvent(), "{\n\t\"data\" : \"this is text\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"4.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}");
+
 }
 
 TEST(JsonMarshaller, Deserialize) {
