@@ -42,3 +42,11 @@ git_repository(
     remote = "https://github.com/google/googletest",
     branch = "v1.10.x",
 )
+
+git_repository(
+    name = "org_cloudabi_bazel_third_party",
+    commit = "91ca2167219c612a89334fa09ddf15fbdc5d0592",
+    remote = "https://github.com/NuxiNL/bazel-third-party.git",
+)
+load("@org_cloudabi_bazel_third_party//:third_party.bzl", "third_party_repositories")
+third_party_repositories()
