@@ -2,21 +2,40 @@
 #include <iostream>
 
 #include <gtest/gtest.h>
+namespace cloud_events {
+namespace format {
 
 TEST(test, runs) {
     ASSERT_EQ(1,1);
 }
 
-TEST(marshaller, sce) {
-    io::cloudevents::v1::CloudEvent ce;
-    ce.set_id("9");
-    ce.set_source("/wer/9");
-    ce.set_spec_version("1");
-    ce.set_type("test");
-
-    structured_cloud_events::Marshaller m;
-
-    structured_cloud_events::StructuredCloudEvent my_sce = mCreateStructuredCloudEvent(&ce, structured_cloud_events::CloudEventFormat::Json, "test");
-    ASSERT_EQ(my_sce.GetCloudEvent(),ce);
-    ASSERT_EQ(my_sce.GetSerializedCloudEvent(),"test");
+TEST(StructuredCloudEvent, constructor) {
+    StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
+    StructuredCloudEvent sce2 = StructuredCloudEvent(CloudEventFormat::JSON, "");
+    StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, "etrfyguhjnmhugyutxrxcjkuygilhojihguyrtesyrstduyfkgl");
 }
+
+TEST(StructuredCloudEvent, format) {
+    StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
+    ASSERT_EQ(sce1.GetCloudEventFormat(), CloudEventFormat::JSON);
+    
+    StructuredCloudEvent sce2 = StructuredCloudEvent(CloudEventFormat::JSON, "");
+    ASSERT_EQ(sce2.GetCloudEventFormat(), CloudEventFormat::JSON);
+    
+    StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, "etrfyguhjnmhugyutxrxcjkuygilhojihguyrtesyrstduyfkgl");
+    ASSERT_EQ(sce3.GetCloudEventFormat(), CloudEventFormat::JSON);
+}
+
+TEST(StructuredCloudEvent, serialization) {
+    StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
+    ASSERT_EQ(sce1.GetSerializedCloudEvent(), "test");
+
+    StructuredCloudEvent sce2 = StructuredCloudEvent(CloudEventFormat::JSON, "");
+    ASSERT_EQ(sce2.GetSerializedCloudEvent(), "");
+
+    StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, "etrfyguhjnmhugyutxrxcjkuygilhojihguyrtesyrstduyfkgl");
+    ASSERT_EQ(sce3.GetSerializedCloudEvent(), "etrfyguhjnmhugyutxrxcjkuygilhojihguyrtesyrstduyfkgl");
+}
+} // format
+} // cloud_events
+
