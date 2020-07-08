@@ -10,7 +10,7 @@ TEST(test, runs) {
     ASSERT_EQ(1,1);
 }
 
-TEST(StructuredCloudEvent, constructor) {
+TEST(StructuredCloudEvent, Constructor) {
     StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
     StructuredCloudEvent sce2 = StructuredCloudEvent(CloudEventFormat::JSON, "");
     StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
@@ -38,7 +38,7 @@ TEST(StructuredCloudEvent, GetSerialized) {
     ASSERT_EQ(sce3.GetSerializedCloudEvent(), "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
 }
 
-TEST(JsonMarshaller, serialize) {
+TEST(JsonMarshaller, Serialize) {
     JsonMarshaller m;
     CloudEvent ce1;
     ce1.set_id("1");
