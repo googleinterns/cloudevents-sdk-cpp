@@ -48,7 +48,7 @@ TEST(JsonMarshaller, serialize) {
     absl::StatusOr<StructuredCloudEvent> sce1 = m.Serialize(ce1);
     ASSERT_TRUE(sce1);
     ASSERT_EQ(sce1.value().GetCloudEventFormat(), CloudEventFormat::JSON);
-    ASSERT_EQ(sce1.value().GetSerializedCloudEvent(),"{\"id\":\"1\",\"source\":\"/test\",\"spec_version\":\"1.0\",\"type\":\"test\"}\n");
+    ASSERT_EQ(sce1.value().GetSerializedCloudEvent(),"{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}");
     
     CloudEvent ce2;
     ce2.set_id("9999999");
@@ -58,7 +58,7 @@ TEST(JsonMarshaller, serialize) {
     absl::StatusOr<StructuredCloudEvent> sce2 = m.Serialize(ce2);
     ASSERT_TRUE(sce2);
     ASSERT_EQ(sce2.value().GetCloudEventFormat(), CloudEventFormat::JSON);
-    ASSERT_EQ(sce2.value().GetSerializedCloudEvent(),"{\"id\":\"9999999\",\"source\":\"/test/qwertyuiop\",\"spec_version\":\"2.xxxxx\",\"type\":\"not_a_type\"}\n");
+    ASSERT_EQ(sce2.value().GetSerializedCloudEvent(), "{\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"2.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}");
 
 }
 
