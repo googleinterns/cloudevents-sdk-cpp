@@ -80,7 +80,7 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
             root[x.first] = json_printed.value();
         }
     }
-    return StructuredCloudEvent(&cloud_event, CloudEventFormat::JSON, root.asString());
+    return StructuredCloudEvent(CloudEventFormat::JSON, root.asString());
 }
 
 absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Deserialize(std::string serialized_cloud_event) {
