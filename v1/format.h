@@ -14,18 +14,15 @@ class StructuredCloudEvent {
         CloudEventFormat format_;
         io::cloudevents::v1::CloudEvent* cloud_event_;
         std::string serialized_cloud_event_;
-        StructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
-        friend class Marshaller;
     public:
         CloudEventFormat GetCloudEventFormat();
         io::cloudevents::v1::CloudEvent* GetCloudEvent();
         std::string GetSerializedCloudEvent();
+        StructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
 };
 
 class Marshaller {
     // interface for stand-alone format marshallers
-    private: 
-        StructuredCloudEvent CreateStructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
     public:
         virtual absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) = 0;
         virtual absl::StatusOr<StructuredCloudEvent> Deserialize(std::string serialized_cloud_event) = 0;
