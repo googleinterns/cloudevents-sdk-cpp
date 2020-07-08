@@ -29,6 +29,7 @@ class Marshaller {
     public:
         virtual absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) = 0;
         virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(std::string serialized_cloud_event) = 0;
+        virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(StructuredCloudEvent structured_cloud_event) = 0;
 };
 
 class JsonMarshaller: public Marshaller {
@@ -37,6 +38,7 @@ class JsonMarshaller: public Marshaller {
     public: 
         absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
         absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(std::string serialized_cloud_event) override;
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(StructuredCloudEvent structured_cloud_event) override;
 };
 
 } // format
