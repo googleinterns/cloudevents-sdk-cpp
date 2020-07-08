@@ -48,7 +48,7 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
     Json::Value root;
     switch (cloud_event.data_oneof_case()) {
         case CloudEvent::DataOneofCase::kBinaryData:
-            root["data_base64"] = base64_encode(cloud_event.binary_data());
+            root["data_base64"] = cloud_event.binary_data();
         case CloudEvent::DataOneofCase::kTextData:
             root["data"] = cloud_event.text_data();
         case CloudEvent::DataOneofCase::kProtoData:
