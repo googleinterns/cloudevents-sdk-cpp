@@ -15,7 +15,7 @@ TEST(StructuredCloudEvent, constructor) {
     StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, "etrfyguhjnmhugyutxrxcjkuygilhojihguyrtesyrstduyfkgl");
 }
 
-TEST(StructuredCloudEvent, format) {
+TEST(StructuredCloudEvent, get_format) {
     StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
     ASSERT_EQ(sce1.GetCloudEventFormat(), CloudEventFormat::JSON);
     
@@ -26,7 +26,7 @@ TEST(StructuredCloudEvent, format) {
     ASSERT_EQ(sce3.GetCloudEventFormat(), CloudEventFormat::JSON);
 }
 
-TEST(StructuredCloudEvent, serialization) {
+TEST(StructuredCloudEvent, get_serialized) {
     StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, "test");
     ASSERT_EQ(sce1.GetSerializedCloudEvent(), "test");
 
