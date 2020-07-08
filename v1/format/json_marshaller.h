@@ -18,7 +18,7 @@ class JsonMarshaller: public Marshaller {
         absl::StatusOr<Json::Value> PrintToJson(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
     public: 
         absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
-        absl::StatusOr<StructuredCloudEvent> Deserialize(std::string serialized_cloud_event) override;
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(std::string serialized_cloud_event) override;
 };
 
 #endif

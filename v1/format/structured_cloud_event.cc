@@ -84,8 +84,49 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
     return StructuredCloudEvent(CloudEventFormat::JSON, Json::writeString(builder, root));
 }
 
-absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Deserialize(std::string serialized_cloud_event) {
-    return absl::UnimplementedError("protobuf::Any not supported yet.");
+absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cloud_event) {
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors;
+
+    Json::Value root;   
+    bool parsingSuccessful = reader->parse(serialized_cloud_event.c_str(), serialized_cloud_event.c_str() + serialized_cloud_event.size(), &root, &errors);
+    if (!parsingSuccessful) {
+        return absl::InvalidArgumentError(errors);
+    }
+
+    CloudEvent cloud_event;
+
+    // handle data
+    if (root.isMember("data") && root.isMember("base64_data")) {
+        return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
+    } else if (root.isMember("data")) {
+        cloud_event.set_text_data(root["data"].asString());
+    } else if (root.isMember("base64_data")) {
+        cloud_event.set_binary_data(root["base64_data"].asString());
+    }
+
+    // handle metadata
+    if (!root.isMember("id") || !root.isMember("source") || !root.isMember("spec_version") || !root.isMember("type")) { // using isMember to avoid creating null member, avoids quirk of JsonCpp
+        return absl::InvalidArgumentError("Provided input is missing required Cloud Event attributes.");
+    }
+
+    for (auto const& member : root.getMemberNames()) {
+        if (member == "id") {
+            cloud_event.set_id(root[member].asString());
+        } else if (member == "source") {
+            cloud_event.set_source(root[member].asString());
+        } else if (member == "spec_version") {
+            cloud_event.set_spec_version(root[member].asString());
+        } else if (member == "type") {
+            cloud_event.set_type(root[member].asString());
+        } else {
+            CloudEvent_CloudEventAttribute attr;
+            attr.set_ce_string(root[member].asString());
+            (*cloud_event.mutable_attributes())[member] = attr;
+        }
+    }
+    return cloud_event;
 }
 
 } // format
