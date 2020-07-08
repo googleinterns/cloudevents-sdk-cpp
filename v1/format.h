@@ -2,7 +2,6 @@
 #define CLOUDEVENTS_FORMAT_H
 
 #include "proto/cloud_event.pb.h"
-#include "third_party/base64/base64.h"
 #include "third_party/statusor/statusor.h"
 #include <json/json.h>
 #include <google/protobuf/any.pb.h>
