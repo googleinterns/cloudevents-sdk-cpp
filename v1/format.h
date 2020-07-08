@@ -1,5 +1,5 @@
-#ifndef EVENT_FORMAT_H
-#define EVENT_FORMAT_H
+#ifndef CLOUDEVENTS_FORMAT_H
+#define CLOUDEVENTS_FORMAT_H
 
 #include "proto/cloud_event.pb.h"
 #include "third_party/base64/base64.h"
@@ -40,4 +40,6 @@ class Marshaller {
 } // format
 } // cloud_events
 
+} // format
+} // cloud_events
 #endif
