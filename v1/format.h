@@ -13,13 +13,11 @@ enum CloudEventFormat {JSON};
 class StructuredCloudEvent {
     private:
         CloudEventFormat format_;
-        io::cloudevents::v1::CloudEvent* cloud_event_;
         std::string serialized_cloud_event_;
     public:
+        StructuredCloudEvent(CloudEventFormat format, std::string serialized_cloud_event);
         CloudEventFormat GetCloudEventFormat();
-        io::cloudevents::v1::CloudEvent* GetCloudEvent();
         std::string GetSerializedCloudEvent();
-        StructuredCloudEvent(io::cloudevents::v1::CloudEvent* cloud_event, CloudEventFormat format, std::string serialized_cloud_event);
 };
 
 class Marshaller {
