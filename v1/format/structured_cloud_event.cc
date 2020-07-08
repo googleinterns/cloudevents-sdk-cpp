@@ -80,8 +80,8 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
             root[x.first] = json_printed.value();
         }
     }
-    Json::FastWriter writer;
-    return StructuredCloudEvent(CloudEventFormat::JSON, writer.write(root));
+    Json::StreamWriterBuilder builder;
+    return StructuredCloudEvent(CloudEventFormat::JSON, Json::writeString(builder, root));
 }
 
 absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Deserialize(std::string serialized_cloud_event) {
