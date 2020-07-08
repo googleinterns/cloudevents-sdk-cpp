@@ -44,24 +44,7 @@ absl::StatusOr<Json::Value> JsonMarshaller::PrintToJson(CloudEvent_CloudEventAtt
 }
 
 absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_event) {
-    // handle data
     Json::Value root;
-    switch (cloud_event.data_oneof_case()) {
-        case CloudEvent::DataOneofCase::kBinaryData:
-            root["data_base64"] = cloud_event.binary_data();
-            break;
-        case CloudEvent::DataOneofCase::kTextData:
-            root["data"] = cloud_event.text_data();
-            break;
-        case CloudEvent::DataOneofCase::kProtoData:
-            // TODO (#17): Handle CloudEvent Any in JsonMarshaller
-            // Json::Value data_json_p = root["data"];
-            // google::protobuf::Any data_proto = cloud_event.proto_data();
-            // data_proto.UnpackTo(&data_msg);
-            // google::protobuf::util::MessageToJsonString(, &data_json_p);
-            return absl::UnimplementedError("protobuf::Any not supported yet.");
-            break;
-    }
 
     // handle metadata
     if (cloud_event.id().empty() || cloud_event.source().empty() || cloud_event.spec_version().empty(), cloud_event.type().empty()) {
@@ -81,6 +64,27 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
             root[x.first] = json_printed.value();
         }
     }
+
+    // handle data
+    switch (cloud_event.data_oneof_case()) {
+        case CloudEvent::DataOneofCase::kBinaryData:
+            root["data_base64"] = cloud_event.binary_data();
+            break;
+        case CloudEvent::DataOneofCase::kTextData:
+            root["data"] = cloud_event.text_data();
+            break;
+        case CloudEvent::DataOneofCase::kProtoData:
+            // TODO (#17): Handle CloudEvent Any in JsonMarshaller
+            // Json::Value data_json_p = root["data"];
+            // google::protobuf::Any data_proto = cloud_event.proto_data();
+            // data_proto.UnpackTo(&data_msg);
+            // google::protobuf::util::MessageToJsonString(, &data_json_p);
+            return absl::UnimplementedError("protobuf::Any not supported yet.");
+            break;
+        case CloudEvent::DATA_ONEOF_NOT_SET:
+            break;
+    }
+    
     Json::StreamWriterBuilder builder;
     return StructuredCloudEvent(CloudEventFormat::JSON, Json::writeString(builder, root));
 }
