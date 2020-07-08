@@ -64,13 +64,22 @@ TEST(JsonMarshaller, Serialize) {
 
 TEST(JsonMarshaller, Deserialize) {
     JsonMarshaller m;
-    std::string sce1 = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
-    absl::StatusOr<CloudEvent> ce1 = m.Deserialize(sce1);
+    std::string s1 = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
+    absl::StatusOr<CloudEvent> ce1 = m.Deserialize(s1);
     ASSERT_TRUE(ce1);
     ASSERT_EQ(ce1.value().id(), "1");
     ASSERT_EQ(ce1.value().source(), "/test");
     ASSERT_EQ(ce1.value().spec_version(), "1.0");
     ASSERT_EQ(ce1.value().type(), "test");
+
+    StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, s1);
+    absl::StatusOr<CloudEvent> ce1b = m.Deserialize(sce1);
+    ASSERT_TRUE(ce1);
+    ASSERT_EQ(ce1b.value().id(), "1");
+    ASSERT_EQ(ce1b.value().source(), "/test");
+    ASSERT_EQ(ce1b.value().spec_version(), "1.0");
+    ASSERT_EQ(ce1b.value().type(), "test");
+
 }
 
 } // format
