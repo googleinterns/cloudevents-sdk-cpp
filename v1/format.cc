@@ -3,6 +3,7 @@
 namespace cloud_events {
 namespace format {
 using ::io::cloudevents::v1::CloudEvent;
+using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 
 // StructuredCloudEvent
 
