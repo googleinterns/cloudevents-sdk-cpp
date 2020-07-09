@@ -84,7 +84,7 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
         case CloudEvent::DATA_ONEOF_NOT_SET:
             break;
     }
-    
+
     Json::StreamWriterBuilder builder;
     return StructuredCloudEvent(CloudEventFormat::JSON, Json::writeString(builder, root));
 }
@@ -101,15 +101,6 @@ absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cl
     }
 
     CloudEvent cloud_event;
-
-    // handle data
-    if (root.isMember("data") && root.isMember("base64_data")) {
-        return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
-    } else if (root.isMember("data")) {
-        cloud_event.set_text_data(root["data"].asString());
-    } else if (root.isMember("base64_data")) {
-        cloud_event.set_binary_data(root["base64_data"].asString());
-    }
 
     // handle metadata
     if (!root.isMember("id") || !root.isMember("source") || !root.isMember("spec_version") || !root.isMember("type")) { // using isMember to avoid creating null member, avoids quirk of JsonCpp
@@ -131,6 +122,17 @@ absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cl
             (*cloud_event.mutable_attributes())[member] = attr;
         }
     }
+
+    // handle data
+    std::cout << root.isMember("data") << root.isMember("data_base64");
+    if (root.isMember("data") && root.isMember("data_base64")) {
+        return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
+    } else if (root.isMember("data")) {
+        cloud_event.set_text_data(root["data"].asString());
+    } else if (root.isMember("data_base64")) {
+        cloud_event.set_binary_data(root["data_base64"].asString());
+    }
+
     return cloud_event;
 }
 
