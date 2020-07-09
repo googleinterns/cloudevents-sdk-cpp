@@ -11,7 +11,8 @@
 
 namespace cloud_events {
 namespace format {
-enum CloudEventFormat {JSON};
+
+enum CloudEventFormat {UNFORMATTED, JSON};
 
 class StructuredCloudEvent {
     private:
