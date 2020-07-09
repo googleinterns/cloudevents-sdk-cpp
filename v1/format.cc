@@ -124,7 +124,6 @@ absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cl
     }
 
     // handle data
-    std::cout << root.isMember("data") << root.isMember("data_base64");
     if (root.isMember("data") && root.isMember("data_base64")) {
         return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
     } else if (root.isMember("data")) {
