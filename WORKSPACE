@@ -35,3 +35,10 @@ http_archive(
     sha256 = "c7ff8decfbda0add222d44bdc27b47527ca4e76929291311474efe7354f663d3",
     strip_prefix = "abseil-cpp-b19ba96766db08b1f32605cb4424a0e7ea0c7584",
 )
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+git_repository(
+    name = "gtest",
+    remote = "https://github.com/google/googletest",
+    branch = "v1.10.x",
+)

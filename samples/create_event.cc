@@ -107,5 +107,6 @@ int main(int argc, char* argv[]) {
     }
 
     google::protobuf::ShutdownProtobufLibrary();
+    std::cout << "sup" << std::endl;
     return 0;
 }
