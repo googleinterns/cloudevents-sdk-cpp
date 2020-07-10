@@ -1,4 +1,4 @@
-#include "proto/spec.pb.h"
+#include "proto/cloud_event.pb.h"
 #include "third_party/statusor/statusor.h"
 #include <fstream>
 #include <iostream>
