@@ -38,4 +38,3 @@ TEST(StructuredCloudEvent, GetSerialized) {
 }
 } // format
 } // cloud_events
-

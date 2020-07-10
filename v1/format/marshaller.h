@@ -11,7 +11,7 @@ class Marshaller {
     // interface for stand-alone format marshallers
     public:
         virtual absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) = 0;
-        virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(cloud_events::format::StructuredCloudEvent structured_cloud_event) = 0;
+        virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(StructuredCloudEvent structured_cloud_event) = 0;
 };
 
 } // format
