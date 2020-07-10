@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/googleinterns/cloudevents-sdk-cpp.svg?branch=master)](https://travis-ci.org/googleinterns/cloudevents-sdk-cpp)
+
 # C++ SDK for [CloudEvents](https://github.com/cloudevents/spec)
 
 This SDK is still a work in progress.
@@ -10,14 +12,13 @@ The Protobuf format is based on this [open pull request](https://github.com/JemD
 Run-able code samples are available in the `/samples` folder.
 
 ### Setup
-Install Bazel. Instuctions found in (Bazel documentation)(https://docs.bazel.build/versions/master/install-ubuntu.html).
+Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
 
 ### Run
 1. Create executable <br/>
 `bazel build //sample:create_event`
 2. Run executable <br/>
 `bazel-bin/sample/create_event`
-
 
 # Dependencies
 Rene Nyffenegger's [base64 byte library](https://github.com/ReneNyffenegger/cpp-base64).
