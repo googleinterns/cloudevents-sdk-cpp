@@ -1,4 +1,4 @@
-#include "format.h"
+#include "structured_cloud_event.h"
 
 namespace cloud_events {
 namespace format {

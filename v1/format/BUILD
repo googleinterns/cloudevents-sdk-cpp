@@ -1,9 +1,9 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 cc_library(
-    name = "format_lib",
-    srcs = ["format.cc"],
-    hdrs = ["format.h"],
+    name = "structured_cloud_event_lib",
+    srcs = ["structured_cloud_event.cc"],
+    hdrs = ["structured_cloud_event.h"],
     visibility = ["//visibility:public"],
     deps = [
         "//proto:cloud_event_cc_proto",
@@ -13,10 +13,10 @@ cc_library(
 )
 
 cc_test(
-   name = "format_test",
-   srcs = ["format_test.cc"],
+   name = "structured_cloud_event_test",
+   srcs = ["structured_cloud_event_test.cc"],
    deps = [
-       ":format_lib",
+       ":structured_cloud_event_lib",
        "@gtest//:gtest",
        "@gtest//:gtest_main"
    ],
