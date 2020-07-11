@@ -75,6 +75,10 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
 }
 
 absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(StructuredCloudEvent structured_cloud_event) {
+    if (structured_cloud_event.GetCloudEventFormat() != CloudEventFormat::JSON) {
+        return absl::InvalidArgumentError("This structured cloud event is not JSON formatted and should not be handled by a Json Marshaller.");
+    }
+
     std::string serialized_cloud_event = structured_cloud_event.GetSerializedCloudEvent();
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
