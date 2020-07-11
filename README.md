@@ -20,4 +20,4 @@ Install Bazel. Instuctions found in (Bazel documentation)(https://docs.bazel.bui
 
 
 # Dependencies
-Rene Nyffenegger's [base64 byte library](https://github.com/ReneNyffenegger/cpp-base64).
+Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c) and René Nyffenegger's [base64 testing code](https://github.com/ReneNyffenegger/cpp-base64).
