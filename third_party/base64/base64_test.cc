@@ -41,9 +41,4 @@ TEST(Base64, encode)
    std::string rest2_decoded = base64_decode(rest2_encoded);
 
    ASSERT_EQ(rest2_decoded, rest2_original);
-
-   std::cout << "encoded:   " << rest2_encoded << std::endl;
-   std::cout << "reference: " << rest2_reference << std::endl;
-   std::cout << "decoded:   " << rest2_decoded << std::endl
-             << std::endl;
 }
