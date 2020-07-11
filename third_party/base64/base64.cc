@@ -10,7 +10,6 @@
 
 #include "os.h"
 #include "base64.h"
-#include <cstring>
 
 static const unsigned char base64_table[65] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -27,13 +26,16 @@ static const unsigned char base64_table[65] =
  * nul terminated to make it easier to use as a C string. The nul terminator is
  * not included in out_len.
  */
-unsigned char * base64_encode(const unsigned char *src, std::size_t len,
-			      std::size_t *out_len)
+//unsigned char * base64_encode(const unsigned char *src, std::size_t len,
+//			      std::size_t *out_len)
+unsigned char * base64_encode(std::string str)
 {
 	unsigned char *out, *pos;
 	const unsigned char *end, *in;
 	std::size_t olen;
 	int line_len;
+	unsigned char *src = (unsigned char*) str.c_str();
+	std::size_t len = str.length();
 
 	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
 	olen += olen / 72; /* line feeds */
@@ -79,8 +81,8 @@ unsigned char * base64_encode(const unsigned char *src, std::size_t len,
 		*pos++ = '\n';
 
 	*pos = '\0';
-	if (out_len)
-		*out_len = pos - out;
+	// if (out_len)
+	// 	*out_len = pos - out;
 	return out;
 }
 
@@ -95,12 +97,16 @@ unsigned char * base64_encode(const unsigned char *src, std::size_t len,
  *
  * Caller is responsible for freeing the returned buffer.
  */
-unsigned char * base64_decode(const unsigned char *src, std::size_t len,
-			      std::size_t *out_len)
+//unsigned char * base64_decode(const unsigned char *src, std::size_t len,
+//			      std::size_t *out_len)
+unsigned char * base64_decode(std::string str)
 {
 	unsigned char dtable[256], *out, *pos, block[4], tmp;
 	std::size_t i, count, olen;
 	int pad = 0;
+
+	unsigned char *src = (unsigned char*) str.c_str();
+	std::size_t len = str.length();
 
 	os_memset(dtable, 0x80, 256);
 	for (i = 0; i < sizeof(base64_table) - 1; i++)
@@ -151,6 +157,6 @@ unsigned char * base64_decode(const unsigned char *src, std::size_t len,
 		}
 	}
 
-	*out_len = pos - out;
+	//*out_len = pos - out;
 	return out;
 }
