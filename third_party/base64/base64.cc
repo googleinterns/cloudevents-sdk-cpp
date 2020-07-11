@@ -27,12 +27,12 @@ static const unsigned char base64_table[65] =
  * nul terminated to make it easier to use as a C string. The nul terminator is
  * not included in out_len.
  */
-unsigned char * base64_encode(const unsigned char *src, size_t len,
-			      size_t *out_len)
+unsigned char * base64_encode(const unsigned char *src, std::size_t len,
+			      std::size_t *out_len)
 {
 	unsigned char *out, *pos;
 	const unsigned char *end, *in;
-	size_t olen;
+	std::size_t olen;
 	int line_len;
 
 	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
@@ -40,7 +40,7 @@ unsigned char * base64_encode(const unsigned char *src, size_t len,
 	olen++; /* nul termination */
 	if (olen < len)
 		return NULL; /* integer overflow */
-	out = os_malloc(olen);
+	out = (unsigned char*) os_malloc(olen);
 	if (out == NULL)
 		return NULL;
 
@@ -95,11 +95,11 @@ unsigned char * base64_encode(const unsigned char *src, size_t len,
  *
  * Caller is responsible for freeing the returned buffer.
  */
-unsigned char * base64_decode(const unsigned char *src, size_t len,
-			      size_t *out_len)
+unsigned char * base64_decode(const unsigned char *src, std::size_t len,
+			      std::size_t *out_len)
 {
 	unsigned char dtable[256], *out, *pos, block[4], tmp;
-	size_t i, count, olen;
+	std::size_t i, count, olen;
 	int pad = 0;
 
 	os_memset(dtable, 0x80, 256);
@@ -117,7 +117,7 @@ unsigned char * base64_decode(const unsigned char *src, size_t len,
 		return NULL;
 
 	olen = count / 4 * 3;
-	pos = out = os_malloc(olen);
+	pos = out = (unsigned char*) os_malloc(olen);
 	if (out == NULL)
 		return NULL;
 
