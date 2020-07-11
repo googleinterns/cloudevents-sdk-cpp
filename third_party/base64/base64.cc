@@ -8,7 +8,6 @@
 
 //#include "includes.h"
 
-#include "os.h"
 #include "base64.h"
 
 static const unsigned char base64_table[65] =

@@ -15,12 +15,6 @@ TEST(Base64, encode)
 
    ASSERT_EQ(decoded, s);
 
-   std::cout << "encoded: " << std::endl
-             << encoded << std::endl
-             << std::endl;
-   std::cout << "decoded: " << std::endl
-             << decoded << std::endl;
-
    // Test all possibilites of fill bytes (none, one =, two ==)
    // References calculated with: https://www.base64encode.org/
 
@@ -32,11 +26,6 @@ TEST(Base64, encode)
 
    ASSERT_EQ(rest0_decoded, rest0_original);
 
-   std::cout << "encoded:   " << rest0_encoded << std::endl;
-   std::cout << "reference: " << rest0_reference << std::endl;
-   std::cout << "decoded:   " << rest0_decoded << std::endl
-             << std::endl;
-
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
@@ -44,11 +33,6 @@ TEST(Base64, encode)
    std::string rest1_decoded = base64_decode(rest1_encoded);
 
    ASSERT_EQ(rest1_decoded, rest1_original);
-
-   std::cout << "encoded:   " << rest1_encoded << std::endl;
-   std::cout << "reference: " << rest1_reference << std::endl;
-   std::cout << "decoded:   " << rest1_decoded << std::endl
-             << std::endl;
 
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
