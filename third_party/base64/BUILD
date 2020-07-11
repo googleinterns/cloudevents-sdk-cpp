@@ -3,7 +3,10 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 cc_library(
     name = "base64_lib",
     srcs = ["base64.cc"],
-    hdrs = ["base64.h"],
+    hdrs = [
+        "base64.h",
+        "os.h",
+    ],
     visibility = ["//visibility:public"],
 )
 
