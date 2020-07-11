@@ -74,7 +74,8 @@ absl::StatusOr<StructuredCloudEvent> JsonMarshaller::Serialize(CloudEvent cloud_
     return StructuredCloudEvent(CloudEventFormat::JSON, Json::writeString(builder, root));
 }
 
-absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cloud_event) {
+absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(StructuredCloudEvent structured_cloud_event) {
+    std::string serialized_cloud_event = structured_cloud_event.GetSerializedCloudEvent();
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
     std::string errors;
@@ -118,10 +119,6 @@ absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(std::string serialized_cl
     }
 
     return cloud_event;
-}
-
-absl::StatusOr<CloudEvent> JsonMarshaller::Deserialize(StructuredCloudEvent structured_cloud_event) {
-    return JsonMarshaller::Deserialize(structured_cloud_event.GetSerializedCloudEvent());
 }
 
 } // format

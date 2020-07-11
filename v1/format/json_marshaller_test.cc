@@ -55,56 +55,33 @@ TEST(JsonMarshaller, Serialize) {
 TEST(JsonMarshaller, Deserialize) {
     JsonMarshaller m;
     std::string s1 = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
-    absl::StatusOr<CloudEvent> ce1a = m.Deserialize(s1);
-    ASSERT_TRUE(ce1a);
-    ASSERT_EQ(ce1a.value().id(), "1");
-    ASSERT_EQ(ce1a.value().source(), "/test");
-    ASSERT_EQ(ce1a.value().spec_version(), "1.0");
-    ASSERT_EQ(ce1a.value().type(), "test");
-
     StructuredCloudEvent sce1 = StructuredCloudEvent(CloudEventFormat::JSON, s1);
-    absl::StatusOr<CloudEvent> ce1b = m.Deserialize(sce1);
-    ASSERT_TRUE(ce1b);
-    ASSERT_EQ(ce1b.value().id(), "1");
-    ASSERT_EQ(ce1b.value().source(), "/test");
-    ASSERT_EQ(ce1b.value().spec_version(), "1.0");
-    ASSERT_EQ(ce1b.value().type(), "test");
+    absl::StatusOr<CloudEvent> ce1 = m.Deserialize(sce1);
+    ASSERT_TRUE(ce1);
+    ASSERT_EQ(ce1.value().id(), "1");
+    ASSERT_EQ(ce1.value().source(), "/test");
+    ASSERT_EQ(ce1.value().spec_version(), "1.0");
+    ASSERT_EQ(ce1.value().type(), "test");
 
     std::string s2 = "{\n\t\"data_base64\" : \"binary_data_wow\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"3.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}";
-    absl::StatusOr<CloudEvent> ce2a = m.Deserialize(s2);
-    ASSERT_TRUE(ce2a);
-    ASSERT_EQ(ce2a.value().id(), "9999999");
-    ASSERT_EQ(ce2a.value().source(), "/test/qwertyuiop");
-    ASSERT_EQ(ce2a.value().spec_version(), "3.xxxxx");
-    ASSERT_EQ(ce2a.value().type(), "not_a_type");
-    ASSERT_EQ(ce2a.value().binary_data(), "binary_data_wow");
-
     StructuredCloudEvent sce2 = StructuredCloudEvent(CloudEventFormat::JSON, s2);
-    absl::StatusOr<CloudEvent> ce2b = m.Deserialize(sce2);
-    ASSERT_TRUE(ce2b);
-    ASSERT_EQ(ce2b.value().id(), "9999999");
-    ASSERT_EQ(ce2b.value().source(), "/test/qwertyuiop");
-    ASSERT_EQ(ce2b.value().spec_version(), "3.xxxxx");
-    ASSERT_EQ(ce2b.value().type(), "not_a_type");
-    ASSERT_EQ(ce2b.value().binary_data(), "binary_data_wow");
+    absl::StatusOr<CloudEvent> ce2 = m.Deserialize(sce2);
+    ASSERT_TRUE(ce2);
+    ASSERT_EQ(ce2.value().id(), "9999999");
+    ASSERT_EQ(ce2.value().source(), "/test/qwertyuiop");
+    ASSERT_EQ(ce2.value().spec_version(), "3.xxxxx");
+    ASSERT_EQ(ce2.value().type(), "not_a_type");
+    ASSERT_EQ(ce2.value().binary_data(), "binary_data_wow");
 
     std::string s3 = "{\n\t\"data\" : \"this is text\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"4\",\n\t\"type\" : \"not_a_type\"\n}";
-    absl::StatusOr<CloudEvent> ce3a = m.Deserialize(s3);
-    ASSERT_TRUE(ce3a);
-    ASSERT_EQ(ce3a.value().id(), "9999999");
-    ASSERT_EQ(ce3a.value().source(), "/test/qwertyuiop");
-    ASSERT_EQ(ce3a.value().spec_version(), "4");
-    ASSERT_EQ(ce3a.value().type(), "not_a_type");
-    ASSERT_EQ(ce3a.value().text_data(), "this is text");
-
     StructuredCloudEvent sce3 = StructuredCloudEvent(CloudEventFormat::JSON, s3);
-    absl::StatusOr<CloudEvent> ce3b = m.Deserialize(sce3);
-    ASSERT_TRUE(ce3b);
-    ASSERT_EQ(ce3b.value().id(), "9999999");
-    ASSERT_EQ(ce3b.value().source(), "/test/qwertyuiop");
-    ASSERT_EQ(ce3b.value().spec_version(), "4");
-    ASSERT_EQ(ce3b.value().type(), "not_a_type");
-    ASSERT_EQ(ce3b.value().text_data(), "this is text");
+    absl::StatusOr<CloudEvent> ce3 = m.Deserialize(sce3);
+    ASSERT_TRUE(ce3);
+    ASSERT_EQ(ce3.value().id(), "9999999");
+    ASSERT_EQ(ce3.value().source(), "/test/qwertyuiop");
+    ASSERT_EQ(ce3.value().spec_version(), "4");
+    ASSERT_EQ(ce3.value().type(), "not_a_type");
+    ASSERT_EQ(ce3.value().text_data(), "this is text");
 }
 
 } // format
