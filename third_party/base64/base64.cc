@@ -26,10 +26,8 @@ static const unsigned char base64_table[65] =
  * nul terminated to make it easier to use as a C string. The nul terminator is
  * not included in out_len.
  */
-//unsigned char * base64_encode(const unsigned char *src, std::size_t len,
-//			      std::size_t *out_len)
-unsigned char * base64_encode(std::string str)
-{
+
+std::string base64_encode(std::string str) {
 	unsigned char *out, *pos;
 	const unsigned char *end, *in;
 	std::size_t olen;
@@ -81,9 +79,7 @@ unsigned char * base64_encode(std::string str)
 		*pos++ = '\n';
 
 	*pos = '\0';
-	// if (out_len)
-	// 	*out_len = pos - out;
-	return out;
+	return std::string(reinterpret_cast<const char*>(out));
 }
 
 
@@ -97,10 +93,8 @@ unsigned char * base64_encode(std::string str)
  *
  * Caller is responsible for freeing the returned buffer.
  */
-//unsigned char * base64_decode(const unsigned char *src, std::size_t len,
-//			      std::size_t *out_len)
-unsigned char * base64_decode(std::string str)
-{
+
+std::string base64_decode(std::string str) {
 	unsigned char dtable[256], *out, *pos, block[4], tmp;
 	std::size_t i, count, olen;
 	int pad = 0;
@@ -157,6 +151,5 @@ unsigned char * base64_decode(std::string str)
 		}
 	}
 
-	//*out_len = pos - out;
-	return out;
+	return std::string(reinterpret_cast<const char*>(out));
 }

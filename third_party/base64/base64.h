@@ -15,7 +15,7 @@
 #include <cstring>
 #include <string>
 
-unsigned char * base64_encode(std::string str);
-unsigned char * base64_decode(std::string str);
+std::string base64_encode(std::string str);
+std::string base64_decode(std::string str);
 
 #endif /* BASE64_H */
