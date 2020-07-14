@@ -8,6 +8,7 @@ os:
 
 env:
   - V=3.3.0
+  - V=3.4.1
 
 before_install:
   - OS=linux
