@@ -1,4 +1,4 @@
-#include "proto/spec.pb.h"
+#include "proto/cloud_event.pb.h"
 #include <iostream>
 int main() {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
