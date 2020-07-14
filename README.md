@@ -29,3 +29,11 @@ Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/
 
 ## Abseil StatusOr
 Copying [Envoy's Abseil StatusOr setup](https://github.com/envoyproxy/envoy/tree/44eedc792ab64bba2358e0294b53294c6bc30526/third_party/statusor) temporarily until an official abseil release exists.
+
+# File Structure
+All formatting logic can be found in `//v1/format`.
+
+Formatting works by supporting conversions between a `CloudEvent` (proto from proprietary CloudEvent spec) and a `StructuredCloudEvent`.
+
+Each X-format implements a concrete `XMarshaller` object that inherits from the interface `Marshaller`. 
+For example, supporting a JSON-format would require a concrete implementation of `JsonMarshaller`.
