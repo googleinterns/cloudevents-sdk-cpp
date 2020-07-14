@@ -65,6 +65,9 @@
 //  }
 //
 
+#ifndef STATUSOR_H
+#define STATUSOR_H
+
 #include <new>
 #include <string>
 #include <type_traits>
@@ -350,3 +353,5 @@ template <typename T> void StatusOr<T>::IgnoreError() const {
 }
 
 } // namespace absl
+
+#endif
