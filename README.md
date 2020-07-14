@@ -19,3 +19,6 @@ Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.bui
 `bazel build //sample:create_event`
 2. Run executable <br/>
 `bazel-bin/sample/create_event`
+
+# Dependencies
+Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c) and René Nyffenegger's [base64 testing code](https://github.com/ReneNyffenegger/cpp-base64).
