@@ -8,14 +8,16 @@ using ::cloud_events::format::Marshaller;
 using ::cloud_events::format::JsonMarshaller;
 using ::google::protobuf::Message;
 
-absl::StatusOr<Marshaller> Binder::GetMarshallerForFormat(CloudEventFormat format) {
+absl::StatusOr<std::unique_ptr<Marshaller>> Binder::GetMarshallerForFormat(CloudEventFormat format) {
     switch (format) {
+        case CloudEventFormat::UNFORMATTED:
+            return absl::Status();
         case CloudEventFormat::JSON:
-            JsonMarshaller m;
-            return m;
-        default:
-            return absl::InternalError("Can't find Marshaller for given Cloud Event Format");
+            auto jm = new JsonMarshaller();
+            auto m = static_cast<Marshaller*>(jm);
+            return std::unique_ptr<Marshaller>(m);
     }
+    return absl::InternalError("Could not find marshaller for given format.");
 };
 
 // absl::StatusOr<Message> Binder::Write(io::cloudevents::v1::CloudEvent cloud_event) {

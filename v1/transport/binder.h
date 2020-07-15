@@ -8,15 +8,21 @@
 #include "v1/format/json_marshaller.h"
 #include "third_party/statusor/statusor.h"
 #include <google/protobuf/message.h>
+#include <memory>
 
 namespace cloud_events {
 namespace binder {
 
 enum CloudEventMessageType {PUBSUB};
 
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
 class Binder {
     private:
-        absl::StatusOr<cloud_events::format::Marshaller> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format);
+        absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format);
         virtual absl::StatusOr<cloud_events::format::CloudEventFormat> GetFormat(std::string message) = 0;
         // virtual io::cloudevents::v1::CloudEvent ReadBinary(std::string binary_message) = 0;
         // virtual io::cloudevents::v1::CloudEvent ReadStructured(std::string structured_message) = 0;
