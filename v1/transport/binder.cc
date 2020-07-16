@@ -41,30 +41,6 @@ absl::StatusOr<std::unique_ptr<Message>> Binder::Write(StructuredCloudEvent stru
     return WriteStructured(structured_cloud_event);
 }
 
-// absl::StatusOr<io::cloudevents::v1::CloudEvent> Binder::Read(std::string message) {
-//     // get format of the message
-//     absl::StatusOr<CloudEventFormat> get_format_successful = Binder::GetFormat(message);
-//     if (!get_format_successful) {
-//         return get_format_successful.status();
-//     }
-//     CloudEventFormat format = get_format_successful.value();
-
-//     // pass to appropriate protocol specific read function
-//     if (format == CloudEventFormat::UNFORMATTED) {
-//         return ReadBinary(message);
-//     } else {
-//         // if formatted, unmarshal before reading
-//         absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> get_marshaller_successful = Binder::GetMarshallerForFormat(format);
-//         if (!get_marshaller_successful) {
-//             return get_marshaller_successful.status();
-//         }
-//         StructuredCloudEvent structured_cloud_event = StructuredCloudEvent(format, message);
-//         return Binder::ReadStructured(structured_cloud_event);
-//     }
-
-//     // todo: warn if trying to deserialize binary
-// }
-
 absl::StatusOr<std::unique_ptr<Message>> Binder::Read(google::protobuf::Message* message, bool deserialize) const {
     // get format of the message
     absl::StatusOr<CloudEventFormat> get_format_successful = this->GetFormat(message);
@@ -111,14 +87,6 @@ absl::StatusOr<std::unique_ptr<Message>> Binder::Read(google::protobuf::Message*
         // return std::unique_ptr<Message>(m);
         return absl::UnimplementedError("retaining structured payload is not yet supported.");
     }
-    //else { // deserialize using format-specific marshaller and return
-    //     absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> get_marshaller_successful = Binder::GetMarshallerForFormat(format);
-    //     if (!get_marshaller_successful) {
-    //         return get_marshaller_successful.status();
-    //     }
-    //     CloudEvent = get_marshaller_successful.value() -> Deserialize(this -> GetPayload(message));
-    //     return std::unique_ptr<Message>(message);
-    // }
     return absl::UnimplementedError("todo");
 }
 
