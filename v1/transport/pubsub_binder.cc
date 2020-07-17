@@ -16,7 +16,7 @@ absl::StatusOr<CloudEventFormat> GetFormat(PubsubMessage* message) const {
     } else {
         // strip prefix
         std::string format_str = (i -> second).erase(0, ce_attribute_key_prefix_.length());
-        return StrToFormat(format_str);
+        return StrToFormat(format_str); // will return error status if format string not recognized
     }
 }
 
