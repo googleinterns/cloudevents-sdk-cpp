@@ -11,6 +11,13 @@ using ::cloud_events::format::JsonMarshaller;
 using ::google::protobuf::Message;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 
+absl::StatusOr<CloudEventFormat> Binder::StrToFormat(std::string format_str) const {
+    if (format_str == "json") {
+        return CloudEventFormat::JSON;
+    }
+    return absl::InvalidArgumentError("The given format is not currently supported by the SDK.");
+}
+
 absl::StatusOr<std::unique_ptr<Marshaller>> Binder::GetMarshallerForFormat(CloudEventFormat format) const {
     switch (format) {
         case CloudEventFormat::UNFORMATTED:
@@ -33,7 +40,7 @@ absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_Cloud
             return std::to_string(attr.ce_integer()); // skipping validity checks as protobuf generates int32 for sfixed32
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
             // TODO (Michelle): Handle Unicode
-            return absl::UnimplementedError("Looking for a more verified solution");
+            return absl::UnimplementedError("Gotta learn unicode first");
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
             return base64::base64_encode(attr.ce_binary());
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
@@ -41,9 +48,9 @@ absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_Cloud
             //     break;
             // }
             // return attr.ce_uri();
-            return absl::UnimplementedError("Looking for a more verified solution");
+            return absl::UnimplementedError("Looking for a more verified solution.");
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
-            return absl::UnimplementedError("Looking for a more verified solution");
+            return absl::UnimplementedError("Gotta learn regex first");
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
             return google::protobuf::util::TimeUtil::ToString(attr.ce_timestamp()); // take advantage of protobuf using RFC3339 representation
         case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:

@@ -1,4 +1,4 @@
-#include "binder.h"
+#include "pubsub_binder.h"
 
 namespace cloud_events {
 namespace binder {

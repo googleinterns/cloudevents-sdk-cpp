@@ -1,5 +1,5 @@
-#ifndef CLOUDEVENTS_BINDER_H
-#define CLOUDEVENTS_BINDER_H
+#ifndef BINDER_H
+#define BINDER_H
 
 #include "proto/cloud_event.pb.h"
 #include "proto/pubsub_message.pb.h"
@@ -35,6 +35,7 @@ class Binder {
     private:
         // implemented operations for Read/ Write
         absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format) const;
+        absl::StatusOr<cloud_events::format::CloudEventFormat> StrToFormat(std::string format_str) const;
 
         // virtual operations for Read
         virtual absl::StatusOr<cloud_events::format::CloudEventFormat> GetFormat(google::protobuf::Message* message) const = 0;
@@ -45,7 +46,8 @@ class Binder {
         virtual absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteBinary(io::cloudevents::v1::CloudEvent cloud_event) = 0;
         virtual absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteStructured(cloud_events::format::StructuredCloudEvent structured_cloud_event) = 0;   
     public:
-        const std::string ce_prefix_ = "ce-";
+        const std::string ce_attr_prefix_ = "ce-";
+        const std::string ce_contenttype_prefix_ = "application/cloudevents+";
         absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
 
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Write(io::cloudevents::v1::CloudEvent cloud_event);
