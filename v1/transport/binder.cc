@@ -80,14 +80,14 @@ absl::StatusOr<std::unique_ptr<Message>> Binder::Write(StructuredCloudEvent stru
 }
 
 absl::StatusOr<std::unique_ptr<Message>> Binder::Read(google::protobuf::Message* message, bool deserialize) const {
-    // get format of the message
+    // get content-mode of the message
     absl::StatusOr<CloudEventFormat> get_format_successful = this->GetFormat(message);
     if (!get_format_successful) {
         return get_format_successful.status();
     }
     CloudEventFormat format = get_format_successful.value();
 
-    // parse message into [Structured]CloudEvent
+    // if binary content-mode, parse directly
     if (format == CloudEventFormat::UNFORMATTED) { // read from binary mode: protocol specific
         absl::StatusOr<io::cloudevents::v1::CloudEvent> read_binary_successful = ReadBinary(message);
         if (!read_binary_successful) {
@@ -98,6 +98,7 @@ absl::StatusOr<std::unique_ptr<Message>> Binder::Read(google::protobuf::Message*
         }
     } 
 
+    // if structured content-mode, get payload and unmarshal
     absl::StatusOr<std::string> get_payload_successful = this->GetPayload(message);
 
     if (!get_payload_successful) {
