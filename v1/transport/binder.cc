@@ -1,7 +1,7 @@
 #include "binder.h"
 
 namespace cloud_events {
-namespace binder {
+namespace transport {
 
 using ::io::cloudevents::v1::CloudEvent;
 using ::cloud_events::format::StructuredCloudEvent;
@@ -10,6 +10,10 @@ using ::cloud_events::format::Marshaller;
 using ::cloud_events::format::JsonMarshaller;
 using ::google::protobuf::Message;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
+
+const char* Binder::ce_attr_prefix_ = "ce-";
+const char* Binder::ce_contenttype_prefix_ = "application/cloudevents+";
+
 
 absl::StatusOr<CloudEventFormat> Binder::StrToFormat(std::string format_str) const {
     if (format_str == "json") {

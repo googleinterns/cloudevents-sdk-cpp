@@ -13,7 +13,7 @@
 #include <regex> 
 
 namespace cloud_events {
-namespace binder {
+namespace transport {
 
 // union Message {
 //     google::pubsub::v1::PubsubMessage pubsub;
@@ -32,7 +32,7 @@ class Binder {
 
     // Write takes a CloudEvent [and CloudEventFormat], or StructuredCloudEvent as input, and creates a XMessage as ouput
     // Read takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
-    private:
+    protected:
         // implemented operations for Read/ Write
         absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format) const;
         absl::StatusOr<cloud_events::format::CloudEventFormat> StrToFormat(std::string format_str) const;
@@ -46,8 +46,8 @@ class Binder {
         virtual absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteBinary(io::cloudevents::v1::CloudEvent cloud_event) = 0;
         virtual absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteStructured(cloud_events::format::StructuredCloudEvent structured_cloud_event) = 0;   
     public:
-        const std::string ce_attr_prefix_ = "ce-";
-        const std::string ce_contenttype_prefix_ = "application/cloudevents+";
+        const static char* ce_attr_prefix_;
+        const static char* ce_contenttype_prefix_;
         absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
 
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Write(io::cloudevents::v1::CloudEvent cloud_event);
@@ -55,8 +55,6 @@ class Binder {
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Write(cloud_events::format::StructuredCloudEvent structured_cloud_event);
 
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Read(google::protobuf::Message* message, bool deserialize = true) const;
-        // absl::Status Read(google::protobuf::Message message, io::cloudevents::v1::CloudEvent cloud_event);
-        // absl::Status Read(google::protobuf::Message message, cloud_events::format::StructuredCloudEvent structured_cloud_event);
 };
 
 } // format

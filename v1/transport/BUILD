@@ -32,7 +32,7 @@ cc_library(
     hdrs = ["pubsub_binder.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//binder_lib",
+        "//v1/transport:binder_lib",
         "//v1/format:structured_cloud_event_lib",
         "//v1/format:json_marshaller_lib",
         "//proto:cloud_event_cc_proto",
