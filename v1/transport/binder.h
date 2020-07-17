@@ -7,8 +7,10 @@
 #include "v1/format/structured_cloud_event.h"
 #include "v1/format/json_marshaller.h"
 #include "third_party/statusor/statusor.h"
+#include "third_party/base64/base64.h"
 #include <google/protobuf/message.h>
 #include <memory>
+#include <regex> 
 
 namespace cloud_events {
 namespace binder {
@@ -44,8 +46,7 @@ class Binder {
         virtual absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteStructured(cloud_events::format::StructuredCloudEvent structured_cloud_event) = 0;   
     public:
         const std::string ce_prefix_ = "ce-";
-        //std::string CeTypeToString(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
-        //io::cloudevents::v1::CloudEvent_CloudEventAttribute StringToCeType(std::string str_attr);
+        absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
 
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Write(io::cloudevents::v1::CloudEvent cloud_event);
         absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Write(io::cloudevents::v1::CloudEvent cloud_event, cloud_events::format::CloudEventFormat format);

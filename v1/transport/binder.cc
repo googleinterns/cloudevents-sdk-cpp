@@ -9,6 +9,7 @@ using ::cloud_events::format::CloudEventFormat;
 using ::cloud_events::format::Marshaller;
 using ::cloud_events::format::JsonMarshaller;
 using ::google::protobuf::Message;
+using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 
 absl::StatusOr<std::unique_ptr<Marshaller>> Binder::GetMarshallerForFormat(CloudEventFormat format) const {
     switch (format) {
@@ -19,7 +20,37 @@ absl::StatusOr<std::unique_ptr<Marshaller>> Binder::GetMarshallerForFormat(Cloud
             return std::unique_ptr<Marshaller>(m);
     }
     return absl::InternalError("Could not find marshaller for given format.");
-};
+}
+
+
+absl::StatusOr<std::string> CeTypeToString(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr) {
+    // std::string protocol = "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{2,256}.[a-z]{2,4}b([-a-zA-Z0-9@:%_+.~#?&//=]*)";
+    // std::regex url_regex(pattern);
+    switch (attr.attr_oneof_case()) {
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
+            return std::string(attr.ce_boolean() ? "true" : "false"); // statusOr requires explicit type conversion (?)
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
+            return std::to_string(attr.ce_integer()); // skipping validity checks as protobuf generates int32 for sfixed32
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
+            // TODO (Michelle): Handle Unicode
+            return absl::UnimplementedError("Looking for a more verified solution");
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
+            return base64::base64_encode(attr.ce_binary());
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
+            // if(!regex_match(attr.ce_uri(), url_regex)) {
+            //     break;
+            // }
+            // return attr.ce_uri();
+            return absl::UnimplementedError("Looking for a more verified solution");
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
+            return absl::UnimplementedError("Looking for a more verified solution");
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
+            return google::protobuf::util::TimeUtil::ToString(attr.ce_timestamp()); // take advantage of protobuf using RFC3339 representation
+        case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
+            return absl::InvalidArgumentError("Cloud Event metadata attribute not set.");
+    }
+    return absl::InvalidArgumentError("Cloud Event attribute provided is invalid."); // catch all when any constraint unmet
+}
 
 absl::StatusOr<std::unique_ptr<Message>> Binder::Write(CloudEvent cloud_event) {
     return WriteBinary(cloud_event);
