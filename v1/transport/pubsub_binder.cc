@@ -28,10 +28,15 @@ absl::StatusOr<std::string> PubsubBinder::GetPayload(PubsubMessage* message) con
 }
 
 absl::StatusOr<CloudEvent> PubsubBinder::ReadBinary(PubsubMessage* binary_message) const {
-    // https://github.com/google/knative-gcp/blob/master/docs/spec/pubsub-protocol-binding.md#311-content-type
+    // check valid CloudEvent
+    google::protobuf::Map<std::string, std::string> pubsub_attr = binary_message -> attributes();
+
+    // TODO (#27): encapsulate checking required attributes in CloudEvent
+    if (!pubsub_attr.count("ce-id") || !pubsub_attr.count("ce-source") || !pubsub_attr.count("ce-spec_version") || !pubsub_attr.count("ce-type")) {
+        return absl::InvalidArgumentError("Message does not contain required CloudEvent attributes");
+    }
 
     CloudEvent cloud_event;
-    // google::protobuf::Map<std::string,std::string> pubsub_attr = binary_message -> attributes();
 
     // handle metadata
     for (auto const& pubsub_attr : binary_message -> attributes()) {
@@ -50,18 +55,13 @@ absl::StatusOr<CloudEvent> PubsubBinder::ReadBinary(PubsubMessage* binary_messag
         }  
     }
 
-    // auto i = attr_map.find(pubsub_content_key_);
-
-    // if (i != attr_map.end()) {
-    //     CloudEvent_CloudEventAttribute content_val;
-    //     content_val.set_ce_string(i -> second);
-    //     (*cloud_event.mutable_attributes())[ce_content_key_] = content_val;
-
-    // } 
-
-
     // handle data
-    return absl::UnimplementedError("wip");
+    std::string pubsub_data = binary_message -> data();
+    if (!pubsub_data.empty()) {
+        cloud_event.set_binary_data(pubsub_data);
+    }
+
+    return cloud_event;
 }
 
 // __________ WRITE ___________
