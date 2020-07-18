@@ -19,10 +19,11 @@ class PubsubBinder: public Binder {
     private:
         absl::StatusOr<cloud_events::format::CloudEventFormat> GetFormat(google::pubsub::v1::PubsubMessage* message) const;
         absl::StatusOr<std::string> GetPayload(google::pubsub::v1::PubsubMessage* message) const;
-        // absl::StatusOr<io::cloudevents::v1::CloudEvent> ReadBinary(google::pubsub::v1::PubsubMessage* binary_message) const;
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> ReadBinary(google::pubsub::v1::PubsubMessage* binary_message) const;
 
     public:
-        std::string content_attr_key_ = "content-type";
+        std::string pubsub_content_key_ = "content-type";
+        std::string ce_content_key_ = "datacontenttype"; 
 
 };
 
