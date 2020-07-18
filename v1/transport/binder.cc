@@ -25,9 +25,11 @@ absl::StatusOr<CloudEventFormat> Binder::StrToFormat(std::string format_str) con
 absl::StatusOr<std::string> Binder::FormatToStr(CloudEventFormat format) const {
     switch (format) {
         case CloudEventFormat::JSON:
-            return "json";
+            return std::string("json");
         case CloudEventFormat::UNFORMATTED:
             return absl::InternalError("A request was made for a stringified format on an unformatted cloud event.");
+        default:
+            return absl::InternalError("A recognized format is not handled in this function.");
     }
 }
 

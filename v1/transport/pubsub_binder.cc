@@ -6,7 +6,7 @@ using ::google::pubsub::v1::PubsubMessage;
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::cloud_events::format::CloudEventFormat;
-
+using ::cloud_events::format::StructuredCloudEvent;
 const char* PubsubBinder::pubsub_content_key_ = "content-type";
 const char* PubsubBinder::ce_content_key_ = "datacontenttype";
 
@@ -69,7 +69,7 @@ absl::StatusOr<CloudEvent> PubsubBinder::ReadBinary(PubsubMessage* binary_messag
 
 // __________ WRITE ___________
 
-absl::StatusOr<std::unique_ptr<PubsubMessage>> PubsubBinder::WriteBinary(CloudEvent cloud_event) {
+absl::StatusOr<std::unique_ptr<google::protobuf::Message>> PubsubBinder::WriteBinary(CloudEvent cloud_event) {
     // handle metadata
         // check size constraints pubsub
         // add ce prefix
@@ -81,14 +81,22 @@ absl::StatusOr<std::unique_ptr<PubsubMessage>> PubsubBinder::WriteBinary(CloudEv
     return absl::UnimplementedError("todo");
 };
 
-virtual absl::StatusOr<std::unique_ptr<PubsubMessage>> WriteStructured(StructuredCloudEvent structured_cloud_event) {
+absl::StatusOr<std::unique_ptr<google::protobuf::Message>> PubsubBinder::WriteStructured(StructuredCloudEvent structured_cloud_event) {
     PubsubMessage pubsub_msg;
-    (*pubsub_msg.mutable_attributes())[pubsub_content_key_] = ce_contenttype_prefix_ + //FormatToStr;
+    
+    // set datacontent type
+    absl::StatusOr<std::string> formattostr_successful = FormatToStr(structured_cloud_event.GetCloudEventFormat());
+
+    if (!formattostr_successful) {
+        return formattostr_successful.status();
+    }
+    (*pubsub_msg.mutable_attributes())[pubsub_content_key_] = ce_contenttype_prefix_ + *formattostr_successful;
 
     // dump entire serialized in payload.
+    pubsub_msg.set_data(structured_cloud_event.GetSerializedCloudEvent());
 
     // return unique pointer
-
+    return std::unique_ptr<google::protobuf::Message>(&pubsub_msg);
 };
 
 

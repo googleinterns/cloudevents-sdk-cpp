@@ -23,7 +23,8 @@ class PubsubBinder: public Binder {
         absl::StatusOr<io::cloudevents::v1::CloudEvent> ReadBinary(google::pubsub::v1::PubsubMessage* binary_message) const;
         
         // Write
-        absl::StatusOr<std::unique_ptr<PubsubMessage>> PubsubBinder::WriteBinary(CloudEvent cloud_event);
+        absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteBinary(io::cloudevents::v1::CloudEvent cloud_event);
+        absl::StatusOr<std::unique_ptr<google::protobuf::Message>> WriteStructured(cloud_events::format::StructuredCloudEvent structured_cloud_event);
 
     public:
         const static char* pubsub_content_key_;

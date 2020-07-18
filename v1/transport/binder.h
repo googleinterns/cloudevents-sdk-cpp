@@ -35,7 +35,7 @@ class Binder {
     protected:
         // for interfacing between binding and formatting
         absl::StatusOr<cloud_events::format::CloudEventFormat> StrToFormat(std::string format_str) const;
-        absl::StatusOr<cloud_events::format::CloudEventFormat> FormatToStr(std::string format_str) const;
+        absl::StatusOr<std::string> FormatToStr(cloud_events::format::CloudEventFormat format) const;
         absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format) const;
 
         // virtual operations for Read
