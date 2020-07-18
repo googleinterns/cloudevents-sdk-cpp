@@ -33,9 +33,10 @@ class Binder {
     // Write takes a CloudEvent [and CloudEventFormat], or StructuredCloudEvent as input, and creates a XMessage as ouput
     // Read takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
     protected:
-        // implemented operations for Read/ Write
-        absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format) const;
+        // for interfacing between binding and formatting
         absl::StatusOr<cloud_events::format::CloudEventFormat> StrToFormat(std::string format_str) const;
+        absl::StatusOr<cloud_events::format::CloudEventFormat> FormatToStr(std::string format_str) const;
+        absl::StatusOr<std::unique_ptr<cloud_events::format::Marshaller>> GetMarshallerForFormat(cloud_events::format::CloudEventFormat format) const;
 
         // virtual operations for Read
         virtual absl::StatusOr<cloud_events::format::CloudEventFormat> GetFormat(google::protobuf::Message* message) const = 0;

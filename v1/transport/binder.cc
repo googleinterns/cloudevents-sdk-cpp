@@ -22,6 +22,15 @@ absl::StatusOr<CloudEventFormat> Binder::StrToFormat(std::string format_str) con
     return absl::InvalidArgumentError("The given format is not currently supported by the SDK.");
 }
 
+absl::StatusOr<std::string> Binder::FormatToStr(CloudEventFormat format) const {
+    switch (format) {
+        case CloudEventFormat::JSON:
+            return "json";
+        case CloudEventFormat::UNFORMATTED:
+            return absl::InternalError("A request was made for a stringified format on an unformatted cloud event.");
+    }
+}
+
 absl::StatusOr<std::unique_ptr<Marshaller>> Binder::GetMarshallerForFormat(CloudEventFormat format) const {
     switch (format) {
         case CloudEventFormat::UNFORMATTED:

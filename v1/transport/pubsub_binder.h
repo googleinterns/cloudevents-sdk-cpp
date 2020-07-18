@@ -16,14 +16,18 @@ namespace transport {
 class PubsubBinder: public Binder {
     // According to spec in https://github.com/google/knative-gcp/blob/master/docs/spec/pubsub-protocol-binding.md#14-event-formats
     // Data encoding referenced from https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-    private:
+    protected:
+        // Read
         absl::StatusOr<cloud_events::format::CloudEventFormat> GetFormat(google::pubsub::v1::PubsubMessage* message) const;
         absl::StatusOr<std::string> GetPayload(google::pubsub::v1::PubsubMessage* message) const;
         absl::StatusOr<io::cloudevents::v1::CloudEvent> ReadBinary(google::pubsub::v1::PubsubMessage* binary_message) const;
+        
+        // Write
+        absl::StatusOr<std::unique_ptr<PubsubMessage>> PubsubBinder::WriteBinary(CloudEvent cloud_event);
 
     public:
-        std::string pubsub_content_key_ = "content-type";
-        std::string ce_content_key_ = "datacontenttype"; 
+        const static char* pubsub_content_key_;
+        const static char* ce_content_key_; 
 
 };
 
