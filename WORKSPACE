@@ -81,5 +81,6 @@ git_repository(
     remote = "https://github.com/NuxiNL/bazel-third-party.git",
     shallow_since = "1547652202 +0100",
 )
+
 load("@org_cloudabi_bazel_third_party//:third_party.bzl", "third_party_repositories")
 third_party_repositories()
