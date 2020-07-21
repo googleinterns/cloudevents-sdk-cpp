@@ -1,13 +1,12 @@
 dist: trusty
 sudo: required
-osx_image: xcode8
 language: java
 
 os:
   - linux
 
 env:
-  - V=3.3.0
+  - V=3.4.1
 
 before_install:
   - OS=linux
