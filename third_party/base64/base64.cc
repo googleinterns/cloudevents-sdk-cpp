@@ -9,6 +9,7 @@
 //#include "includes.h"
 
 #include "base64.h"
+// #include <iostream>
 
 namespace base64 {
 static const unsigned char base64_table[65] =
@@ -32,15 +33,23 @@ std::string base64_encode(std::string str) {
 	const unsigned char *end, *in;
 	std::size_t olen;
 	int line_len;
+
+	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	// end
 
-	olen = len * 4 / 3 + 4; /* 3-byte blocks to 4-byte */
-	olen += olen / 72; /* line feeds */
-	olen++; /* nul termination */
+	olen = (len +2) / 3 * 4;
 	if (olen < len)
 		return NULL; /* integer overflow */
-	out = (unsigned char*) os_malloc(olen);
+
+
+	// adaptation to return str
+	std::string outStr;
+    outStr.resize(olen);
+    out = (unsigned char*)&outStr[0];
+	//
+
 	if (out == NULL)
 		return NULL;
 
@@ -79,7 +88,7 @@ std::string base64_encode(std::string str) {
 		*pos++ = '\n';
 
 	*pos = '\0';
-	return std::string(reinterpret_cast<const char*>(out));
+	return outStr;
 }
 
 
@@ -99,8 +108,11 @@ std::string base64_decode(std::string str) {
 	std::size_t i, count, olen;
 	int pad = 0;
 
+	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	// end
+
 
 	os_memset(dtable, 0x80, 256);
 	for (i = 0; i < sizeof(base64_table) - 1; i++)
@@ -117,7 +129,13 @@ std::string base64_decode(std::string str) {
 		return NULL;
 
 	olen = count / 4 * 3;
-	pos = out = (unsigned char*) os_malloc(olen);
+
+	// adaptation to return str
+	std::string outStr;
+    outStr.resize(olen);
+    pos = out = (unsigned char*)&outStr[0];
+	//
+
 	if (out == NULL)
 		return NULL;
 
@@ -150,8 +168,12 @@ std::string base64_decode(std::string str) {
 			}
 		}
 	}
+	// strip all trailing nulls
+	std::size_t nulls_found = outStr.find('\0');
+	if (nulls_found!=std::string::npos) {
+		return outStr.erase(nulls_found);
+	}
 
-	return std::string(reinterpret_cast<const char*>(out));
+	return outStr;
 }
-
 } // base64
