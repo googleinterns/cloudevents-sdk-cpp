@@ -22,10 +22,3 @@ cc_proto_library(
   visibility = ["//visibility:public"],
   deps = ["@googleapis//google/pubsub/v1:pubsub_proto"],
 )
-
-
-#cpp_grpc_library(
-#  name = "pubsub_cc_proto",
-#  visibility = ["//visibility:public"],
-#  deps = ["@googleapis//google/pubsub/v1:pubsub_proto"],
-#)
