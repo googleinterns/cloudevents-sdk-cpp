@@ -32,6 +32,9 @@ Copying [Envoy's Abseil StatusOr setup](https://github.com/envoyproxy/envoy/tree
 ## base64
 Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c) and René Nyffenegger's [base64 testing code](https://github.com/ReneNyffenegger/cpp-base64).
 
+## Jsoncpp
+Using [Nuxi NL's bazel setup] (https://github.com/NuxiNL/bazel-third-party) to setup a bazel target for jsoncpp
+
 # File Structure
 All logic related to implementing version 1 of the CloudEvent spec can be found in `//v1`.
 - All logic for [Protocol Binding](https://github.com/cloudevents/spec/blob/master/spec.md#protocol-binding)s can be found in the subfolder `//v1/protocol_binding`.
