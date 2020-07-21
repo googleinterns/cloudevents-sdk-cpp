@@ -19,3 +19,7 @@ Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.bui
 `bazel build //sample:create_event`
 2. Run executable <br/>
 `bazel-bin/sample/create_event`
+
+# Dependencies
+## Json
+Using [Nuxi NL's bazel setup] (https://github.com/NuxiNL/bazel-third-party) to setup a bazel target for jsoncpp
