@@ -56,7 +56,8 @@ git_repository(
 http_archive(
     name = "googleapis",
     urls = ["https://github.com/googleapis/googleapis/archive/master.zip"],
-    sha256 = "58d0c3e2bf38d25c4a0be7939166ca263bfc4fe58d3cfc83d05576cb04b97cc7",
+    # commented out SHA as it is flaky
+    #sha256 = "58d0c3e2bf38d25c4a0be7939166ca263bfc4fe58d3cfc83d05576cb04b97cc7",
     strip_prefix = "googleapis-master",
 )
 
