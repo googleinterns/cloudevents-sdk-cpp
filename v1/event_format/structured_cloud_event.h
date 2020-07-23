@@ -8,7 +8,7 @@ namespace format {
 
 struct StructuredCloudEvent {
     Format format;
-    std::string name;
+    std::string serialization;
 };
 
 } // format
