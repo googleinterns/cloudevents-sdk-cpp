@@ -4,7 +4,7 @@
 namespace cloudevents {
 namespace format {
     
-enum class Format {JSON};
+enum class Format {kJson};
 
 } // format
 } // cloudevents
