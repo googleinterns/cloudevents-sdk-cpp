@@ -45,12 +45,12 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
     root["spec_version"] = cloud_event.spec_version();
     root["type"] = cloud_event.type();
 
-    for (auto const& x : cloud_event.attributes()) {
-        absl::StatusOr<Json::Value> json_printed = JsonFormatter::PrintToJson(x.second);
+    for (auto const& attr : cloud_event.attributes()) {
+        absl::StatusOr<Json::Value> json_printed = JsonFormatter::PrintToJson(attr.second);
         if (!json_printed.ok()) {
             return json_printed.status();
         }
-        root[x.first] = *json_printed;
+        root[attr.first] = *json_printed;
     }
 
     switch (cloud_event.data_oneof_case()) {
