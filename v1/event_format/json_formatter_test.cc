@@ -18,7 +18,7 @@ TEST(JsonFormatterTest, Serialize_NoData) {
     serialize = json_formatter.Serialize(cloud_event);
     
     ASSERT_TRUE(serialize.ok());
-    ASSERT_EQ((*serialize).format, Format::JSON);
+    ASSERT_EQ((*serialize).format, Format::kJson);
     ASSERT_EQ((*serialize).serialization,"{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}");
 }
 
@@ -35,7 +35,7 @@ TEST(JsonFormatterTest, Serialize_BinaryData) {
     serialize = json_formatter.Serialize(cloud_event);
 
     ASSERT_TRUE(serialize.ok());
-    ASSERT_EQ((*serialize).format, Format::JSON);
+    ASSERT_EQ((*serialize).format, Format::kJson);
     ASSERT_EQ((*serialize).serialization, "{\n\t\"data_base64\" : \"0110\",\n\t\"id\" : \"4545\",\n\t\"source\" : \"/bonk+bonk\",\n\t\"spec_version\" : \"3.xxxxx\",\n\t\"type\" : \"new\"\n}");
 }
 
@@ -52,13 +52,13 @@ TEST(JsonFormatterTest, Serialize_TextData) {
     serialize = json_formatter.Serialize(cloud_event);
 
     ASSERT_TRUE(serialize.ok());
-    ASSERT_EQ((*serialize).format, Format::JSON);
+    ASSERT_EQ((*serialize).format, Format::kJson);
     ASSERT_EQ((*serialize).serialization, "{\n\t\"data\" : \"this is text\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"4.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}");
 }
 
 TEST(JsonFormatterTest, Deserialize_NoData) {
     StructuredCloudEvent structured_ce;
-    structured_ce.format = Format::JSON;
+    structured_ce.format = Format::kJson;
     structured_ce.serialization = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
     JsonFormatter json_formatter;
     absl::StatusOr<CloudEvent> deserialize;
@@ -74,7 +74,7 @@ TEST(JsonFormatterTest, Deserialize_NoData) {
 
 TEST(JsonFormatterTest, Deserialize_BinaryData) {
     StructuredCloudEvent structured_ce;
-    structured_ce.format = Format::JSON;
+    structured_ce.format = Format::kJson;
     structured_ce.serialization = "{\n\t\"data_base64\" : \"binary_data_wow\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"3.xxxxx\",\n\t\"type\" : \"not_a_type\"\n}";
     JsonFormatter json_formatter;
     absl::StatusOr<CloudEvent> deserialize;
@@ -91,13 +91,13 @@ TEST(JsonFormatterTest, Deserialize_BinaryData) {
 
 TEST(JsonFormatterTest, Deserialize_TextData) {
     StructuredCloudEvent structured_ce;
-    structured_ce.format = Format::JSON;
+    structured_ce.format = Format::kJson;
     structured_ce.serialization = "{\n\t\"data\" : \"this is text\",\n\t\"id\" : \"9999999\",\n\t\"source\" : \"/test/qwertyuiop\",\n\t\"spec_version\" : \"4\",\n\t\"type\" : \"not_a_type\"\n}";
     JsonFormatter json_formatter;
     absl::StatusOr<CloudEvent> deserialize;
 
     deserialize = json_formatter.Deserialize(structured_ce);
-    
+
     ASSERT_TRUE(deserialize);
     ASSERT_EQ((*deserialize).id(), "9999999");
     ASSERT_EQ((*deserialize).source(), "/test/qwertyuiop");

@@ -70,14 +70,14 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
     // Write JSON serialization as std::string
     Json::StreamWriterBuilder builder;
     StructuredCloudEvent structured_ce;
-    structured_ce.format = Format::JSON;
+    structured_ce.format = Format::kJson;
     structured_ce.serialization = Json::writeString(builder, root);
     return structured_ce;
 }
 
 absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent structured_cloud_event) {
     // Validate that this is the right format to be handled by this object
-    if (structured_cloud_event.format != Format::JSON) {
+    if (structured_cloud_event.format != Format::kJson) {
         return absl::InternalError("This structured cloud event is not JSON formatted and should not be handled by a Json Formatter.");
     }
 
