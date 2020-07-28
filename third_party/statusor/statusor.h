@@ -68,9 +68,6 @@
 //  }
 //
 
-#ifndef STATUSOR_H
-#define STATUSOR_H
-
 #include <new>
 #include <string>
 #include <type_traits>
