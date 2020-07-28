@@ -6,8 +6,8 @@ cc_library(
     hdrs = ["binder.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//v1/format:structured_cloud_event_lib",
-        "//v1/format:json_marshaller_lib",
+        "//v1/event_format:structured_cloud_event_lib",
+        "//v1/event_format:json_marshaller_lib",
         "//proto:cloud_event_cc_proto",
         "//proto:pubsub_message_cc_proto",
         "//third_party/statusor:statusor_lib",
@@ -32,9 +32,9 @@ cc_library(
     hdrs = ["pubsub_binder.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//v1/transport:binder_lib",
-        "//v1/format:structured_cloud_event_lib",
-        "//v1/format:json_marshaller_lib",
+        "//v1/trainsport_binding:binder_lib",
+        "//v1/event_format:structured_cloud_event_lib",
+        "//v1/event_format:json_marshaller_lib",
         "//proto:cloud_event_cc_proto",
         "//proto:pubsub_message_cc_proto",
         "//third_party/statusor:statusor_lib",
