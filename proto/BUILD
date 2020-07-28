@@ -1,5 +1,6 @@
 load("@rules_cc//cc:defs.bzl", "cc_proto_library")
 load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_proto_grpc//cpp:defs.bzl", "cpp_grpc_library")
 
 # _____ build cpp from proto _____
 cc_proto_library(
@@ -17,15 +18,7 @@ proto_library(
 )
 
 cc_proto_library(
-  name = "pubsub_message_cc_proto",
+  name = "pubsub_cc_proto",
   visibility = ["//visibility:public"],
-  deps = [":pubsub_message_proto"],
-)
-
-
-proto_library(
-  name = "pubsub_message_proto",
-  srcs = ["pubsub_message.proto"],
-  deps = ["@com_google_protobuf//:any_proto",
-  "@com_google_protobuf//:timestamp_proto"],
+  deps = ["@googleapis//google/pubsub/v1:pubsub_proto"],
 )

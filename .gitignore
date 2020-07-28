@@ -1,2 +1,2 @@
-# Ignore all bazel-* symlinks
+# ignore all bazel symlinks
 /bazel-*
