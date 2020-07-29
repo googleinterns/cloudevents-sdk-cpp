@@ -103,6 +103,7 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
 
     CloudEvent cloud_event;
     
+    // TODO (#39): Should we try to infer CE Type from serialization?
     for (auto const& member : root.getMemberNames()) {
         if (member == "id") {
             cloud_event.set_id(root[member].asString());
