@@ -12,6 +12,12 @@ using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
+// TODO (#41): Move this to a CE Util, as it is used across formatters/ binders
+static constexpr absl::string_view kCeIdKey = "id";
+static constexpr absl::string_view kCeSourceKey = "source";
+static constexpr absl::string_view kCeSpecKey = "spec_version";
+static constexpr absl::string_view kCeTypeKey = "type";
+
 absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
@@ -44,10 +50,10 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
     }
 
     Json::Value root;
-    root["id"] = cloud_event.id();
-    root["source"] = cloud_event.source();
-    root["spec_version"] = cloud_event.spec_version();
-    root["type"] = cloud_event.type();
+    root[kCeIdKey.data()] = cloud_event.id();
+    root[kCeSourceKey.data()] = cloud_event.source();
+    root[kCeSpecKey.data()] = cloud_event.spec_version();
+    root[kCeTypeKey.data()] = cloud_event.type();
 
     for (auto const& attr : cloud_event.attributes()) {
         absl::StatusOr<Json::Value> json_printed = JsonFormatter::PrintToJson(attr.second);
@@ -104,23 +110,23 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
 
 
     // check that serialization contains a valid CE
-    if (!root.isMember("id") || 
-            !root.isMember("source") || 
-            !root.isMember("spec_version") || 
-            !root.isMember("type")) { // using isMember to avoid creating null member in JsonCpp
+    if (!root.isMember(kCeIdKey.data()) || 
+            !root.isMember(kCeSourceKey.data()) || 
+            !root.isMember(kCeSpecKey.data()) || 
+            !root.isMember(kCeTypeKey.data())) { // using isMember to avoid creating null member in JsonCpp
         return absl::InvalidArgumentError("Provided input is missing required Cloud Event attributes.");
     }
 
     CloudEvent cloud_event;
     
     for (auto const& member : root.getMemberNames()) {
-        if (member == "id") {
+        if (member == kCeIdKey.data()) {
             cloud_event.set_id(root[member].asString());
-        } else if (member == "source") {
+        } else if (member == kCeSourceKey.data()) {
             cloud_event.set_source(root[member].asString());
-        } else if (member == "spec_version") {
+        } else if (member == kCeSpecKey.data()) {
             cloud_event.set_spec_version(root[member].asString());
-        } else if (member == "type") {
+        } else if (member == kCeTypeKey.data()) {
             cloud_event.set_type(root[member].asString());
         } else {
             CloudEvent_CloudEventAttribute attr;
