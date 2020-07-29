@@ -59,10 +59,10 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
 
     switch (cloud_event.data_oneof_case()) {
         case CloudEvent::DataOneofCase::kBinaryData:
-            root["data_base64"] = cloud_event.binary_data();
+            root[kBinaryDataKey.data()] = cloud_event.binary_data();
             break;
         case CloudEvent::DataOneofCase::kTextData:
-            root["data"] = cloud_event.text_data();
+            root[kJsonDataKey.data()] = cloud_event.text_data();
             break;
         case CloudEvent::DataOneofCase::kProtoData:
             // TODO (#17): Handle CloudEvent Any in JsonFormatter
@@ -129,12 +129,12 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
         }
     }
 
-    if (root.isMember("data") && root.isMember("data_base64")) {
+    if (root.isMember(kJsonDataKey.data()) && root.isMember(kBinaryDataKey.data())) {
         return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
-    } else if (root.isMember("data")) {
-        cloud_event.set_text_data(root["data"].asString());
-    } else if (root.isMember("data_base64")) {
-        cloud_event.set_binary_data(root["data_base64"].asString());
+    } else if (root.isMember(kJsonDataKey.data())) {
+        cloud_event.set_text_data(root[kJsonDataKey.data()].asString());
+    } else if (root.isMember(kBinaryDataKey.data())) {
+        cloud_event.set_binary_data(root[kBinaryDataKey.data()].asString());
     }
 
     return cloud_event;
