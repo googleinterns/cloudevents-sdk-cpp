@@ -20,7 +20,7 @@ class CloudEventsUtil {
     
         // // convert CloudEvent Attributes to their canonical string representaiton
         // // as per outlined in https://github.com/cloudevents/spec/blob/master/spec.md#type-system
-        // static absl::StatusOr<std::string> StringifyCeType(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);    
+        static absl::StatusOr<std::string> StringifyCeType(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);    
 };
 
 } // util
