@@ -37,7 +37,6 @@ Run-able code samples are available in the `/samples` folder.
 `bazel-bin/sample/create_event`
 
 # Dependencies
-
 ## Abseil StatusOr
 Copying [Envoy's Abseil StatusOr setup](https://github.com/envoyproxy/envoy/tree/44eedc792ab64bba2358e0294b53294c6bc30526/third_party/statusor) temporarily until an official abseil release exists.
 

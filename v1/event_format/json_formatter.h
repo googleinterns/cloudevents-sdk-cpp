@@ -26,6 +26,10 @@ class JsonFormatter: public Formatter {
         // Convert from CE to JSON Type System according to https://github.com/cloudevents/spec/blob/master/json-format.md#22-type-system-mapping
         // Relies mostly on the overloaded constructor for Json::Value in jsoncpp
         absl::StatusOr<Json::Value> PrintToJson(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
+        
+        // Constexpr keys used during Json marshalling
+        inline static constexpr absl::string_view kBinaryDataKey = "data_base64";
+        inline static constexpr absl::string_view kJsonDataKey = "data";
 };
 
 } // format

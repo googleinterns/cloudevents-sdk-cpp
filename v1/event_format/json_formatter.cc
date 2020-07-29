@@ -15,6 +15,12 @@ using ::cloudevents::util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
+// TODO (#41): Move this to a CE Util, as it is used across formatters/ binders
+static constexpr absl::string_view kCeIdKey = "id";
+static constexpr absl::string_view kCeSourceKey = "source";
+static constexpr absl::string_view kCeSpecKey = "spec_version";
+static constexpr absl::string_view kCeTypeKey = "type";
+
 absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
@@ -61,10 +67,10 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
 
     switch (cloud_event.data_oneof_case()) {
         case CloudEvent::DataOneofCase::kBinaryData:
-            root["data_base64"] = cloud_event.binary_data();
+            root[kBinaryDataKey.data()] = cloud_event.binary_data();
             break;
         case CloudEvent::DataOneofCase::kTextData:
-            root["data"] = cloud_event.text_data();
+            root[kJsonDataKey.data()] = cloud_event.text_data();
             break;
         case CloudEvent::DataOneofCase::kProtoData:
             // TODO (#17): Handle CloudEvent Any in JsonFormatter
@@ -93,10 +99,13 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
     Json::CharReader * reader = builder.newCharReader();
     std::string errors;
     Json::Value root;   
-    bool parsingSuccessful = reader->parse(serialization.c_str(), 
+
+    bool parsingSuccessful = reader->parse(
+        serialization.c_str(), 
         serialization.c_str() + serialization.size(), 
         &root, 
         &errors);
+        
     if (!parsingSuccessful) {
         return absl::InvalidArgumentError(errors);
     }
@@ -105,13 +114,13 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
     
     // TODO (#39): Should we try to infer CE Type from serialization?
     for (auto const& member : root.getMemberNames()) {
-        if (member == "id") {
+        if (member == kCeIdKey.data()) {
             cloud_event.set_id(root[member].asString());
-        } else if (member == "source") {
+        } else if (member == kCeSourceKey.data()) {
             cloud_event.set_source(root[member].asString());
-        } else if (member == "spec_version") {
+        } else if (member == kCeSpecKey.data()) {
             cloud_event.set_spec_version(root[member].asString());
-        } else if (member == "type") {
+        } else if (member == kCeTypeKey.data()) {
             cloud_event.set_type(root[member].asString());
         } else {
             CloudEvent_CloudEventAttribute attr;
@@ -120,12 +129,12 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
         }
     }
 
-    if (root.isMember("data") && root.isMember("data_base64")) {
+    if (root.isMember(kJsonDataKey.data()) && root.isMember(kBinaryDataKey.data())) {
         return absl::InvalidArgumentError("Provided input contains two data payloads and is an invalid serialization.");
-    } else if (root.isMember("data")) {
-        cloud_event.set_text_data(root["data"].asString());
-    } else if (root.isMember("data_base64")) {
-        cloud_event.set_binary_data(root["data_base64"].asString());
+    } else if (root.isMember(kJsonDataKey.data())) {
+        cloud_event.set_text_data(root[kJsonDataKey.data()].asString());
+    } else if (root.isMember(kBinaryDataKey.data())) {
+        cloud_event.set_binary_data(root[kBinaryDataKey.data()].asString());
     }
 
     if (!CloudEventsUtil::IsValid(cloud_event)) {
