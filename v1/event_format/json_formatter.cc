@@ -10,6 +10,7 @@ namespace format {
 
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
+using ::google::protobuf::util::TimeUtil;
 
 absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
     switch (attr.attr_oneof_case()) {
@@ -26,7 +27,7 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
             return Json::Value(attr.ce_uri_reference());
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
-            return Json::Value(google::protobuf::util::TimeUtil::ToString(attr.ce_timestamp()));
+            return Json::Value(TimeUtil::ToString(attr.ce_timestamp()));
         case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
             return absl::InvalidArgumentError("Cloud Event metadata attribute not set.");
     }
@@ -90,7 +91,13 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
     Json::CharReader * reader = builder.newCharReader();
     std::string errors;
     Json::Value root;   
-    bool parsingSuccessful = reader->parse(serialization.c_str(), serialization.c_str() + serialization.size(), &root, &errors);
+
+    bool parsingSuccessful = reader->parse(
+        serialization.c_str(), 
+        serialization.c_str() + serialization.size(), 
+        &root, 
+        &errors);
+        
     if (!parsingSuccessful) {
         return absl::InvalidArgumentError(errors);
     }
