@@ -5,11 +5,15 @@
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/time_util.h>
 
+#include "v1/util/cloud_events_util.h"
+
 namespace cloudevents {
 namespace format {
 
 using ::io::cloudevents::v1::CloudEvent;
+using ::cloudevents::util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
+using ::google::protobuf::util::TimeUtil;
 
 absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
     switch (attr.attr_oneof_case()) {
@@ -26,7 +30,7 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
             return Json::Value(attr.ce_uri_reference());
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
-            return Json::Value(google::protobuf::util::TimeUtil::ToString(attr.ce_timestamp()));
+            return Json::Value(TimeUtil::ToString(attr.ce_timestamp()));
         case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
             return absl::InvalidArgumentError("Cloud Event metadata attribute not set.");
     }
@@ -35,18 +39,20 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
 
 absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_event) {
     // validate CloudEvent by ensuring all required metadata is present
-    if (cloud_event.id().empty() || cloud_event.source().empty() || cloud_event.spec_version().empty(), cloud_event.type().empty()) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
-    Json::Value root;
-    root["id"] = cloud_event.id();
-    root["source"] = cloud_event.source();
-    root["spec_version"] = cloud_event.spec_version();
-    root["type"] = cloud_event.type();
+    absl::StatusOr<std::map<std::string, CloudEvent_CloudEventAttribute>> attrs;
+    attrs = CloudEventsUtil::GetMetadata(cloud_event);
+    if (!attrs.ok()) {
+        return attrs.status();
+    }
 
-    for (auto const& attr : cloud_event.attributes()) {
-        absl::StatusOr<Json::Value> json_printed = JsonFormatter::PrintToJson(attr.second);
+    Json::Value root;
+    for (auto const& attr : (*attrs)) {
+        absl::StatusOr<Json::Value> json_printed;
+        json_printed = JsonFormatter::PrintToJson(attr.second);
         if (!json_printed.ok()) {
             return json_printed.status();
         }
@@ -87,15 +93,12 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
     Json::CharReader * reader = builder.newCharReader();
     std::string errors;
     Json::Value root;   
-    bool parsingSuccessful = reader->parse(serialization.c_str(), serialization.c_str() + serialization.size(), &root, &errors);
+    bool parsingSuccessful = reader->parse(serialization.c_str(), 
+        serialization.c_str() + serialization.size(), 
+        &root, 
+        &errors);
     if (!parsingSuccessful) {
         return absl::InvalidArgumentError(errors);
-    }
-
-
-    // check that serialization contains a valid CE
-    if (!root.isMember("id") || !root.isMember("source") || !root.isMember("spec_version") || !root.isMember("type")) { // using isMember to avoid creating null member, avoids quirk of JsonCpp
-        return absl::InvalidArgumentError("Provided input is missing required Cloud Event attributes.");
     }
 
     CloudEvent cloud_event;
@@ -122,6 +125,10 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
         cloud_event.set_text_data(root["data"].asString());
     } else if (root.isMember("data_base64")) {
         cloud_event.set_binary_data(root["data_base64"].asString());
+    }
+
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("The serialization does not contain a valid CloudEvent");
     }
 
     return cloud_event;
