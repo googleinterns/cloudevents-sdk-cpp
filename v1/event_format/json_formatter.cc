@@ -35,7 +35,10 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
 
 absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_event) {
     // validate CloudEvent by ensuring all required metadata is present
-    if (cloud_event.id().empty() || cloud_event.source().empty() || cloud_event.spec_version().empty(), cloud_event.type().empty()) {
+    if (cloud_event.id().empty() || 
+            cloud_event.source().empty() || 
+            cloud_event.spec_version().empty() ||
+            cloud_event.type().empty()) {
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
@@ -94,7 +97,10 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent struc
 
 
     // check that serialization contains a valid CE
-    if (!root.isMember("id") || !root.isMember("source") || !root.isMember("spec_version") || !root.isMember("type")) { // using isMember to avoid creating null member, avoids quirk of JsonCpp
+    if (!root.isMember("id") || 
+            !root.isMember("source") || 
+            !root.isMember("spec_version") || 
+            !root.isMember("type")) { // using isMember to avoid creating null member in JsonCpp
         return absl::InvalidArgumentError("Provided input is missing required Cloud Event attributes.");
     }
 
