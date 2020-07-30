@@ -1,19 +1,30 @@
 #ifndef CLOUDEVENTSCPPSDK_V1_UTIL_CFORMATTERTIL
 #define CLOUDEVENTSCPPSDK_V1_UTIL_CFORMATTERTIL
+
+#include "third_party/statusor/statusor.h"
+#include "proto/cloud_event.pb.h"
+#include "v1/event_format/format.h"
+#include "v1/event_format/formatter.h"
+#include "v1/event_format/json_formatter.h"
+
 namespace cloudevents {
 namespace util {
 
 class FormatterUtil {
-    // interfacing with Formatters
+    public:
+        // Converts a given string to a cloudevents::format::Format
+        // Throws InternalError() if string cannot be mapped succesfully.
+        static absl::StatusOr<
+                cloudevents::format::Format> 
+            DestringifyFormat(std::string format_str);
 
-    // Converts a given string to a cloudevents::format::Format
-    // Throws InternalError() if string cannot be mapped succesfully.
-    absl::StatusOr<cloudevents::format::Format> DestringifyFormat(std::string format_str) const;
-
-    // Converts a cloudevents::format::Format to its string representation
-    absl::StatusOr<std::string> StringifyFormat(cloudevents::format::Format format) const;
-    absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> GetFormatter(cloudevents::format::Format format) const;
-
+        // Converts a cloudevents::format::Format to its string representation
+        static std::string StringifyFormat(cloudevents::format::Format format);
+        
+        // Returns Formatter that handles the given Format
+        static absl::StatusOr<
+                std::unique_ptr<cloudevents::format::Formatter>> 
+            GetFormatter(cloudevents::format::Format format);
 };
 
 } // util
