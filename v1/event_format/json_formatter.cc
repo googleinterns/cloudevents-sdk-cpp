@@ -13,7 +13,7 @@ namespace format {
 using ::io::cloudevents::v1::CloudEvent;
 using ::cloudevents::util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
-using ::cloudevents::util::CloudeventsUtil;
+using ::google::protobuf::util::TimeUtil;
 
 absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
     switch (attr.attr_oneof_case()) {
@@ -39,15 +39,19 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
 
 absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_event) {
     // validate CloudEvent by ensuring all required metadata is present
-    if (!CloudeventsUtil::IsValid(cloud_event)) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
     Json::Value root;
 
-    std::map<std::string, CloudEvent_CloudEventAttribute> attrs = CloudeventsUtil::GetMetadata(cloud_event);
+    absl::StatusOr<std::map<std::string, CloudEvent_CloudEventAttribute>> attrs;
+    attrs = CloudEventsUtil::GetMetadata(cloud_event);
+    if (!attrs.ok()) {
+        return attrs.status();
+    }
 
-    for (auto const& attr : attrs) {
+    for (auto const& attr : (*attrs)) {
         absl::StatusOr<Json::Value> json_printed = JsonFormatter::PrintToJson(attr.second);
         if (!json_printed.ok()) {
             return json_printed.status();
