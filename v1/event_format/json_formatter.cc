@@ -54,14 +54,16 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
-    Json::Value root;
-    root[kCeIdKey.data()] = cloud_event.id();
-    root[kCeSourceKey.data()] = cloud_event.source();
-    root[kCeSpecKey.data()] = cloud_event.spec_version();
-    root[kCeTypeKey.data()] = cloud_event.type();
+    absl::StatusOr<std::map<std::string, CloudEvent_CloudEventAttribute>> attrs;
+    attrs = CloudEventsUtil::GetMetadata(cloud_event);
+    if (!attrs.ok()) {
+        return attrs.status();
+    }
 
-    for (auto const& attr : cloud_event.attributes()) {
-        absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
+    Json::Value root;
+    for (auto const& attr : (*attrs)) {
+        absl::StatusOr<Json::Value> json_printed;
+        json_printed = JsonFormatter::PrintToJson(attr.second);
         if (!json_printed.ok()) {
             return json_printed.status();
         }
