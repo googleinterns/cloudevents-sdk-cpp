@@ -22,11 +22,11 @@ class CloudEventsUtil {
         // as per outlined in https://github.com/cloudevents/spec/blob/master/spec.md#type-system
         static absl::StatusOr<std::string> StringifyCeType(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);    
 
-        // // Constexpr keys used when interacting with CloudEvent
-        // inline static constexpr absl::string_view kCeIdKey = "id";
-        // inline static constexpr absl::string_view kCeSourceKey = "source";
-        // inline static constexpr absl::string_view kCeSpecKey = "spec_version";
-        // inline static constexpr absl::string_view kCeTypeKey = "type";
+        // Constexpr keys used when interacting with CloudEvent
+        inline static constexpr absl::string_view kCeIdKey = "id";
+        inline static constexpr absl::string_view kCeSourceKey = "source";
+        inline static constexpr absl::string_view kCeSpecKey = "spec_version";
+        inline static constexpr absl::string_view kCeTypeKey = "type";
 };
 
 } // util

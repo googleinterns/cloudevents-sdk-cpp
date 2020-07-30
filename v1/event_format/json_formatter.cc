@@ -15,11 +15,6 @@ using ::cloudevents::util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
-// TODO (#41): Move this to a CE Util, as it is used across formatters/ binders
-static constexpr absl::string_view kCeIdKey = "id";
-static constexpr absl::string_view kCeSourceKey = "source";
-static constexpr absl::string_view kCeSpecKey = "spec_version";
-static constexpr absl::string_view kCeTypeKey = "type";
 
 static constexpr absl::string_view kBinaryDataKey = "data_base64";
 static constexpr absl::string_view kJsonDataKey = "data";
@@ -119,14 +114,15 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
     CloudEvent cloud_event;
     
+    // TODO (#39): Should we try to infer CE Type from serialization?
     for (auto const& member : root.getMemberNames()) {
-        if (member == kCeIdKey.data()) {
+        if (member == CloudEventsUtil::kCeIdKey.data()) {
             cloud_event.set_id(root[member].asString());
-        } else if (member == kCeSourceKey.data()) {
+        } else if (member == CloudEventsUtil::kCeSourceKey.data()) {
             cloud_event.set_source(root[member].asString());
-        } else if (member == kCeSpecKey.data()) {
+        } else if (member == CloudEventsUtil::kCeSpecKey.data()) {
             cloud_event.set_spec_version(root[member].asString());
-        } else if (member == kCeTypeKey.data()) {
+        } else if (member == CloudEventsUtil::kCeTypeKey.data()) {
             cloud_event.set_type(root[member].asString());
         } else {
             CloudEvent_CloudEventAttribute attr;
