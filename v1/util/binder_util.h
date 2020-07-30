@@ -2,7 +2,7 @@
 #define CLOUDEVENTSCPPSDK_V1_UTIL_BINDERUTIL
 
 namespace cloudevents {
-namespace util {
+namespace binder_util {
 
 class BinderUtil {
     public:
