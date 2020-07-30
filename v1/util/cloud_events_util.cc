@@ -8,14 +8,19 @@ namespace util {
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 
-bool CloudeventsUtil::IsValid(CloudEvent cloud_event) {
+bool CloudEventsUtil::IsValid(CloudEvent cloud_event) {
     return !(cloud_event.id().empty() || 
         cloud_event.source().empty() || 
         cloud_event.spec_version().empty() ||
         cloud_event.type().empty());
 }
 
-std::map<std::string, CloudEvent_CloudEventAttribute> CloudeventsUtil::GetMetadata(CloudEvent cloud_event) {
+absl::StatusOr<std::map<std::string, CloudEvent_CloudEventAttribute>> CloudEventsUtil::GetMetadata(
+    CloudEvent cloud_event) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("GetMetadata can only be called with valid Cloud Event.");
+    }
+
     // create std::map from protobuf map of optional/ extensionattrs
     std::map<std::string, CloudEvent_CloudEventAttribute> attrs(
         (cloud_event.attributes()).begin(),
@@ -36,10 +41,7 @@ std::map<std::string, CloudEvent_CloudEventAttribute> CloudeventsUtil::GetMetada
     return attrs;
 }
 
-
-absl::StatusOr<std::string> CloudeventsUtil::StringifyCeType(CloudEvent_CloudEventAttribute attr){
-    // std::string protocol = "https?://(www.)?[-a-zA-Z0-9@:%._+~#=]{2,256}.[a-z]{2,4}b([-a-zA-Z0-9@:%_+.~#?&//=]*)";
-    // std::regex url_regex(pattern);
+absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(CloudEvent_CloudEventAttribute attr){
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
             return std::string(attr.ce_boolean() ? "true" : "false");  // StatusOr requires explicit conversion

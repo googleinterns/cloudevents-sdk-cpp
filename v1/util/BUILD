@@ -13,3 +13,13 @@ cc_library(
         "//proto:cloud_event_cc_proto",
     ],
 )
+
+cc_test(
+   name = "cloud_events_util_test",
+   srcs = ["cloud_events_util_test.cc"],
+   deps = [
+       ":cloud_events_util_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)
