@@ -3,7 +3,7 @@
 #include <google/protobuf/util/time_util.h>
 
 namespace cloudevents {
-namespace util {
+namespace cloudevents_util {
 
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;

@@ -11,7 +11,7 @@ namespace cloudevents {
 namespace format {
 
 using ::io::cloudevents::v1::CloudEvent;
-using ::cloudevents::util::CloudEventsUtil;
+using ::cloudevents::cloudevents_util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 

@@ -6,7 +6,7 @@
 #include "proto/cloud_event.pb.h"
 
 namespace cloudevents {
-namespace util {
+namespace cloudevents_util {
 
 class CloudEventsUtil {
     public:
