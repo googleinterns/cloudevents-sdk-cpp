@@ -5,10 +5,13 @@
 #include <google/protobuf/util/json_util.h>
 #include <google/protobuf/util/time_util.h>
 
+#include "v1/util/cloud_events_util.h"
+
 namespace cloudevents {
 namespace format {
 
 using ::io::cloudevents::v1::CloudEvent;
+using ::cloudevents::util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
@@ -47,10 +50,7 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
 absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(
         const CloudEvent& cloud_event) {
     // validate CloudEvent by ensuring all required metadata is present
-    if (cloud_event.id().empty() || 
-            cloud_event.source().empty() || 
-            cloud_event.spec_version().empty() ||
-            cloud_event.type().empty()) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
@@ -115,16 +115,6 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
         return absl::InvalidArgumentError(errors);
     }
 
-
-    // check that serialization contains a valid CE
-    if (!root.isMember(kCeIdKey.data()) || 
-            !root.isMember(kCeSourceKey.data()) || 
-            !root.isMember(kCeSpecKey.data()) || 
-            !root.isMember(kCeTypeKey.data())) { // using isMember to avoid creating null member in JsonCpp
-        return absl::InvalidArgumentError(
-            "Provided input is missing required Cloud Event attributes.");
-    }
-
     CloudEvent cloud_event;
     
     for (auto const& member : root.getMemberNames()) {
@@ -150,6 +140,10 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
         cloud_event.set_text_data(root[kJsonDataKey.data()].asString());
     } else if (root.isMember(kBinaryDataKey.data())) {
         cloud_event.set_binary_data(root[kBinaryDataKey.data()].asString());
+    }
+
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("The serialization does not contain a valid CloudEvent");
     }
 
     return cloud_event;
