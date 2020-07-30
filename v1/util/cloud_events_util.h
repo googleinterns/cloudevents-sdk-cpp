@@ -10,8 +10,8 @@ namespace util {
 
 class CloudEventsUtil {
     public:
-        // // validate if given CloudEvent fulfills requirements to be valid
-        // static bool IsValid(io::cloudevents::v1::CloudEvent cloud_event);
+        // validate if given CloudEvent fulfills requirements to be valid
+        static bool IsValid(io::cloudevents::v1::CloudEvent cloud_event);
 
         // // consolidate metadata in CloudEvent to a single map
         // static absl::StatusOr<
