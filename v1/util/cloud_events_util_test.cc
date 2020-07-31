@@ -12,7 +12,7 @@ using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
 
-typedef std::map<std::string, CloudEvent_CloudEventAttribute> CeAttrMap;
+typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> CeAttrMap;
 
 TEST(CloudEventsUtilTest, IsValid_NoSource) {
     CloudEvent cloud_event;

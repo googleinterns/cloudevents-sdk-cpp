@@ -8,6 +8,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "@com_google_absl//absl/container:flat_hash_map",
         "//third_party/statusor:statusor_lib",
         "//third_party/base64:base64_lib",
         "//proto:cloud_event_cc_proto",

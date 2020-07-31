@@ -15,6 +15,7 @@ using ::cloudevents::cloudevents_util::CloudEventsUtil;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
+typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> CeAttrMap;
 
 static constexpr absl::string_view kBinaryDataKey = "data_base64";
 static constexpr absl::string_view kJsonDataKey = "data";
@@ -49,7 +50,7 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(
         return absl::InvalidArgumentError("Required attribute in Cloud Event cannot be empty");
     }
 
-    absl::StatusOr<std::map<std::string, CloudEvent_CloudEventAttribute>> attrs;
+    absl::StatusOr<CeAttrMap> attrs;
     attrs = CloudEventsUtil::GetMetadata(cloud_event);
     if (!attrs.ok()) {
         return attrs.status();
