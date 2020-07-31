@@ -41,6 +41,25 @@ absl::StatusOr<
     return attrs;
 }
 
+void CloudEventsUtil::SetMetadata(CloudEvent* cloud_event, 
+        std::string key, std::string value){
+    // TODO (#39): Should we try to infer CE Type from serialization?
+    CloudEvent_CloudEventAttribute attr;
+    attr.set_ce_string(value);
+    if (key == "id") {
+        cloud_event -> set_id(value);
+    } else if (key == "source") {
+        cloud_event -> set_source(value);
+    } else if (key == "spec_version") {
+        cloud_event -> set_spec_version(value);
+    } else if (key == "type") {
+        cloud_event -> set_type(value);
+    } else {
+        (*cloud_event -> mutable_attributes())[key] = attr;
+    }
+}
+
+
 absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(CloudEvent_CloudEventAttribute attr){
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
