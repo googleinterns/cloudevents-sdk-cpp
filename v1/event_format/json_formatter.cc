@@ -117,19 +117,7 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
     
     // TODO (#39): Should we try to infer CE Type from serialization?
     for (auto const& member : root.getMemberNames()) {
-        if (member == CloudEventsUtil::kCeIdKey.data()) {
-            cloud_event.set_id(root[member].asString());
-        } else if (member == CloudEventsUtil::kCeSourceKey.data()) {
-            cloud_event.set_source(root[member].asString());
-        } else if (member == CloudEventsUtil::kCeSpecKey.data()) {
-            cloud_event.set_spec_version(root[member].asString());
-        } else if (member == CloudEventsUtil::kCeTypeKey.data()) {
-            cloud_event.set_type(root[member].asString());
-        } else {
-            CloudEvent_CloudEventAttribute attr;
-            attr.set_ce_string(root[member].asString());
-            (*cloud_event.mutable_attributes())[member] = attr;
-        }
+        CloudEventsUtil::SetMetadata(&cloud_event, member, root[member].asString());
     }
 
     if (root.isMember(kJsonDataKey.data()) && root.isMember(kBinaryDataKey.data())) {
