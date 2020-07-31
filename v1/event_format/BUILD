@@ -20,8 +20,8 @@ cc_test(
    name = "json_formatter_test",
    srcs = ["json_formatter_test.cc"],
    deps = [
-       ":json_formatter_lib",
        "@gtest//:gtest",
-       "@gtest//:gtest_main"
+       "@gtest//:gtest_main",
+       ":json_formatter_lib",
    ],
 )

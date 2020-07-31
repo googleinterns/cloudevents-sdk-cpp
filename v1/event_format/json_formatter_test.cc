@@ -80,8 +80,7 @@ TEST(Deserialize, BinaryData) {
     absl::StatusOr<CloudEvent> deserialize;
 
     deserialize = json_formatter.Deserialize(structured_ce);
-
-    ASSERT_TRUE(deserialize);
+    ASSERT_TRUE(deserialize.ok());
     ASSERT_EQ((*deserialize).id(), "9999999");
     ASSERT_EQ((*deserialize).source(), "/test/qwertyuiop");
     ASSERT_EQ((*deserialize).spec_version(), "3.xxxxx");
@@ -98,7 +97,7 @@ TEST(Deserialize, TextData) {
 
     deserialize = json_formatter.Deserialize(structured_ce);
 
-    ASSERT_TRUE(deserialize);
+    ASSERT_TRUE(deserialize.ok());
     ASSERT_EQ((*deserialize).id(), "9999999");
     ASSERT_EQ((*deserialize).source(), "/test/qwertyuiop");
     ASSERT_EQ((*deserialize).spec_version(), "4");

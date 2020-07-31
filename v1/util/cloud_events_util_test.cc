@@ -2,7 +2,6 @@
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/util/time_util.h>
 #include <gtest/gtest.h>
-#include <iostream>
 
 namespace cloudevents {
 namespace cloudevents_util {
@@ -120,6 +119,47 @@ TEST(CloudEventsUtilTest, GetMetadata_TwoOptional) {
     ASSERT_TRUE((*get_metadata)["type"].ce_string() == "test");
     ASSERT_TRUE((*get_metadata)["test_key1"].ce_string() == "test_val1");
     ASSERT_TRUE((*get_metadata)["test_key2"].ce_string() == "test_val2");
+}
+
+TEST(CloudEventsUtilTest, SetMetadata_Id) {
+    CloudEvent cloud_event;
+
+    CloudEventsUtil::SetMetadata(&cloud_event, "id", "1");
+
+    ASSERT_EQ(cloud_event.id(), "1");
+}
+
+TEST(CloudEventsUtilTest, SetMetadata_Source) {
+    CloudEvent cloud_event;
+
+    CloudEventsUtil::SetMetadata(&cloud_event, "source", "/a_source");
+
+    ASSERT_EQ(cloud_event.source(), "/a_source");
+}
+
+TEST(CloudEventsUtilTest, SetMetadata_SpecVersion) {
+    CloudEvent cloud_event;
+
+    CloudEventsUtil::SetMetadata(&cloud_event, "spec_version", "1.xx");
+
+    ASSERT_EQ(cloud_event.spec_version(), "1.xx");
+}
+
+TEST(CloudEventsUtilTest, SetMetadata_Type) {
+    CloudEvent cloud_event;
+
+    CloudEventsUtil::SetMetadata(&cloud_event, "type", "test");
+
+    ASSERT_EQ(cloud_event.type(), "test");
+}
+
+TEST(CloudEventsUtilTest, SetMetadata_Optional) {
+    CloudEvent cloud_event;
+
+    CloudEventsUtil::SetMetadata(&cloud_event, "opt", "arbitrary");
+
+    CloudEvent_CloudEventAttribute attr = cloud_event.attributes().at("opt");
+    ASSERT_EQ(attr.ce_string(), "arbitrary");
 }
 
 TEST(CloudEventsUtilTest, StringifyCeType_BoolFalse) {
