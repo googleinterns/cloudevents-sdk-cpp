@@ -9,6 +9,13 @@ namespace base64 {
 // Test all possibilites of fill bytes (none, one =, two ==)
 // References calculated with: https://www.base64encode.org/
 
+TEST(Encode, Empty)
+{
+   std::string encoded = base64_encode("");
+
+   ASSERT_EQ(encoded, "");
+}
+
 TEST(Encode, t0)
 {
    std::string rest0_original = "abc";
@@ -18,6 +25,7 @@ TEST(Encode, t0)
 
    ASSERT_EQ(rest0_encoded, rest0_reference);
 }
+
 TEST(Encode, t1)
 {
    std::string rest1_original = "abcd";
@@ -37,6 +45,14 @@ TEST(Encode, t2)
 
    ASSERT_EQ(rest2_encoded, rest2_reference);
 }
+
+TEST(Decode, Empty)
+{
+   std::string decoded = base64_decode("");
+
+   ASSERT_EQ(decoded, "");
+}
+
 
 TEST(Decode, t0)
 {

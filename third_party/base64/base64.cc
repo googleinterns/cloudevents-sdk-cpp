@@ -35,6 +35,9 @@ std::string base64_encode(std::string str) {
 	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	if (len == 0) {
+		return str;
+	}
 	// end
 
 	olen = (len +2) / 3 * 4;
@@ -109,6 +112,9 @@ std::string base64_decode(std::string str) {
 	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	if (len == 0) {
+		return str;
+	}
 	// end
 
 
