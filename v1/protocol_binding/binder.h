@@ -13,6 +13,7 @@
 #include "v1/event_format/structured_cloud_event.h"
 #include "v1/event_format/json_formatter.h"
 #include "v1/util/formatter_util.h"
+#include "v1/util/cloud_events_util.h"
 
 namespace cloudevents {
 namespace binding {
@@ -119,20 +120,20 @@ absl::StatusOr<bool>
     Binder<google::pubsub::v1::PubsubMessage>::InStructuredContentMode(
     google::pubsub::v1::PubsubMessage* pubsub_msg);
 
-// template <>
-// absl::StatusOr<cloudevents::format::Format> 
-//     Binder<google::pubsub::v1::PubsubMessage>::GetFormat(
-//     google::pubsub::v1::PubsubMessage* pubsub_msg);
+template <>
+absl::StatusOr<cloudevents::format::Format> 
+    Binder<google::pubsub::v1::PubsubMessage>::GetFormat(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
 
-// template <>
-// absl::StatusOr<std::string> 
-//     Binder<google::pubsub::v1::PubsubMessage>::GetPayload(
-//     google::pubsub::v1::PubsubMessage* pubsub_msg);
+template <>
+absl::StatusOr<std::string> 
+    Binder<google::pubsub::v1::PubsubMessage>::GetPayload(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
 
-// template <>
-// absl::StatusOr<io::cloudevents::v1::CloudEvent> 
-//     Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
-//     google::pubsub::v1::PubsubMessage* pubsub_msg);
+template <>
+absl::StatusOr<io::cloudevents::v1::CloudEvent> 
+    Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
 
 } // format
 } // cloudevents
