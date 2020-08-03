@@ -18,3 +18,13 @@ cc_library(
         "//v1/util:formatter_util_lib",
     ],
 )
+
+cc_test(
+   name = "binder_test",
+   srcs = ["binder_test.cc"],
+   deps = [
+       ":binder_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)

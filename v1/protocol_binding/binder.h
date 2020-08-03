@@ -12,6 +12,7 @@
 #include "external/googleapis/google/pubsub/v1/pubsub.pb.h"
 #include "v1/event_format/structured_cloud_event.h"
 #include "v1/event_format/json_formatter.h"
+#include "v1/util/formatter_util.h"
 
 namespace cloudevents {
 namespace binding {
@@ -26,25 +27,112 @@ class Binder {
     // Bind takes a CloudEvent [and Format], or StructuredCloudEvent as input, and creates a XMessage as ouput
     // Unbind takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
     public:
-        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event);
-        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format);
-        absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message message);
-    protected:
-        // virtual operations for Unbind
-        virtual absl::StatusOr<cloudevents::format::Format> GetFormat(Message message) = 0;
-        virtual absl::StatusOr<bool> InBinaryContentMode(Message message) = 0;
-        virtual absl::StatusOr<std::string> GetPayload(Message message) = 0;
-        virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message binary_message) = 0;
+        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event) {
+            return BindBinary(cloud_event);
+        }
+        
+        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
+            absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
+            get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(format);
+            if (!get_formatter.ok()) {
+                return get_formatter.status();
+            }
+            absl::StatusOr<cloudevents::format::StructuredCloudEvent> serialization;
+            serialization = (*get_formatter) -> Serialize(cloud_event);
+            if (!serialization.ok()) {
+                return serialization.status();
+            }
+            return BindStructured(*serialization);
+        }
+        
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message* message) {
+            // get content-mode of the message
+            absl::StatusOr<bool> in_binary_content_mode; 
+            in_binary_content_mode = InBinaryContentMode(message);
+            if (!in_binary_content_mode.ok()) {
+                return in_binary_content_mode.status();
+            }
 
-        // virtual operations for Bind
-        virtual absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent cloud_event) = 0;
-        virtual absl::StatusOr<Message> BindStructured(cloudevents::format::StructuredCloudEvent structured_cloud_event) = 0;   
+            if (*in_binary_content_mode) {
+                return UnbindBinary(message);
+            }
+
+            absl::StatusOr<cloudevents::format::Format> get_format = GetFormat(message);
+            if (!get_format.ok()) {
+                return get_format.status();
+            }
+
+            absl::StatusOr<std::string> get_payload = GetPayload(message);
+            if (!get_payload.ok()) {
+                return get_payload.status();
+            }
+
+            absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
+            get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(*get_format);
+            if (!get_formatter.ok()) {
+                return get_formatter.status();
+            }
+
+            cloudevents::format::StructuredCloudEvent structured_cloud_event;
+            structured_cloud_event.format = (*get_format);
+            structured_cloud_event.serialization = (*get_payload);
+            absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization = (*get_formatter) -> Deserialize(structured_cloud_event);
+            if (!deserialization.ok()){
+                return deserialization.status();
+            }
+            return (*deserialization);
+        }
+
+
+    // protected: // debug
+        // operations for Unbind that need to be overriden
+        absl::StatusOr<bool> InStructuredContentMode(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<cloudevents::format::Format> GetFormat(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<std::string> GetPayload(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message* binary_message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+
+        // operations for Bind that need to be overriden
+        absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent cloud_event) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<Message> BindStructured(cloudevents::format::StructuredCloudEvent structured_cloud_event) {
+            return absl::InternalError("Unimplemented operation");
+        }   
         
         // Constexpr keys used when binding/ unbinding Messages
-        inline static constexpr absl::string_view kMetadataPrefix = "ce-";
-        inline static constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
-        inline static constexpr absl::string_view kContenttypeKey = "datacontenttype";
+        static inline constexpr absl::string_view kMetadataPrefix = "ce-";
+        static inline constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
+        static inline constexpr absl::string_view kContenttypeKey = "datacontenttype";
 };
+
+// Pubsub specialization
+template <>
+absl::StatusOr<bool> 
+    Binder<google::pubsub::v1::PubsubMessage>::InStructuredContentMode(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+// template <>
+// absl::StatusOr<cloudevents::format::Format> 
+//     Binder<google::pubsub::v1::PubsubMessage>::GetFormat(
+//     google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+// template <>
+// absl::StatusOr<std::string> 
+//     Binder<google::pubsub::v1::PubsubMessage>::GetPayload(
+//     google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+// template <>
+// absl::StatusOr<io::cloudevents::v1::CloudEvent> 
+//     Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
+//     google::pubsub::v1::PubsubMessage* pubsub_msg);
 
 } // format
 } // cloudevents
