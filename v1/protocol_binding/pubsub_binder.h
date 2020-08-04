@@ -11,21 +11,36 @@
 namespace cloudevents {
 namespace binding {
 
+// Pubsub specialization
 template <>
-class Binder<google::pubsub::v1::PubsubMessage> {
-    // According to spec in https://github.com/google/knative-gcp/blob/master/docs/spec/pubsub-protocol-binding.md#14-event-formats
-    // Data encoding referenced from https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage
-    protected:
-        // specializations for Unbind
-        absl::StatusOr<cloudevents::format::Format> GetFormat(google::pubsub::v1::PubsubMessage message);
-        absl::StatusOr<bool> InBinaryContentMode(google::pubsub::v1::PubsubMessage message);
-        absl::StatusOr<std::string> GetPayload(google::pubsub::v1::PubsubMessage message);
-        absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(google::pubsub::v1::PubsubMessage binary_message);
+absl::StatusOr<bool> 
+    Binder<google::pubsub::v1::PubsubMessage>::InStructuredContentMode(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
 
-        // specializations for Bind
-        absl::StatusOr<google::pubsub::v1::PubsubMessage> BindBinary(io::cloudevents::v1::CloudEvent cloud_event);
-        absl::StatusOr<google::pubsub::v1::PubsubMessage> BindStructured(cloudevents::format::StructuredCloudEvent structured_cloud_event);   
-};
+template <>
+absl::StatusOr<cloudevents::format::Format> 
+    Binder<google::pubsub::v1::PubsubMessage>::GetFormat(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+template <>
+absl::StatusOr<std::string> 
+    Binder<google::pubsub::v1::PubsubMessage>::GetPayload(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+template <>
+absl::StatusOr<io::cloudevents::v1::CloudEvent> 
+    Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
+    google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+template <>
+absl::StatusOr<google::pubsub::v1::PubsubMessage> 
+    Binder<google::pubsub::v1::PubsubMessage>::BindBinary(
+    io::cloudevents::v1::CloudEvent* cloud_event);
+
+template <>
+absl::StatusOr<google::pubsub::v1::PubsubMessage> 
+    Binder<google::pubsub::v1::PubsubMessage>::BindStructured(
+    cloudevents::format::StructuredCloudEvent* structured_ce);
 
 } // binding
 } // cloudevents

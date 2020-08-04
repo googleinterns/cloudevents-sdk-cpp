@@ -2,9 +2,6 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 cc_library(
     name = "binder_lib",
-    srcs = [
-        "binder.cc",
-    ],
     hdrs = [
         "binder.h",
     ],
@@ -19,11 +16,26 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "pubsub_binder_lib",
+    srcs = [
+        "pubsub_binder.cc"
+    ],
+    hdrs = [
+        "pubsub_binder.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":binder_lib",
+    ],
+)
+
+
 cc_test(
-   name = "binder_test",
-   srcs = ["binder_test.cc"],
+   name = "pubsub_binder_test",
+   srcs = ["pubsub_binder_test.cc"],
    deps = [
-       ":binder_lib",
+       ":pubsub_binder_lib",
        "@gtest//:gtest",
        "@gtest//:gtest_main"
    ],

@@ -1,108 +1,130 @@
 #include "pubsub_binder.h"
 
-namespace cloud_events {
+namespace cloudevents {
 namespace binding {
 
 using ::google::pubsub::v1::PubsubMessage;
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
-using ::cloudevents::format::Format;
 using ::cloudevents::format::StructuredCloudEvent;
+using ::cloudevents::format::Format;
+using ::cloudevents::format::Formatter;
+using ::cloudevents::formatter_util::FormatterUtil;
+using ::cloudevents::cloudevents_util::CloudEventsUtil;
 
-constexpr absl::string_view kPubsubContenttypeKey = "content-type";
+typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> CeAttrMap;
 
-// __________ Unbind ___________
+constexpr absl::string_view kPubsubContentKey = "content-type";
 
-absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage* message) const {    
-    // // if content-type attribute not found or does not have the prefix "application/cloudevents", treat as binary mode.
-    // google::protobuf::Map<std::string,std::string> attr_map = message -> attributes();
-    // auto i = attr_map.find(pubsub_content_key_);
-    // if (i == attr_map.end() || (i -> second).rfind(ce_contenttype_prefix_, 0) != 0) { 
-    //     return Format::UNFORMATTED;
-    // } else {
-    //     // strip prefix and return
-    //     // StrToFormat will return error status if format string not recognized
-    //     return StrToFormat((i -> second).erase(0,strlen(ce_contenttype_prefix_)));
-    // }
-    return absl::UnimplementedError("todo");
+template <>
+absl::StatusOr<bool> Binder<PubsubMessage>::InStructuredContentMode(PubsubMessage* pubsub_msg) {
+    google::protobuf::Map<std::string,std::string> attrs;
+    attrs = pubsub_msg -> attributes();
+    auto ind = attrs.find(kPubsubContentKey.data());
+    return (ind != attrs.end() && (ind -> second).rfind(kContenttypePrefix.data(), 0) == 0); 
 }
 
-absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage* message) const {
+template <>
+absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage* pubsub_msg) {
+    // makes assumption that message is in structured content mode
+    google::protobuf::Map<std::string,std::string> attrs;
+    attrs = pubsub_msg -> attributes();
+    auto ind = attrs.find(kPubsubContentKey.data());
+
+    std::string format_str = (ind -> second).erase(0,strlen(kContenttypePrefix.data()));
+    return FormatterUtil::DestringifyFormat(format_str);
+}
+
+template <>
+absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage* pubsub_msg) {
     // get payload and base64 decode
-    return base64::base64_decode(message -> data());
+    return base64::base64_decode(pubsub_msg -> data());
 }
 
-absl::StatusOr<CloudEvent> Binder<PubsubMessage>::ReadBinary(PubsubMessage* binary_message) const {
-    // check valid CloudEvent
-    // google::protobuf::Map<std::string, std::string> pubsub_attr = binary_message -> attributes();
+template <>
+absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pubsub_msg) {
+    CloudEvent cloud_event;
 
-    // // TODO (#27): encapsulate checking required attributes in CloudEvent
-    // if (!pubsub_attr.count("ce-id") || !pubsub_attr.count("ce-source") || !pubsub_attr.count("ce-spec_version") || !pubsub_attr.count("ce-type")) {
-    //     return absl::InvalidArgumentError("Message does not contain required CloudEvent attributes");
-    // }
+    for (auto const& attr : pubsub_msg -> attributes()) {
+        std::string key;
+        if (attr.first == kPubsubContentKey.data()) {
+            key = kContenttypeKey.data();
+        } else if (attr.first.rfind(kMetadataPrefix.data(), 0) == 0){
+            size_t len_prefix = strlen(kMetadataPrefix.data());
+            key= attr.first.substr(len_prefix, std::string::npos);
+        }
+        CloudEventsUtil::SetMetadata(&cloud_event,key, attr.second);
+    }
 
-    // CloudEvent cloud_event;
-
-    // // handle metadata
-    // for (auto const& pubsub_attr : binary_message -> attributes()) {
-    //     if (pubsub_attr.first == pubsub_content_key_) { // todo: check for duplicates?
-    //     CloudEvent_CloudEventAttribute content_val;
-    //     content_val.set_ce_string(pubsub_attr.second);
-    //     (*cloud_event.mutable_attributes())[ce_content_key_] = content_val;
-    //     } else if (pubsub_attr.first.rfind(ce_attr_prefix_, 0) == 0){
-    //         // attr key: remove prefix
-    //         // attr val: set CE type string
-    //         std::string attr_key = pubsub_attr.first;
-    //         attr_key.erase(0,strlen(ce_attr_prefix_));
-    //         CloudEvent_CloudEventAttribute attr_val;
-    //         attr_val.set_ce_string(pubsub_attr.second);
-    //     (*cloud_event.mutable_attributes())[attr_key] = attr_val;
-    //     }  
-    // }
-
-    // // handle data
-    // std::string pubsub_data = binary_message -> data();
-    // if (!pubsub_data.empty()) {
-    //     cloud_event.set_binary_data(pubsub_data);
-    // }
-
-    // return cloud_event;
-    return absl::UnimplementedError("todo");
-}
-
-// __________ Bind ___________
-
-absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Binder<PubsubMessage>::BindBinary(CloudEvent cloud_event) {
-    // handle metadata
-        // check size constraints pubsub
-        // add ce prefix
-        // add to pubsub attributes
-
-    // handle data
-        // base64 encode (if not binary)
-        // place in pubsub data payload
-    return absl::UnimplementedError("todo");
-};
-
-absl::StatusOr<std::unique_ptr<google::protobuf::Message>> Binder<PubsubMessage>::BindStructured(StructuredCloudEvent structured_cloud_event) {
-    // PubsubMessage pubsub_msg;
+    std::string pubsub_data = pubsub_msg -> data();
+    if (!pubsub_data.empty()) {
+        cloud_event.set_binary_data(base64::base64_decode(pubsub_data));
+    }
     
-    // // set datacontent type
-    // absl::StatusOr<std::string> formattostr_successful = FormatToStr(structured_cloud_event.GetFormat());
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("Pubsub Message given does not contain a valid binary Cloud Event");
+    }
+    return cloud_event;
+}
 
-    // if (!formattostr_successful) {
-    //     return formattostr_successful.status();
-    // }
-    // (*pubsub_msg.mutable_attributes())[pubsub_content_key_] = ce_contenttype_prefix_ + *formattostr_successful;
+template <>
+absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* cloud_event) {
+    if (!CloudEventsUtil::IsValid(*cloud_event)) {
+        return absl::InvalidArgumentError("Cloud Event given is not valid.");
+    }
 
-    // // dump entire serialized in payload.
-    // pubsub_msg.set_data(structured_cloud_event.GetSerializedCloudEvent());
+    PubsubMessage pubsub_msg;
 
-    // // return unique pointer
-    // return std::unique_ptr<google::protobuf::Message>(&pubsub_msg);
-    return absl::UnimplementedError("todo");
-};
+    absl::StatusOr<CeAttrMap> attrs;
+    attrs = CloudEventsUtil::GetMetadata(*cloud_event);
+    if (!attrs.ok()) {
+        return attrs.status();
+    }
 
+    for (auto const& attr : (*attrs)) {
+        absl::StatusOr<std::string> val = CloudEventsUtil::StringifyCeType(attr.second);
+        if (!val.ok()) {
+            return val.status();
+        }
+        std::string key = kMetadataPrefix.data() + attr.first;
+        (*pubsub_msg.mutable_attributes())[key] = (*val);
+    }
+
+    std::string data;
+    switch (cloud_event -> data_oneof_case()) {
+        case CloudEvent::DataOneofCase::kBinaryData:
+            // cloud event spec uses base64 encoding for binary data as well 
+            data = cloud_event -> binary_data();
+            break;
+        case CloudEvent::DataOneofCase::kTextData:
+            data = base64::base64_encode(cloud_event -> text_data());
+            break;
+        case CloudEvent::DataOneofCase::kProtoData:
+            // TODO (#17): Handle CloudEvent Any in JsonFormatter
+            return absl::UnimplementedError("protobuf::Any not supported yet.");
+        case CloudEvent::DATA_ONEOF_NOT_SET:
+            break;
+    }
+
+    pubsub_msg.set_data(data);
+    return pubsub_msg;
+}
+
+template <>
+absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
+    PubsubMessage pubsub_msg;
+    
+    // set content type
+    std::string format_str;
+    format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
+
+    (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
+
+    // dump entire serialized in payload.
+    pubsub_msg.set_data(structured_ce -> serialization);
+
+    return pubsub_msg;
+}
 
 } // binding
-} // cloud_events
+} // cloudevents
