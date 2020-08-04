@@ -204,6 +204,19 @@ TEST(PubsubBinder, UnbindBinary_Data) {
     ASSERT_EQ((*ce).binary_data(), "test");
 }
 
+TEST(PubsubBinder, BindStructured_Json) {
+    StructuredCloudEvent sce;
+    sce.format = Format::kJson;
+    sce.serialization = "{test}";
+    Binder<PubsubMessage> binder;
+
+    absl::StatusOr<PubsubMessage> pubsub_msg; 
+    pubsub_msg = binder.BindStructured(&sce);
+
+    ASSERT_TRUE(pubsub_msg.ok());
+    ASSERT_EQ((*pubsub_msg).attributes().at("content-type"), "application/cloudevents+json");
+    ASSERT_EQ((*pubsub_msg).data(), "{test}");
+}
 
 } // binding
 } // cloudevents

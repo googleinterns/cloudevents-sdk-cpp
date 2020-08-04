@@ -101,10 +101,10 @@ class Binder {
         }
 
         // operations for Bind that need to be overriden
-        absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent cloud_event) {
+        absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent* cloud_event) {
             return absl::InternalError("Unimplemented operation");
         }
-        absl::StatusOr<Message> BindStructured(cloudevents::format::StructuredCloudEvent structured_cloud_event) {
+        absl::StatusOr<Message> BindStructured(cloudevents::format::StructuredCloudEvent* structured_ce) {
             return absl::InternalError("Unimplemented operation");
         }   
         
@@ -134,6 +134,16 @@ template <>
 absl::StatusOr<io::cloudevents::v1::CloudEvent> 
     Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
     google::pubsub::v1::PubsubMessage* pubsub_msg);
+
+// template <>
+// absl::StatusOr<google::pubsub::v1::PubsubMessage> 
+//     Binder<google::pubsub::v1::PubsubMessage>::BindBinary(
+//     io::cloudevents::v1::CloudEvent* cloud_event);
+
+template <>
+absl::StatusOr<google::pubsub::v1::PubsubMessage> 
+    Binder<google::pubsub::v1::PubsubMessage>::BindStructured(
+    cloudevents::format::StructuredCloudEvent* structured_ce);
 
 } // format
 } // cloudevents
