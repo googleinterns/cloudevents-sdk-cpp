@@ -135,10 +135,10 @@ absl::StatusOr<io::cloudevents::v1::CloudEvent>
     Binder<google::pubsub::v1::PubsubMessage>::UnbindBinary(
     google::pubsub::v1::PubsubMessage* pubsub_msg);
 
-// template <>
-// absl::StatusOr<google::pubsub::v1::PubsubMessage> 
-//     Binder<google::pubsub::v1::PubsubMessage>::BindBinary(
-//     io::cloudevents::v1::CloudEvent* cloud_event);
+template <>
+absl::StatusOr<google::pubsub::v1::PubsubMessage> 
+    Binder<google::pubsub::v1::PubsubMessage>::BindBinary(
+    io::cloudevents::v1::CloudEvent* cloud_event);
 
 template <>
 absl::StatusOr<google::pubsub::v1::PubsubMessage> 
