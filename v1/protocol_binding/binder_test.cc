@@ -204,6 +204,75 @@ TEST(PubsubBinder, UnbindBinary_Data) {
     ASSERT_EQ((*ce).binary_data(), "test");
 }
 
+TEST(PubsubBinder, BindBinary_Invalid) {
+    CloudEvent ce;
+    Binder<PubsubMessage> binder;
+    absl::StatusOr<PubsubMessage> pubsub_msg;
+
+    pubsub_msg = binder.BindBinary(&ce);
+
+    ASSERT_FALSE(pubsub_msg.ok());
+    ASSERT_TRUE(absl::IsInvalidArgument(pubsub_msg.status()));
+}
+
+TEST(PubsubBinder, BindBinary_NoData) {
+    Binder<PubsubMessage> binder;
+    absl::StatusOr<PubsubMessage> pubsub_msg;
+    CloudEvent ce;
+    ce.set_id("1");
+    ce.set_source("2");
+    ce.set_spec_version("3");
+    ce.set_type("4");
+
+    pubsub_msg = binder.BindBinary(&ce);
+
+    ASSERT_TRUE(pubsub_msg.ok());
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-id"), "1");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-source"), "2");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-spec_version"), "3");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-type"), "4");
+}
+
+TEST(PubsubBinder, BindBinary_BinaryData) {
+    Binder<PubsubMessage> binder;
+    absl::StatusOr<PubsubMessage> pubsub_msg;
+    CloudEvent ce;
+    ce.set_id("1");
+    ce.set_source("2");
+    ce.set_spec_version("3");
+    ce.set_type("4");
+    ce.set_binary_data("0101");
+
+    pubsub_msg = binder.BindBinary(&ce);
+
+    ASSERT_TRUE(pubsub_msg.ok());
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-id"), "1");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-source"), "2");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-spec_version"), "3");
+    ASSERT_EQ((*pubsub_msg).data(), "0101");
+}
+
+TEST(PubsubBinder, BindBinary_TextData) {
+    Binder<PubsubMessage> binder;
+    absl::StatusOr<PubsubMessage> pubsub_msg;
+    CloudEvent ce;
+    ce.set_id("1");
+    ce.set_source("2");
+    ce.set_spec_version("3");
+    ce.set_type("4");
+    ce.set_text_data("text data");
+
+    pubsub_msg = binder.BindBinary(&ce);
+
+    ASSERT_TRUE(pubsub_msg.ok());
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-id"), "1");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-source"), "2");
+    ASSERT_EQ((*pubsub_msg).attributes().at("ce-spec_version"), "3");
+    ASSERT_EQ((*pubsub_msg).data(), "dGV4dCBkYXRh");
+}
+
+
+
 TEST(PubsubBinder, BindStructured_Json) {
     StructuredCloudEvent sce;
     sce.format = Format::kJson;
