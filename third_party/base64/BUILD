@@ -7,6 +7,9 @@ cc_library(
         "base64.h",
         "os.h",
     ],
+    deps = [
+        "//third_party/statusor:statusor_lib",
+    ],
     visibility = ["//visibility:public"],
 )
 
