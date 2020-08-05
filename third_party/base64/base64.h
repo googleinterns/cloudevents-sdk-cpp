@@ -12,6 +12,7 @@
 #define BASE64_H
 
 #include "os.h"
+#include "third_party/statusor/statusor.h"
 
 #include <cstddef>
 #include <cstring>
@@ -19,8 +20,8 @@
 
 namespace base64 {
 
-std::string base64_encode(std::string str);
-std::string base64_decode(std::string str);
+absl::StatusOr<std::string> base64_encode(std::string str);
+absl::StatusOr<std::string> base64_decode(std::string str);
 
 } // base64
 
