@@ -17,7 +17,7 @@ TEST(Encode, Empty) {
    ASSERT_EQ((*encoded), "");
 }
 
-TEST(Encode, t0) {
+TEST(Encode, FillZero) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
@@ -27,7 +27,7 @@ TEST(Encode, t0) {
    ASSERT_EQ((*rest0_encoded), rest0_reference);
 }
 
-TEST(Encode, t1) {
+TEST(Encode, FillOne) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
@@ -37,7 +37,7 @@ TEST(Encode, t1) {
    ASSERT_EQ((*rest1_encoded), rest1_reference);
 }
 
-TEST(Encode, t2) {
+TEST(Encode, FillTwo) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
@@ -54,7 +54,7 @@ TEST(Decode, Empty) {
    ASSERT_EQ((*decoded), "");
 }
 
-TEST(Decode, t0) {
+TEST(Decode, FillZero) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
@@ -64,7 +64,7 @@ TEST(Decode, t0) {
    ASSERT_EQ((*rest0_decoded), rest0_original);
 }
 
-TEST(Decode, t1) {
+TEST(Decode, FillOne) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
@@ -74,7 +74,7 @@ TEST(Decode, t1) {
    ASSERT_EQ((*rest1_decoded), rest1_original);
 }
 
-TEST(Decode, t2) {
+TEST(Decode, FillTwo) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
