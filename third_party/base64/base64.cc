@@ -26,7 +26,7 @@ static const unsigned char base64_table[65] =
  * not included in out_len.
  */
 
-std::string base64_encode(std::string str) {
+absl::StatusOr<std::string> base64_encode(std::string str) {
 	unsigned char *out, *pos;
 	const unsigned char *end, *in;
 	std::size_t olen;
@@ -35,11 +35,14 @@ std::string base64_encode(std::string str) {
 	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	if (len == 0) { // handle empty str
+		return str;
+	}
 	// end
 
 	olen = (len +2) / 3 * 4;
 	if (olen < len)
-		return NULL; /* integer overflow */
+		return absl::InvalidArgumentError("Given string is too long to encode and has cause integer overflow."); /* integer overflow */
 
 
 	// adaptation to return str
@@ -47,9 +50,6 @@ std::string base64_encode(std::string str) {
     outStr.resize(olen);
     out = (unsigned char*)&outStr[0];
 	//
-
-	if (out == NULL)
-		return NULL;
 
 	end = src + len;
 	in = src;
@@ -101,7 +101,7 @@ std::string base64_encode(std::string str) {
  * Caller is responsible for freeing the returned buffer.
  */
 
-std::string base64_decode(std::string str) {
+absl::StatusOr<std::string> base64_decode(std::string str) {
 	unsigned char dtable[256], *out, *pos, block[4], tmp;
 	std::size_t i, count, olen;
 	int pad = 0;
@@ -109,6 +109,9 @@ std::string base64_decode(std::string str) {
 	// adaptation for str
 	unsigned char *src = (unsigned char*) str.c_str();
 	std::size_t len = str.length();
+	if (len == 0) { // handle empty str
+		return str;
+	}
 	// end
 
 
@@ -124,7 +127,7 @@ std::string base64_decode(std::string str) {
 	}
 
 	if (count == 0 || count % 4)
-		return NULL;
+		return absl::InvalidArgumentError("Given string is not a valid base64 encoding");
 
 	olen = count / 4 * 3;
 
@@ -133,9 +136,6 @@ std::string base64_decode(std::string str) {
     outStr.resize(olen);
     pos = out = (unsigned char*)&outStr[0];
 	//
-
-	if (out == NULL)
-		return NULL;
 
 	count = 0;
 	for (i = 0; i < len; i++) {
@@ -160,7 +160,7 @@ std::string base64_decode(std::string str) {
 				else {
 					/* Invalid padding */
 					os_free(out);
-					return NULL;
+					return absl::InvalidArgumentError("Given string has invalid padding");
 				}
 				break;
 			}
