@@ -24,6 +24,11 @@ Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.bui
 2. Run executable <br/>
 `bazel-bin/sample/create_event`
 
+# File Structure
+All logic related to implementing version 1 of the CloudEvent spec can be found in `//v1`.
+- All logic for [Protocol Binding](https://github.com/cloudevents/spec/blob/master/spec.md#protocol-binding)s can be found in the subfolder `//v1/protocol_binding`.
+- All logic for [Event Format](https://github.com/cloudevents/spec/blob/master/spec.md#event-format)s can be found in the subfolder `//v1/event_format`.
+
 # Dependencies
 ## Json
 Using [Nuxi NL's bazel setup] (https://github.com/NuxiNL/bazel-third-party) to setup a bazel target for jsoncpp
