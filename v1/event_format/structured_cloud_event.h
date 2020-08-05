@@ -11,7 +11,7 @@ namespace format {
  * according to an EventFormat spec.
  */
 struct StructuredCloudEvent {
-    // What EventFormat spec has been used to create this serialization
+    // The EventFormat spec used to create this serialization
     Format format;
 
     // The serialization of the CloudEvent
