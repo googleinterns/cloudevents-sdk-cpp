@@ -34,7 +34,8 @@ All logic related to implementing version 1 of the CloudEvent spec can be found 
 Using [Nuxi NL's bazel setup] (https://github.com/NuxiNL/bazel-third-party) to setup a bazel target for jsoncpp
 
 ## base64
-Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c) and René Nyffenegger's [base64 testing code](https://github.com/ReneNyffenegger/cpp-base64).
+Jouni Malinen's [base64 encoding/ decoding lib](http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c) and René Nyffenegger's [base64 testing code](https://github.com/ReneNyffenegger/cpp-base64). </br>
+*This library has been modified to function in C++ and accept/return std::string.*
 
 ## Abseil StatusOr
 Copying [Envoy's Abseil StatusOr setup](https://github.com/envoyproxy/envoy/tree/44eedc792ab64bba2358e0294b53294c6bc30526/third_party/statusor) temporarily until an official abseil release exists.
