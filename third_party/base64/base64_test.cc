@@ -9,8 +9,12 @@ namespace base64 {
 // Test all possibilites of fill bytes (none, one =, two ==)
 // References calculated with: https://www.base64encode.org/
 
-TEST(Encode, t0)
-{
+
+TEST(Encode, Empty) {
+   ASSERT_EQ(base64_encode(""), "");
+}
+
+TEST(Encode, t0) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
@@ -18,8 +22,8 @@ TEST(Encode, t0)
 
    ASSERT_EQ(rest0_encoded, rest0_reference);
 }
-TEST(Encode, t1)
-{
+
+TEST(Encode, t1) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
@@ -28,8 +32,7 @@ TEST(Encode, t1)
    ASSERT_EQ(rest1_encoded, rest1_reference);
 }
 
-TEST(Encode, t2)
-{
+TEST(Encode, t2) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
@@ -38,8 +41,11 @@ TEST(Encode, t2)
    ASSERT_EQ(rest2_encoded, rest2_reference);
 }
 
-TEST(Decode, t0)
-{
+TEST(Decode, Empty) {
+   ASSERT_EQ(base64_decode(""), "");
+}
+
+TEST(Decode, t0) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
@@ -48,8 +54,7 @@ TEST(Decode, t0)
    ASSERT_EQ(rest0_decoded, rest0_original);
 }
 
-TEST(Decode, t1)
-{
+TEST(Decode, t1) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
@@ -58,8 +63,7 @@ TEST(Decode, t1)
    ASSERT_EQ(rest1_decoded, rest1_original);
 }
 
-TEST(Decode, t2)
-{
+TEST(Decode, t2) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
