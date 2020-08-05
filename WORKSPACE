@@ -43,3 +43,12 @@ git_repository(
     commit = "703bd9caab50b139428cea1aaff9974ebee5742e",
     shallow_since = "1570114335 -0400",
 )
+
+git_repository(
+    name = "org_cloudabi_bazel_third_party",
+    commit = "91ca2167219c612a89334fa09ddf15fbdc5d0592",
+    remote = "https://github.com/NuxiNL/bazel-third-party.git",
+    shallow_since = "1547652202 +0100",
+)
+load("@org_cloudabi_bazel_third_party//:third_party.bzl", "third_party_repositories")
+third_party_repositories()
