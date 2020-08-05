@@ -4,7 +4,11 @@
 
 This SDK is still a work in progress.
 
-The Protobuf format is based on this [open pull request](https://github.com/JemDay/spec/tree/jd-proto) from JemDay.
+The CloudEvent class (generated from protobuf) is based on this [open PR to the CloudEvent spec](https://github.com/JemDay/spec/tree/jd-proto) from JemDay.
+<br/>
+
+The PubsubMessage class (generated from protobuf) is based on [Google API](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto#L188).
+
 
 **This is not an officially supported Google product.**
 
