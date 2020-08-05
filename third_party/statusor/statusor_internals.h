@@ -1,3 +1,6 @@
+#ifndef STATUSOR_INTERNALS_H
+#define STATUSOR_INTERNALS_H
+
 /**
  * IMPORTANT: this file is a fork of the soon to be open-source absl::StatusOr class.
  * When the absl::StatusOr lands this file will be removed.
@@ -242,3 +245,5 @@ template <> struct TraitsBase<false, false> {
 } // namespace internal_statusor
 
 } // namespace absl
+
+#endif
