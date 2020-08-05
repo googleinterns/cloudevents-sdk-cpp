@@ -88,5 +88,69 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
     return structured_ce;
 }
 
+absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent structured_cloud_event) {
+    // Validate that this is the right format to be handled by this object
+    if (structured_cloud_event.format != Format::kJson) {
+        return absl::InternalError(
+            "This structured cloud event is not JSON formatted and should not be handled by a Json Formatter.");
+    }
+
+    // Create a Json::Value from the serialization string
+    std::string serialization = structured_cloud_event.serialization;
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors;
+    Json::Value root;   
+
+    bool parsingSuccessful = reader->parse(
+        serialization.c_str(), 
+        serialization.c_str() + serialization.size(), 
+        &root, 
+        &errors);
+        
+    if (!parsingSuccessful) {
+        return absl::InvalidArgumentError(errors);
+    }
+
+
+    // check that serialization contains a valid CE
+    if (!root.isMember(kCeIdKey.data()) || 
+            !root.isMember(kCeSourceKey.data()) || 
+            !root.isMember(kCeSpecKey.data()) || 
+            !root.isMember(kCeTypeKey.data())) { // using isMember to avoid creating null member in JsonCpp
+        return absl::InvalidArgumentError(
+            "Provided input is missing required Cloud Event attributes.");
+    }
+
+    CloudEvent cloud_event;
+    
+    for (auto const& member : root.getMemberNames()) {
+        if (member == kCeIdKey.data()) {
+            cloud_event.set_id(root[member].asString());
+        } else if (member == kCeSourceKey.data()) {
+            cloud_event.set_source(root[member].asString());
+        } else if (member == kCeSpecKey.data()) {
+            cloud_event.set_spec_version(root[member].asString());
+        } else if (member == kCeTypeKey.data()) {
+            cloud_event.set_type(root[member].asString());
+        } else {
+            CloudEvent_CloudEventAttribute attr;
+            attr.set_ce_string(root[member].asString());
+            (*cloud_event.mutable_attributes())[member] = attr;
+        }
+    }
+
+    if (root.isMember(kJsonDataKey.data()) && root.isMember(kBinaryDataKey.data())) {
+        return absl::InvalidArgumentError(
+            "Provided input contains two data payloads and is an invalid serialization.");
+    } else if (root.isMember(kJsonDataKey.data())) {
+        cloud_event.set_text_data(root[kJsonDataKey.data()].asString());
+    } else if (root.isMember(kBinaryDataKey.data())) {
+        cloud_event.set_binary_data(root[kBinaryDataKey.data()].asString());
+    }
+
+    return cloud_event;
+}
+
 } // format
 } // cloudevents
