@@ -70,13 +70,13 @@ class Binder {
 
         // Create CloudEvent from given Message
         absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message& message) {
-            absl::StatusOr<bool> in_binary_content_mode; 
-            in_binary_content_mode = InBinaryContentMode(message);
-            if (!in_binary_content_mode.ok()) {
-                return in_binary_content_mode.status();
+            absl::StatusOr<bool> in_structured_content_mode; 
+            in_structured_content_mode = InStructuredContentMode(message);
+            if (!in_structured_content_mode.ok()) {
+                return in_structured_content_mode.status();
             }
 
-            if (*in_binary_content_mode) {
+            if (!*in_structured_content_mode) {
                 return UnbindBinary(message);
             }
 
@@ -86,6 +86,7 @@ class Binder {
             }
 
             absl::StatusOr<std::string> get_payload = GetPayload(message);
+
             if (!get_payload.ok()) {
                 return get_payload.status();
             }
@@ -99,6 +100,7 @@ class Binder {
             cloudevents::format::StructuredCloudEvent structured_cloud_event;
             structured_cloud_event.format = (*get_format);
             structured_cloud_event.serialization = (*get_payload);
+
             absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization = (*get_formatter) -> Deserialize(structured_cloud_event);
             if (!deserialization.ok()){
                 return deserialization.status();
