@@ -29,7 +29,7 @@ class Binder {
     // Unbind takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
     public:
         absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event) {
-            return absl::InternalError("Unimplemented operation");
+            return BindBinary(cloud_event);
         }
 
         absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
