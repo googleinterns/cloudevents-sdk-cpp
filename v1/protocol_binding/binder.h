@@ -27,6 +27,47 @@ class Binder {
 
     // Bind takes a CloudEvent [and Format], or StructuredCloudEvent as input, and creates a XMessage as ouput
     // Unbind takes an XMessage as input, and creates a CloudEvent or StructuredCloudEvent.
+    public:
+        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event) {
+            return absl::InternalError("Unimplemented operation");
+        }
+
+        absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
+            return absl::InternalError("Unimplemented operation");
+        }
+
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+
+
+    protected:
+        // operations for Unbind that need to be overriden
+        absl::StatusOr<bool> InStructuredContentMode(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<cloudevents::format::Format> GetFormat(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<std::string> GetPayload(Message* message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> UnbindBinary(Message* binary_message) {
+            return absl::InternalError("Unimplemented operation");
+        }
+
+        // operations for Bind that need to be overriden
+        absl::StatusOr<Message> BindBinary(io::cloudevents::v1::CloudEvent* cloud_event) {
+            return absl::InternalError("Unimplemented operation");
+        }
+        absl::StatusOr<Message> BindStructured(cloudevents::format::StructuredCloudEvent* structured_ce) {
+            return absl::InternalError("Unimplemented operation");
+        }   
+
+        // Constexpr keys used when binding/ unbinding Messages
+        static inline constexpr absl::string_view kMetadataPrefix = "ce-";
+        static inline constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
+        static inline constexpr absl::string_view kContenttypeKey = "datacontenttype";
 };
 
 } // format
