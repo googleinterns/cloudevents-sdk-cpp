@@ -17,18 +17,18 @@ typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> CeAttrM
 constexpr absl::string_view kPubsubContentKey = "content-type";
 
 template <>
-absl::StatusOr<bool> Binder<PubsubMessage>::InStructuredContentMode(PubsubMessage* pubsub_msg) {
+absl::StatusOr<bool> Binder<PubsubMessage>::InStructuredContentMode(PubsubMessage& pubsub_msg) {
     google::protobuf::Map<std::string,std::string> attrs;
-    attrs = pubsub_msg -> attributes();
+    attrs = pubsub_msg.attributes();
     auto ind = attrs.find(kPubsubContentKey.data());
     return (ind != attrs.end() && (ind -> second).rfind(kContenttypePrefix.data(), 0) == 0); 
 }
 
 template <>
-absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage* pubsub_msg) {
+absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage& pubsub_msg) {
     // makes assumption that message is in structured content mode
     google::protobuf::Map<std::string,std::string> attrs;
-    attrs = pubsub_msg -> attributes();
+    attrs = pubsub_msg.attributes();
     auto ind = attrs.find(kPubsubContentKey.data());
 
     std::string format_str = (ind -> second).erase(0,strlen(kContenttypePrefix.data()));
@@ -36,16 +36,16 @@ absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage* pubsub_ms
 }
 
 template <>
-absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage* pubsub_msg) {
+absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage& pubsub_msg) {
     // get payload and base64 decode
-    return base64::base64_decode(pubsub_msg -> data()); // no need to unpack due to matching return type
+    return base64::base64_decode(pubsub_msg.data()); // no need to unpack due to matching return type
 }
 
 template <>
-absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pubsub_msg) {
+absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage& pubsub_msg) {
     CloudEvent cloud_event;
 
-    for (auto const& attr : pubsub_msg -> attributes()) {
+    for (auto const& attr : pubsub_msg.attributes()) {
         std::string key;
         if (attr.first == kPubsubContentKey.data()) {
             key = kContenttypeKey.data();
@@ -56,7 +56,7 @@ absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pu
         CloudEventsUtil::SetMetadata(cloud_event,key, attr.second);
     }
 
-    std::string pubsub_data = pubsub_msg -> data();
+    std::string pubsub_data = pubsub_msg.data();
     if (!pubsub_data.empty()) {
         absl::StatusOr<std::string> decoded = base64::base64_decode(pubsub_data);
         if (!decoded.ok()) {
@@ -72,15 +72,15 @@ absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pu
 }
 
 template <>
-absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* cloud_event) {
-    if (!CloudEventsUtil::IsValid(*cloud_event)) {
+absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent& cloud_event) {
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
         return absl::InvalidArgumentError("Cloud Event given is not valid.");
     }
 
     PubsubMessage pubsub_msg;
 
     absl::StatusOr<CeAttrMap> attrs;
-    attrs = CloudEventsUtil::GetMetadata(*cloud_event);
+    attrs = CloudEventsUtil::GetMetadata(cloud_event);
     if (!attrs.ok()) {
         return attrs.status();
     }
@@ -95,15 +95,15 @@ absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* clou
     }
 
     std::string data;
-    switch (cloud_event -> data_oneof_case()) {
+    switch (cloud_event.data_oneof_case()) {
         case CloudEvent::DataOneofCase::kBinaryData: {
             // cloud event spec uses base64 encoding for binary data as well 
-            data = cloud_event -> binary_data();
+            data = cloud_event.binary_data();
             break;
         }
         case CloudEvent::DataOneofCase::kTextData: {
             absl::StatusOr<std::string> encoded;  // curly braces to prevent cross init
-            encoded = base64::base64_encode(cloud_event -> text_data());
+            encoded = base64::base64_encode(cloud_event.text_data());
             if (!encoded.ok()) {
                 return encoded.status();
             }
@@ -123,20 +123,50 @@ absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* clou
     return pubsub_msg;
 }
 
-template <>
-absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
-    PubsubMessage pubsub_msg;
+// template <>
+// absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
+//     PubsubMessage pubsub_msg;
     
-    // set content type
-    std::string format_str;
-    format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
+//     // set content type
+//     std::string format_str;
+//     format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
 
-    (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
+//     (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
 
-    // dump entire serialized in payload.
-    pubsub_msg.set_data(structured_ce -> serialization);
+//     // dump entire serialized in payload.
+//     pubsub_msg.set_data(structured_ce -> serialization);
 
-    return pubsub_msg;
+//     return pubsub_msg;
+// }
+
+// template <>
+// void Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
+//     PubsubMessage pubsub_msg;
+    
+//     // set content type
+//     std::string format_str;
+//     format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
+
+//     (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
+
+//     // dump entire serialized in payload.
+//     pubsub_msg.set_data(structured_ce -> serialization);
+
+//     return pubsub_msg;
+// }
+
+template <>
+absl::Status Binder<PubsubMessage>::SetContentType(
+        PubsubMessage& pubsub_msg, std::string contenttype) {
+    (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = contenttype;
+    return absl::Status();
+}
+
+template <>
+absl::Status Binder<PubsubMessage>::SetPayload(
+        PubsubMessage& pubsub_msg, std::string payload) {
+    pubsub_msg.set_data(payload);
+    return absl::Status();
 }
 
 } // binding
