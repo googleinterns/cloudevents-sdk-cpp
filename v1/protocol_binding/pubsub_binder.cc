@@ -53,7 +53,7 @@ absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pu
             size_t len_prefix = strlen(kMetadataPrefix.data());
             key= attr.first.substr(len_prefix, std::string::npos);
         }
-        CloudEventsUtil::SetMetadata(&cloud_event,key, attr.second);
+        CloudEventsUtil::SetMetadata(cloud_event,key, attr.second);
     }
 
     std::string pubsub_data = pubsub_msg -> data();
@@ -96,23 +96,27 @@ absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* clou
 
     std::string data;
     switch (cloud_event -> data_oneof_case()) {
-        case CloudEvent::DataOneofCase::kBinaryData:
+        case CloudEvent::DataOneofCase::kBinaryData: {
             // cloud event spec uses base64 encoding for binary data as well 
             data = cloud_event -> binary_data();
             break;
-        case CloudEvent::DataOneofCase::kTextData:
-            absl::StatusOr<std::string> encoded;
+        }
+        case CloudEvent::DataOneofCase::kTextData: {
+            absl::StatusOr<std::string> encoded;  // curly braces to prevent cross init
             encoded = base64::base64_encode(cloud_event -> text_data());
             if (!encoded.ok()) {
                 return encoded.status();
             }
             data = (*encoded);
             break;
-        case CloudEvent::DataOneofCase::kProtoData:
+        }
+        case CloudEvent::DataOneofCase::kProtoData: {
             // TODO (#17): Handle CloudEvent Any in JsonFormatter
             return absl::UnimplementedError("protobuf::Any not supported yet.");
-        case CloudEvent::DATA_ONEOF_NOT_SET:
+        }
+        case CloudEvent::DATA_ONEOF_NOT_SET: {
             break;
+        }
     }
 
     pubsub_msg.set_data(data);
