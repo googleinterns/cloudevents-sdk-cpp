@@ -1,28 +1,38 @@
-/*
- * Base64 encoding/decoding (RFC1341)
- * Copyright (c) 2005, Jouni Malinen <j@w1.fi>
- *
- * This software may be distributed under the terms of the BSD license.
- * See README for more details.
- *
- * EDITTED to accomodate std::string
- */
+//
+//  base64 encoding and decoding with C++.
+//  Version: 2.rc.04 (release candidate)
+//
 
-#ifndef BASE64_H
-#define BASE64_H
+#ifndef BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A
+#define BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A
 
-#include "os.h"
-#include "third_party/statusor/statusor.h"
-
-#include <cstddef>
-#include <cstring>
 #include <string>
 
 namespace base64 {
 
-absl::StatusOr<std::string> base64_encode(std::string str);
-absl::StatusOr<std::string> base64_decode(std::string str);
+#if __cplusplus >= 201703L
+#include <string_view>
+#endif  // __cplusplus >= 201703L
 
-} // base64
+std::string base64_encode     (std::string const& s, bool url = false);
+std::string base64_encode_pem (std::string const& s);
+std::string base64_encode_mime(std::string const& s);
 
-#endif /* BASE64_H */
+std::string base64_decode(std::string const& s, bool remove_linebreaks = false);
+std::string base64_encode(unsigned char const*, size_t len, bool url = false);
+
+#if __cplusplus >= 201703L
+//
+// Interface with std::string_view rather than const std::string&
+// Requires C++17
+// Provided by Yannic Bonenberger (https://github.com/Yannic)
+//
+std::string base64_encode     (std::string_view s, bool url = false);
+std::string base64_encode_pem (std::string_view s);
+std::string base64_encode_mime(std::string_view s);
+
+std::string base64_decode(std::string_view s, bool remove_linebreaks = false);
+#endif  // __cplusplus >= 201703L
+}
+
+#endif /* BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A */
