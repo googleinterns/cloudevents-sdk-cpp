@@ -124,7 +124,7 @@ TEST(CloudEventsUtilTest, GetMetadata_TwoOptional) {
 TEST(CloudEventsUtilTest, SetMetadata_Id) {
     CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata(&cloud_event, "id", "1");
+    CloudEventsUtil::SetMetadata(cloud_event, "id", "1");
 
     ASSERT_EQ(cloud_event.id(), "1");
 }
@@ -132,7 +132,7 @@ TEST(CloudEventsUtilTest, SetMetadata_Id) {
 TEST(CloudEventsUtilTest, SetMetadata_Source) {
     CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata(&cloud_event, "source", "/a_source");
+    CloudEventsUtil::SetMetadata(cloud_event, "source", "/a_source");
 
     ASSERT_EQ(cloud_event.source(), "/a_source");
 }
@@ -140,7 +140,7 @@ TEST(CloudEventsUtilTest, SetMetadata_Source) {
 TEST(CloudEventsUtilTest, SetMetadata_SpecVersion) {
     CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata(&cloud_event, "spec_version", "1.xx");
+    CloudEventsUtil::SetMetadata(cloud_event, "spec_version", "1.xx");
 
     ASSERT_EQ(cloud_event.spec_version(), "1.xx");
 }
@@ -148,7 +148,7 @@ TEST(CloudEventsUtilTest, SetMetadata_SpecVersion) {
 TEST(CloudEventsUtilTest, SetMetadata_Type) {
     CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata(&cloud_event, "type", "test");
+    CloudEventsUtil::SetMetadata(cloud_event, "type", "test");
 
     ASSERT_EQ(cloud_event.type(), "test");
 }
@@ -156,7 +156,7 @@ TEST(CloudEventsUtilTest, SetMetadata_Type) {
 TEST(CloudEventsUtilTest, SetMetadata_Optional) {
     CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata(&cloud_event, "opt", "arbitrary");
+    CloudEventsUtil::SetMetadata(cloud_event, "opt", "arbitrary");
 
     CloudEvent_CloudEventAttribute attr = cloud_event.attributes().at("opt");
     ASSERT_EQ(attr.ce_string(), "arbitrary");
