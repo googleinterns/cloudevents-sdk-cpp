@@ -79,6 +79,7 @@ absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(CloudEvent_CloudEve
         case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
             return absl::InvalidArgumentError("Cloud Event metadata attribute not set.");
     }
+    return absl::InternalError("A CE type is not handled in StringifyCeType.");
 }
 
 } // util
