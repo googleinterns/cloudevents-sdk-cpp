@@ -38,7 +38,7 @@ absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage* pubsub_ms
 template <>
 absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage* pubsub_msg) {
     // get payload and base64 decode
-    return base64::base64_decode(pubsub_msg -> data());
+    return base64::base64_decode(pubsub_msg -> data()); // no need to unpack due to matching return type
 }
 
 template <>
@@ -58,7 +58,11 @@ absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage* pu
 
     std::string pubsub_data = pubsub_msg -> data();
     if (!pubsub_data.empty()) {
-        cloud_event.set_binary_data(base64::base64_decode(pubsub_data));
+        absl::StatusOr<std::string> decoded = base64::base64_decode(pubsub_data);
+        if (!decoded.ok()) {
+            return decoded.status();
+        }
+        cloud_event.set_binary_data((*decoded));
     }
     
     if (!CloudEventsUtil::IsValid(cloud_event)) {
@@ -97,7 +101,12 @@ absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent* clou
             data = cloud_event -> binary_data();
             break;
         case CloudEvent::DataOneofCase::kTextData:
-            data = base64::base64_encode(cloud_event -> text_data());
+            absl::StatusOr<std::string> encoded;
+            encoded = base64::base64_encode(cloud_event -> text_data());
+            if (!encoded.ok()) {
+                return encoded.status();
+            }
+            data = (*encoded);
             break;
         case CloudEvent::DataOneofCase::kProtoData:
             // TODO (#17): Handle CloudEvent Any in JsonFormatter
