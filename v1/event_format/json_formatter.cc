@@ -21,7 +21,8 @@ static constexpr absl::string_view kCeTypeKey = "type";
 static constexpr absl::string_view kBinaryDataKey = "data_base64";
 static constexpr absl::string_view kJsonDataKey = "data";
 
-absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttribute attr){    
+absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
+        const CloudEvent_CloudEventAttribute& attr){    
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
             return Json::Value(attr.ce_boolean());
@@ -43,7 +44,8 @@ absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(CloudEvent_CloudEventAttr
     return absl::InternalError("A Cloud Event attribute has not been handled.");
 }
 
-absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_event) {
+absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(
+        const CloudEvent& cloud_event) {
     // validate CloudEvent by ensuring all required metadata is present
     if (cloud_event.id().empty() || 
             cloud_event.source().empty() || 
@@ -88,15 +90,16 @@ absl::StatusOr<StructuredCloudEvent> JsonFormatter::Serialize(CloudEvent cloud_e
     return structured_ce;
 }
 
-absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(StructuredCloudEvent structured_cloud_event) {
+absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
+        const StructuredCloudEvent& structured_ce) {
     // Validate that this is the right format to be handled by this object
-    if (structured_cloud_event.format != Format::kJson) {
+    if (structured_ce.format != Format::kJson) {
         return absl::InternalError(
             "This structured cloud event is not JSON formatted and should not be handled by a Json Formatter.");
     }
 
     // Create a Json::Value from the serialization string
-    std::string serialization = structured_cloud_event.serialization;
+    std::string serialization = structured_ce.serialization;
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
     std::string errors;

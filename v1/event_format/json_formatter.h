@@ -17,15 +17,18 @@ namespace format {
 class JsonFormatter: public Formatter {
     public: 
         // Create Json-formatted serialization from CloudEvent
-        absl::StatusOr<StructuredCloudEvent> Serialize(io::cloudevents::v1::CloudEvent cloud_event) override;
+        absl::StatusOr<StructuredCloudEvent> Serialize(
+            const io::cloudevents::v1::CloudEvent& cloud_event) override;
 
         // Create CloudEvent from Json-formatted serialization
-        absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(StructuredCloudEvent) override;
+        absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
+            const StructuredCloudEvent& structured_ce) override;
 
     private:
         // Convert from CE to JSON Type System according to https://github.com/cloudevents/spec/blob/master/json-format.md#22-type-system-mapping
         // Relies mostly on the overloaded constructor for Json::Value in jsoncpp
-        absl::StatusOr<Json::Value> PrintToJson(io::cloudevents::v1::CloudEvent_CloudEventAttribute attr);
+        absl::StatusOr<Json::Value> PrintToJson(
+            const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
 };
 
 } // format
