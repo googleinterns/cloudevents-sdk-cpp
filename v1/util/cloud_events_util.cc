@@ -8,7 +8,7 @@ namespace cloudevents_util {
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 
-bool CloudEventsUtil::IsValid(CloudEvent& cloud_event) {
+bool CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
     return !(cloud_event.id().empty() || 
         cloud_event.source().empty() || 
         cloud_event.spec_version().empty() ||
@@ -17,7 +17,7 @@ bool CloudEventsUtil::IsValid(CloudEvent& cloud_event) {
 
 absl::StatusOr<
         absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>> 
-        CloudEventsUtil::GetMetadata(CloudEvent& cloud_event) {
+        CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
     if (!CloudEventsUtil::IsValid(cloud_event)) {
         return absl::InvalidArgumentError("GetMetadata can only be called with valid Cloud Event.");
     }
@@ -60,7 +60,7 @@ void CloudEventsUtil::SetMetadata(CloudEvent& cloud_event,
 }
 
 
-absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(CloudEvent_CloudEventAttribute& attr){
+absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(const CloudEvent_CloudEventAttribute& attr){
     switch (attr.attr_oneof_case()) {
         case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
             return std::string(attr.ce_boolean() ? "true" : "false");  // StatusOr requires explicit conversion
