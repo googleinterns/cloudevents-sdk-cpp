@@ -33,7 +33,17 @@ class Binder {
         }
 
         absl::StatusOr<Message> Bind(io::cloudevents::v1::CloudEvent cloud_event, cloudevents::format::Format format) {
-            return absl::InternalError("Unimplemented operation");
+            absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
+            get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(format);
+            if (!get_formatter.ok()) {
+                return get_formatter.status();
+            }
+            absl::StatusOr<cloudevents::format::StructuredCloudEvent> serialization;
+            serialization = (*get_formatter) -> Serialize(cloud_event);
+            if (!serialization.ok()) {
+                return serialization.status();
+            }
+            return BindStructured(*serialization);
         }
 
         absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message* message) {
