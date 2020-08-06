@@ -55,9 +55,16 @@ class Binder {
             std::string contenttype = kContenttypePrefix.data();
             contenttype += cloudevents::formatter_util::FormatterUtil::StringifyFormat(
                 (*serialization).format);
-            SetContentType(msg, contenttype);
-            SetPayload(msg, (*serialization).serialization);
+            absl::Status set_contenttype = SetContentType(msg, contenttype);
+            if (!set_contenttype.ok()) {
+                return set_contenttype;
+            }
 
+            absl::Status set_payload = SetPayload(msg, (*serialization).serialization);
+            if (!set_payload.ok()) {
+                return set_payload;
+            }
+        
             return msg;
         }
 
