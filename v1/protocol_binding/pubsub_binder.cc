@@ -71,7 +71,12 @@ absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage& pu
     return cloud_event;
 }
 
-
+template <>
+absl::Status Binder<PubsubMessage>::SetContentType(
+        PubsubMessage& pubsub_msg, std::string contenttype) {
+    (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = contenttype;
+    return absl::Status();
+}
 
 } // binding
 } // cloudevents
