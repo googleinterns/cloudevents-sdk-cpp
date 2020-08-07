@@ -78,5 +78,12 @@ absl::Status Binder<PubsubMessage>::SetContentType(
     return absl::Status();
 }
 
+template <>
+absl::Status Binder<PubsubMessage>::SetPayload(
+        PubsubMessage& pubsub_msg, std::string payload) {
+    pubsub_msg.set_data(payload);
+    return absl::Status();
+}
+
 } // binding
 } // cloudevents
