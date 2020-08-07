@@ -30,12 +30,36 @@ cc_library(
     ],
 )
 
-
 cc_test(
    name = "pubsub_binder_test",
    srcs = ["pubsub_binder_test.cc"],
    deps = [
        ":pubsub_binder_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)
+
+cc_library(
+    name = "http_binder_lib",
+    srcs = [
+        "http_binder.cc"
+    ],
+    hdrs = [
+        "http_binder.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@boost//:beast",
+        ":binder_lib",
+    ],
+)
+
+cc_test(
+   name = "http_binder_test",
+   srcs = ["http_binder_test.cc"],
+   deps = [
+       ":http_binder_lib",
        "@gtest//:gtest",
        "@gtest//:gtest_main"
    ],
