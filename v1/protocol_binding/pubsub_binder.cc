@@ -24,6 +24,17 @@ absl::StatusOr<bool> Binder<PubsubMessage>::InStructuredContentMode(PubsubMessag
     return (ind != attrs.end() && (ind -> second).rfind(kContenttypePrefix.data(), 0) == 0); 
 }
 
+template <>
+absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage& pubsub_msg) {
+    // makes assumption that message is in structured content mode
+    google::protobuf::Map<std::string,std::string> attrs;
+    attrs = pubsub_msg.attributes();
+    auto ind = attrs.find(kPubsubContentKey.data());
+
+    std::string format_str = (ind -> second).erase(0,strlen(kContenttypePrefix.data()));
+    return FormatterUtil::DestringifyFormat(format_str);
+}
+
 
 } // binding
 } // cloudevents
