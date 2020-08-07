@@ -35,6 +35,11 @@ absl::StatusOr<Format> Binder<PubsubMessage>::GetFormat(PubsubMessage& pubsub_ms
     return FormatterUtil::DestringifyFormat(format_str);
 }
 
+template <>
+absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage& pubsub_msg) {
+    // get payload and base64 decode
+    return base64::base64_decode(pubsub_msg.data()); // no need to unpack due to matching return type
+}
 
 } // binding
 } // cloudevents
