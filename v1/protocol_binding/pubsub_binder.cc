@@ -123,38 +123,6 @@ absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindBinary(CloudEvent& clou
     return pubsub_msg;
 }
 
-// template <>
-// absl::StatusOr<PubsubMessage> Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
-//     PubsubMessage pubsub_msg;
-    
-//     // set content type
-//     std::string format_str;
-//     format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
-
-//     (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
-
-//     // dump entire serialized in payload.
-//     pubsub_msg.set_data(structured_ce -> serialization);
-
-//     return pubsub_msg;
-// }
-
-// template <>
-// void Binder<PubsubMessage>::BindStructured(StructuredCloudEvent* structured_ce) {
-//     PubsubMessage pubsub_msg;
-    
-//     // set content type
-//     std::string format_str;
-//     format_str = FormatterUtil::StringifyFormat(structured_ce -> format);
-
-//     (*pubsub_msg.mutable_attributes())[kPubsubContentKey.data()] = kContenttypePrefix.data() + format_str;
-
-//     // dump entire serialized in payload.
-//     pubsub_msg.set_data(structured_ce -> serialization);
-
-//     return pubsub_msg;
-// }
-
 template <>
 absl::Status Binder<PubsubMessage>::SetContentType(
         PubsubMessage& pubsub_msg, std::string contenttype) {
