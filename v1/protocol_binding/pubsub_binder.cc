@@ -41,5 +41,37 @@ absl::StatusOr<std::string> Binder<PubsubMessage>::GetPayload(PubsubMessage& pub
     return base64::base64_decode(pubsub_msg.data()); // no need to unpack due to matching return type
 }
 
+template <>
+absl::StatusOr<CloudEvent> Binder<PubsubMessage>::UnbindBinary(PubsubMessage& pubsub_msg) {
+    CloudEvent cloud_event;
+
+    for (auto const& attr : pubsub_msg.attributes()) {
+        std::string key;
+        if (attr.first == kPubsubContentKey.data()) {
+            key = kContenttypeKey.data();
+        } else if (attr.first.rfind(kMetadataPrefix.data(), 0) == 0){
+            size_t len_prefix = strlen(kMetadataPrefix.data());
+            key= attr.first.substr(len_prefix, std::string::npos);
+        }
+        CloudEventsUtil::SetMetadata(cloud_event,key, attr.second);
+    }
+
+    std::string pubsub_data = pubsub_msg.data();
+    if (!pubsub_data.empty()) {
+        absl::StatusOr<std::string> decoded = base64::base64_decode(pubsub_data);
+        if (!decoded.ok()) {
+            return decoded.status();
+        }
+        cloud_event.set_binary_data((*decoded));
+    }
+    
+    if (!CloudEventsUtil::IsValid(cloud_event)) {
+        return absl::InvalidArgumentError("Pubsub Message given does not contain a valid binary Cloud Event");
+    }
+    return cloud_event;
+}
+
+
+
 } // binding
 } // cloudevents
