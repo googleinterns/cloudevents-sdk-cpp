@@ -44,6 +44,7 @@ class Binder {
             if (!get_formatter.ok()) {
                 return get_formatter.status();
             }
+            
             absl::StatusOr<cloudevents::format::StructuredCloudEvent> serialization;
             serialization = (*get_formatter) -> Serialize(cloud_event);
             if (!serialization.ok()) {
@@ -54,6 +55,7 @@ class Binder {
             std::string contenttype = kContenttypePrefix.data();
             contenttype += cloudevents::formatter_util::FormatterUtil::StringifyFormat(
                 (*serialization).format);
+
             absl::Status set_contenttype = SetContentType(msg, contenttype);
             if (!set_contenttype.ok()) {
                 return set_contenttype;
@@ -69,19 +71,23 @@ class Binder {
 
         // Create CloudEvent from given Message
         absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(Message& message) {
-            absl::StatusOr<bool> in_structured_content_mode; 
-            in_structured_content_mode = InStructuredContentMode(message);
-            if (!in_structured_content_mode.ok()) {
-                return in_structured_content_mode.status();
+            absl::StatusOr<std::string> contenttype = GetContentType(message);
+            if (!contenttype.ok()) {
+                return contenttype.status();
             }
-
-            if (!*in_structured_content_mode) {
+            if ((*contenttype).empty() || 
+                    (*contenttype).rfind(kContenttypePrefix.data(), 0) != 0) {
                 return UnbindBinary(message);
             }
 
-            absl::StatusOr<cloudevents::format::Format> get_format = GetFormat(message);
-            if (!get_format.ok()) {
-                return get_format.status();
+            std::string format_str = (*contenttype).erase(
+                0, strlen(kContenttypePrefix.data()));
+
+            absl::StatusOr<cloudevents::format::Format> format;
+            format = cloudevents::formatter_util::
+                FormatterUtil::DestringifyFormat(format_str);
+            if (!format.ok()){
+                return format.status();
             }
 
             absl::StatusOr<std::string> get_payload = GetPayload(message);
@@ -91,13 +97,13 @@ class Binder {
             }
 
             absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>> get_formatter;
-            get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(*get_format);
+            get_formatter = cloudevents::formatter_util::FormatterUtil::GetFormatter(*format);
             if (!get_formatter.ok()) {
                 return get_formatter.status();
             }
 
             cloudevents::format::StructuredCloudEvent structured_cloud_event;
-            structured_cloud_event.format = (*get_format);
+            structured_cloud_event.format = (*format);
             structured_cloud_event.serialization = (*get_payload);
 
             absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization = (*get_formatter) -> Deserialize(structured_cloud_event);
@@ -110,16 +116,8 @@ class Binder {
 
     // The following operations are protocol-specific and
     // will be overriden for each supported ProtocolBinding
-    // protected:
-        // _____ Operations used in Unbind _____
-
-        absl::StatusOr<bool> InStructuredContentMode(Message& message) {
-            return absl::InternalError("Unimplemented operation");
-        }
-
-        absl::StatusOr<cloudevents::format::Format> GetFormat(Message& message) {
-            return absl::InternalError("Unimplemented operation");
-        }
+    protected:
+        absl::StatusOr<std::string> GetContentType(Message& message);
         
         absl::StatusOr<std::string> GetPayload(Message& message) {
             return absl::InternalError("Unimplemented operation");
