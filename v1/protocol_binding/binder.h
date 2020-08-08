@@ -27,7 +27,6 @@ namespace binding {
  * Bind() will marhsal a CloudEvent to a protocol-specific Message.
  * Unbind() will marshal a protocol-specific message to a CloudEvent.
  * To create a StructuredContentMode Message, pass a EventFormat parameter to Bind().
-
  * Code samples available in README.md.
  */
 template <class Message>
@@ -146,7 +145,7 @@ class Binder {
             return absl::InternalError("Unimplemented operation");
         }
 
-        // Constexpr keys used when binding/ unbinding Messages
+        // Constexpr keys used accross ProtocolBindings
         static inline constexpr absl::string_view kMetadataPrefix = "ce-";
         static inline constexpr absl::string_view kContenttypePrefix = "application/cloudevents+";
         static inline constexpr absl::string_view kContenttypeKey = "datacontenttype";
