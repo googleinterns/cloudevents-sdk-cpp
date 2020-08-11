@@ -14,10 +14,10 @@ class CloudEventsUtil {
         // validate if given CloudEvent fulfills requirements to be valid
         static bool IsValid(const io::cloudevents::v1::CloudEvent& cloud_event);
 
-        // // get metadata from CloudEvent in a single map
-        // static absl::StatusOr<absl::flat_hash_map<
-        //     std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
-        //     GetMetadata(const io::cloudevents::v1::CloudEvent& cloud_event);
+        // get metadata from CloudEvent in a single map
+        static absl::StatusOr<absl::flat_hash_map<
+            std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
+            GetMetadata(const io::cloudevents::v1::CloudEvent& cloud_event);
 
         // // TODO (#44): Overload SetMetadata to accept a map of attributes
 
