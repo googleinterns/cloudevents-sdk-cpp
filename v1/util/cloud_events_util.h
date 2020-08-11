@@ -19,11 +19,11 @@ class CloudEventsUtil {
             std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
             GetMetadata(const io::cloudevents::v1::CloudEvent& cloud_event);
 
-        // // TODO (#44): Overload SetMetadata to accept a map of attributes
+        // TODO (#44): Overload SetMetadata to accept a map of attributes
 
-        // // set metadata without dealing with CloudEvent proto structure
-        // static void SetMetadata(const std::string& key, const std::string& val,
-        //     io::cloudevents::v1::CloudEvent& cloud_event);
+        // set metadata without dealing with CloudEvent proto structure
+        static void SetMetadata(const std::string& key, const std::string& val,
+            io::cloudevents::v1::CloudEvent& cloud_event);
 
         // // convert CloudEvent attributes to canonical string representaiton
         // // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
