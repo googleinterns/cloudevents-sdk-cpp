@@ -11,77 +11,69 @@ namespace base64 {
 
 
 TEST(Encode, Empty) {
-   absl::StatusOr<std::string> encoded = base64_encode(""); 
+   std::string encoded = base64_encode(""); 
 
-   ASSERT_TRUE(encoded.ok());
-   ASSERT_EQ((*encoded), "");
+   ASSERT_EQ(encoded, "");
 }
 
 TEST(Encode, FillZero) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
-   absl::StatusOr<std::string> rest0_encoded = base64_encode(rest0_original);
+   std::string rest0_encoded = base64_encode(rest0_original);
 
-   ASSERT_TRUE(rest0_encoded.ok());
-   ASSERT_EQ((*rest0_encoded), rest0_reference);
+   ASSERT_EQ(rest0_encoded, rest0_reference);
 }
 
 TEST(Encode, FillOne) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
-   absl::StatusOr<std::string> rest1_encoded = base64_encode(rest1_original);
+   std::string rest1_encoded = base64_encode(rest1_original);
 
-   ASSERT_TRUE(rest1_encoded.ok());
-   ASSERT_EQ((*rest1_encoded), rest1_reference);
+   ASSERT_EQ(rest1_encoded, rest1_reference);
 }
 
 TEST(Encode, FillTwo) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
-   absl::StatusOr<std::string> rest2_encoded = base64_encode(rest2_original);
+   std::string rest2_encoded = base64_encode(rest2_original);
 
-   ASSERT_TRUE(rest2_encoded.ok());
-   ASSERT_EQ((*rest2_encoded), rest2_reference);
+   ASSERT_EQ(rest2_encoded, rest2_reference);
 }
 
 TEST(Decode, Empty) {
-   absl::StatusOr<std::string> decoded = base64_decode(""); 
+   std::string decoded = base64_decode(""); 
 
-   ASSERT_TRUE(decoded.ok());
-   ASSERT_EQ((*decoded), "");
+   ASSERT_EQ(decoded, "");
 }
 
 TEST(Decode, FillZero) {
    std::string rest0_original = "abc";
    std::string rest0_reference = "YWJj";
 
-   absl::StatusOr<std::string> rest0_decoded = base64_decode(rest0_reference);
+   std::string rest0_decoded = base64_decode(rest0_reference);
 
-   ASSERT_TRUE(rest0_decoded.ok());
-   ASSERT_EQ((*rest0_decoded), rest0_original);
+   ASSERT_EQ(rest0_decoded, rest0_original);
 }
 
 TEST(Decode, FillOne) {
    std::string rest1_original = "abcd";
    std::string rest1_reference = "YWJjZA==";
 
-   absl::StatusOr<std::string> rest1_decoded = base64_decode(rest1_reference);
+   std::string rest1_decoded = base64_decode(rest1_reference);
 
-   ASSERT_TRUE(rest1_decoded.ok());
-   ASSERT_EQ((*rest1_decoded), rest1_original);
+   ASSERT_EQ(rest1_decoded, rest1_original);
 }
 
 TEST(Decode, FillTwo) {
    std::string rest2_original = "abcde";
    std::string rest2_reference = "YWJjZGU=";
 
-   absl::StatusOr<std::string> rest2_decoded = base64_decode(rest2_reference);
+   std::string rest2_decoded = base64_decode(rest2_reference);
 
-   ASSERT_TRUE(rest2_decoded.ok());
-   ASSERT_EQ((*rest2_decoded), rest2_original);
+   ASSERT_EQ(rest2_decoded, rest2_original);
 }
 
 
