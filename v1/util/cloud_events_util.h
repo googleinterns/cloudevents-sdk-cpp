@@ -25,10 +25,10 @@ class CloudEventsUtil {
         static void SetMetadata(const std::string& key, const std::string& val,
             io::cloudevents::v1::CloudEvent& cloud_event);
 
-        // // convert CloudEvent attributes to canonical string representaiton
-        // // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
-        // static absl::StatusOr<std::string> StringifyCeType(
-        //     const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
+        // convert CloudEvent attributes to canonical string representaiton
+        // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
+        static absl::StatusOr<std::string> StringifyCeType(
+            const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
 };
 
 }  // namespace cloudevents_util
