@@ -123,5 +123,29 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
   return cloud_event;
 }
 
+absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
+    const CloudEvent_CloudEventAttribute& attr){
+  switch (attr.attr_oneof_case()) {
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
+      return Json::Value(attr.ce_boolean());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
+      return Json::Value(attr.ce_integer());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
+      return Json::Value(attr.ce_string());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
+      return Json::Value(attr.ce_binary());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
+      return Json::Value(attr.ce_uri());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
+      return Json::Value(attr.ce_uri_reference());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
+      return Json::Value(TimeUtil::ToString(attr.ce_timestamp()));
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
+      return absl::InvalidArgumentError(
+        "Cloud Event metadata attribute not set.");
+  }
+  return absl::InternalError("A Cloud Event attribute was not handled.");
+}
+
 }  // namespace format
 }  // namespace cloudevents

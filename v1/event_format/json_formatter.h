@@ -25,11 +25,11 @@ class JsonFormatter: public Formatter {
     const StructuredCloudEvent& structured_ce) override;
 
  private:
-//   // Convert from CE to JSON Type System according to
-//   // Relies on the overloaded constructor for Json::Value in jsoncpp
-//   // https://github.com/cloudevents/spec/blob/master/json-format.md#22-type-system-mapping
-//   absl::StatusOr<Json::Value> PrintToJson(
-//     const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
+  // Convert from CE to JSON Type System according to
+  // Relies on the overloaded constructor for Json::Value in jsoncpp
+  // https://github.com/cloudevents/spec/blob/master/json-format.md#22-type-system-mapping
+  absl::StatusOr<Json::Value> PrintToJson(
+    const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
 };
 
 }  // namespace format
