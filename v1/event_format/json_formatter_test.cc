@@ -20,8 +20,8 @@ TEST(Serialize, NoData) {
 
   ASSERT_TRUE(serialize.ok());
   // dereference twice to unwrap StatusOr and unique_ptr
-  ASSERT_EQ((*(*serialize)).format, Format::kJson);
-  ASSERT_EQ((*(*serialize)).serialized_data, expected_ser);
+  ASSERT_EQ((**serialize).format, Format::kJson);
+  ASSERT_EQ((**serialize).serialized_data, expected_ser);
 }
 
 TEST(Serialize, BinaryData) {
@@ -38,8 +38,8 @@ TEST(Serialize, BinaryData) {
   serialize = json_formatter.Serialize(cloud_event);
 
   ASSERT_TRUE(serialize.ok());
-  ASSERT_EQ((*(*serialize)).format, Format::kJson);
-  ASSERT_EQ((*(*serialize)).serialized_data, expected_ser);
+  ASSERT_EQ((**serialize).format, Format::kJson);
+  ASSERT_EQ((**serialize).serialized_data, expected_ser);
 }
 
 TEST(Serialize, TextData) {
@@ -56,8 +56,8 @@ TEST(Serialize, TextData) {
   serialize = json_formatter.Serialize(cloud_event);
 
   ASSERT_TRUE(serialize.ok());
-  ASSERT_EQ((*(*serialize)).format, Format::kJson);
-  ASSERT_EQ((*(*serialize)).serialized_data, expected_ser);
+  ASSERT_EQ((**serialize).format, Format::kJson);
+  ASSERT_EQ((**serialize).serialized_data, expected_ser);
 }
 
 TEST(Deserialize, NoData) {

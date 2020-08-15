@@ -29,8 +29,7 @@ constexpr char kErrTwoPayloads[] = "The given serialized data is invalid because
 
 absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
     const CloudEvent& cloud_event) {
-  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
-  if (!is_valid.ok()) {
+  if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
     return is_valid;
   }
 
@@ -41,12 +40,12 @@ absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
   }
 
   Json::Value root;
-  for (auto const& attr : (*attrs)) {
+  for (auto const& attr : *attrs) {
     absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
     if (!json_printed.ok()) {
       return json_printed.status();
     }
-    root[attr.first] = (*json_printed);
+    root[attr.first] = *json_printed;
   }
 
   switch (cloud_event.data_oneof_case()) {
@@ -99,10 +98,8 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
   // TODO (#39): Should we try to infer CE Type from serialized_data?
   for (auto const& member : root.getMemberNames()) {
-    absl::Status set_metadata = CloudEventsUtil::SetMetadata(member,
-      root[member].asString(),
-      cloud_event);
-    if (!set_metadata.ok()){
+    if (auto set_metadata = CloudEventsUtil::SetMetadata(member,
+      root[member].asString(), cloud_event); !set_metadata.ok()) {
       return set_metadata;
     }
   }
@@ -115,8 +112,7 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
     cloud_event.set_binary_data(root[kJsonBinaryKey].asString());
   }
 
-  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
-  if (!is_valid.ok()) {
+  if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
     return is_valid;
   }
 
