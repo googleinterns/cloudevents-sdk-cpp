@@ -1,4 +1,5 @@
 #include "cloud_events_util.h"
+
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/util/time_util.h>
 #include <gtest/gtest.h>
@@ -12,246 +13,282 @@ using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
 
 typedef absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>
-    CeAttrMap;
+  CeAttrMap;
 
 TEST(CloudEventsUtilTest, IsValid_NoSource) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_spec_version("1.0");
-    cloud_event.set_type("test");
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_spec_version("1.0");
+  cloud_event.set_type("test");
 
-    ASSERT_FALSE(CloudEventsUtil::IsValid(cloud_event));
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+
+  ASSERT_FALSE(is_valid.ok());
+  ASSERT_TRUE(absl::IsInvalidArgument(is_valid));
 }
 
 TEST(CloudEventsUtilTest, IsValid_NoSpecVersion) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_type("test");
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_type("test");
 
-    ASSERT_FALSE(CloudEventsUtil::IsValid(cloud_event));
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+
+  ASSERT_FALSE(is_valid.ok());
+  ASSERT_TRUE(absl::IsInvalidArgument(is_valid));
 }
 
 TEST(CloudEventsUtilTest, IsValid_NoType) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
 
-    ASSERT_FALSE(CloudEventsUtil::IsValid(cloud_event));
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+
+  ASSERT_FALSE(is_valid.ok());
+  ASSERT_TRUE(absl::IsInvalidArgument(is_valid));
 }
 
 TEST(CloudEventsUtilTest, IsValid_HasRequired) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
-    cloud_event.set_type("test");
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
+  cloud_event.set_type("test");
 
-    ASSERT_TRUE(CloudEventsUtil::IsValid(cloud_event));
+  absl::Status is_valid = CloudEventsUtil::IsValid(cloud_event);
+
+  ASSERT_TRUE(is_valid.ok());
 }
 
 TEST(CloudEventsUtilTest, GetMetadata_InvalidCloudEvent) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
 
-    absl::Status get_metadata_status =
-        CloudEventsUtil::GetMetadata(cloud_event).status();
+  absl::Status get_metadata_status = CloudEventsUtil::GetMetadata(
+    cloud_event).status();
 
-    ASSERT_TRUE(absl::IsInvalidArgument(get_metadata_status));
+  ASSERT_TRUE(absl::IsInvalidArgument(get_metadata_status));
 }
 
 TEST(CloudEventsUtilTest, GetMetadata_NoOptional) {
-    // setup input to function
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
-    cloud_event.set_type("test");
+  // setup input to function
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
+  cloud_event.set_type("test");
 
-    absl::StatusOr<CeAttrMap> get_metadata =
-        CloudEventsUtil::GetMetadata(cloud_event);
+  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+    cloud_event);
 
-    ASSERT_TRUE(get_metadata.ok());
-    ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
-    ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-    ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
-    ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
+  ASSERT_TRUE(get_metadata.ok());
+  ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
+  ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
+  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
 }
 
 
 TEST(CloudEventsUtilTest, GetMetadata_OneOptional) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
-    cloud_event.set_type("test");
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string("test_val");
-    (*cloud_event.mutable_attributes())["test_key"] = attr;
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
+  cloud_event.set_type("test");
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_string("test_val");
+  (*cloud_event.mutable_attributes())["test_key"] = attr;
 
-    absl::StatusOr<CeAttrMap> get_metadata =
-        CloudEventsUtil::GetMetadata(cloud_event);
-    ASSERT_TRUE(get_metadata.ok());
-    ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
-    ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-    ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
-    ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
-    ASSERT_EQ((*get_metadata)["test_key"].ce_string(), "test_val");
+  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+    cloud_event);
+
+  ASSERT_TRUE(get_metadata.ok());
+  ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
+  ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
+  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
+  ASSERT_EQ((*get_metadata)["test_key"].ce_string(), "test_val");
 }
 
 TEST(CloudEventsUtilTest, GetMetadata_TwoOptional) {
-    CloudEvent cloud_event;
-    cloud_event.set_id("1");
-    cloud_event.set_source("/test");
-    cloud_event.set_spec_version("1.0");
-    cloud_event.set_type("test");
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string("test_val1");
-    (*cloud_event.mutable_attributes())["test_key1"] = attr;
-    attr.set_ce_string("test_val2");
-    (*cloud_event.mutable_attributes())["test_key2"] = attr;
+  CloudEvent cloud_event;
+  cloud_event.set_id("1");
+  cloud_event.set_source("/test");
+  cloud_event.set_spec_version("1.0");
+  cloud_event.set_type("test");
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_string("test_val1");
+  (*cloud_event.mutable_attributes())["test_key1"] = attr;
+  attr.set_ce_string("test_val2");
+  (*cloud_event.mutable_attributes())["test_key2"] = attr;
 
-    absl::StatusOr<CeAttrMap> get_metadata =
-        CloudEventsUtil::GetMetadata(cloud_event);
-    ASSERT_TRUE(get_metadata.ok());
-    ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
-    ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-    ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
-    ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
-    ASSERT_EQ((*get_metadata)["test_key1"].ce_string(), "test_val1");
-    ASSERT_EQ((*get_metadata)["test_key2"].ce_string(), "test_val2");
+  absl::StatusOr<CeAttrMap> get_metadata = CloudEventsUtil::GetMetadata(
+    cloud_event);
+
+  ASSERT_TRUE(get_metadata.ok());
+  ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
+  ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
+  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
+  ASSERT_EQ((*get_metadata)["test_key1"].ce_string(), "test_val1");
+  ASSERT_EQ((*get_metadata)["test_key2"].ce_string(), "test_val2");
 }
 
 TEST(CloudEventsUtilTest, SetMetadata_Id) {
-    CloudEvent cloud_event;
+  CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata("id", "1", cloud_event);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("id", "1",
+    cloud_event);
 
-    ASSERT_EQ(cloud_event.id(), "1");
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(cloud_event.id(), "1");
 }
 
 TEST(CloudEventsUtilTest, SetMetadata_Source) {
-    CloudEvent cloud_event;
+  CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata("source", "/a_source", cloud_event);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("source", "/a_source",
+  cloud_event);
 
-    ASSERT_EQ(cloud_event.source(), "/a_source");
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(cloud_event.source(), "/a_source");
 }
 
 TEST(CloudEventsUtilTest, SetMetadata_SpecVersion) {
-    CloudEvent cloud_event;
+  CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata("spec_version", "1.xx", cloud_event);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("spec_version", "1.xx",
+    cloud_event);
 
-    ASSERT_EQ(cloud_event.spec_version(), "1.xx");
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(cloud_event.spec_version(), "1.xx");
 }
 
 TEST(CloudEventsUtilTest, SetMetadata_Type) {
-    CloudEvent cloud_event;
+  CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata("type", "test", cloud_event);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("type", "test",
+    cloud_event);
 
-    ASSERT_EQ(cloud_event.type(), "test");
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(cloud_event.type(), "test");
 }
 
 TEST(CloudEventsUtilTest, SetMetadata_Optional) {
-    CloudEvent cloud_event;
+  CloudEvent cloud_event;
 
-    CloudEventsUtil::SetMetadata("opt", "arbitrary", cloud_event);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("opt", "arbitrary",
+    cloud_event);
 
-    CloudEvent_CloudEventAttribute attr = cloud_event.attributes().at("opt");
-    ASSERT_EQ(attr.ce_string(), "arbitrary");
+  CloudEvent_CloudEventAttribute attr = cloud_event.attributes().at("opt");
+
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(attr.ce_string(), "arbitrary");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_BoolFalse) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_boolean(false);
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, SetMetadata_Time) {
+  CloudEvent cloud_event;
+  Timestamp timestamp = TimeUtil::GetCurrentTime();
+  std::string timestamp_str = TimeUtil::ToString(timestamp);
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("time", timestamp_str,
+    cloud_event);
+  CloudEvent_CloudEventAttribute attr = cloud_event.attributes().at("time");
 
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "false");
+  ASSERT_TRUE(set_meta.ok());
+  ASSERT_EQ(TimeUtil::ToString(attr.ce_timestamp()), timestamp_str);
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_BoolTrue) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_boolean(true);
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_BoolFalse) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_boolean(false);
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "true");
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "false");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_Integer) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_integer(88);
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_BoolTrue) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_boolean(true);
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "88");
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "true");
 }
 
+TEST(CloudEventsUtilTest, ToString_Integer) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_integer(88);
 
-TEST(CloudEventsUtilTest, StringifyCeType_String) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string("test");
-    absl::StatusOr<std::string> stringify_ce_type;
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
-
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "test");
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "88");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_URI) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_uri("https://google.com");
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_String) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_string("test");
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "https://google.com");
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "test");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_URIRef) {
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_uri_reference("https://www.google.com/#fragment");
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_URI) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_uri("https://google.com");
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_TRUE(stringify_ce_type.ok());
-    ASSERT_EQ((*stringify_ce_type), "https://www.google.com/#fragment");
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "https://google.com");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_Timestamp) {
-    Timestamp timestamp = TimeUtil::GetCurrentTime();
-    std::string timestamp_str = TimeUtil::ToString(timestamp);
-    CloudEvent_CloudEventAttribute attr;
-    attr.mutable_ce_timestamp()-> MergeFrom(timestamp);
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_URIRef) {
+  CloudEvent_CloudEventAttribute attr;
+  attr.set_ce_uri_reference("https://www.google.com/#fragment");
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_EQ((*stringify_ce_type), timestamp_str);
+  ASSERT_TRUE(stringify_ce_type.ok());
+  ASSERT_EQ(*stringify_ce_type, "https://www.google.com/#fragment");
 }
 
-TEST(CloudEventsUtilTest, StringifyCeType_NotSet) {
-    CloudEvent_CloudEventAttribute attr;
-    absl::StatusOr<std::string> stringify_ce_type;
+TEST(CloudEventsUtilTest, ToString_Timestamp) {
+  Timestamp timestamp = TimeUtil::GetCurrentTime();
+  std::string timestamp_str = TimeUtil::ToString(timestamp);
+  CloudEvent_CloudEventAttribute attr;
+  attr.mutable_ce_timestamp()-> MergeFrom(timestamp);
 
-    stringify_ce_type = CloudEventsUtil::StringifyCeType(attr);
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
 
-    ASSERT_TRUE(absl::IsInvalidArgument(stringify_ce_type.status()));
+  ASSERT_EQ(*stringify_ce_type, timestamp_str);
+}
+
+TEST(CloudEventsUtilTest, ToString_NotSet) {
+  CloudEvent_CloudEventAttribute attr;
+
+  absl::StatusOr<std::string> stringify_ce_type = CloudEventsUtil::ToString(
+    attr);
+
+  ASSERT_TRUE(absl::IsInvalidArgument(stringify_ce_type.status()));
 }
 
 
