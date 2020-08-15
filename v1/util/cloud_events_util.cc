@@ -10,6 +10,11 @@ using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
 
+constexpr char kErrCeInvalid[] = "Given Cloud Event is missing required attributes.";
+constexpr char kErrTimeInvalid[] = "Given time is invalid because it does not comply to RFC 3339.";
+constexpr char kErrAttrNotSet[] = "Given Cloud Event attribute is not set.";
+constexpr char kErrAttrNotHandled[] = "A Cloud Event type is not handled.";
+
 absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
   if (cloud_event.id().empty() ||
       cloud_event.source().empty() ||
