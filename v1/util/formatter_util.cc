@@ -27,5 +27,14 @@ absl::StatusOr<std::string> FormatterUtil::FormatToStr(
   return absl::InternalError(kErrUnkFormat);
 }
 
+absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
+    const Format& format) {
+  if (format == Format::kJson) {
+    std::unique_ptr<Formatter> formatter = absl::make_unique<JsonFormatter>();
+    return formatter;
+  }
+  return absl::InternalError(kErrUnkFormatter);
+}
+
 }  // namespace formatter_util
 }  // namespace cloudevents

@@ -21,9 +21,9 @@ class FormatterUtil {
   static absl::StatusOr<std::string> FormatToStr(
     const cloudevents::format::Format& format);
 
-  // // Returns Formatter that handles the given Format
-  // static absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
-  //   GetFormatter(const cloudevents::format::Format& format);
+  // Returns Formatter that handles the given Format
+  static absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+    GetFormatter(const cloudevents::format::Format& format);
 };
 
 }  // namespace formatter_util
