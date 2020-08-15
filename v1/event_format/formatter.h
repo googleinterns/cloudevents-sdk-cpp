@@ -14,17 +14,17 @@ namespace format {
  * StructuredCloudEvents (serializations based on EventFormats)
  */
 class Formatter {
-    public:
-        // Marshal a CloudEvent into a StructuredCloudEvent
-        virtual absl::StatusOr<StructuredCloudEvent> Serialize(
-            const io::cloudevents::v1::CloudEvent& cloud_event) = 0;
-        
-        // Marshal a StructuredCloudEvent into a CloudEvent
-        virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
-            const StructuredCloudEvent& structured_cloud_event) = 0;
+ public:
+  // Marshal a CloudEvent into a StructuredCloudEvent
+  virtual absl::StatusOr<StructuredCloudEvent> Serialize(
+    const io::cloudevents::v1::CloudEvent& cloud_event) = 0;
+  
+  // Marshal a StructuredCloudEvent into a CloudEvent
+  virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
+    const StructuredCloudEvent& structured_cloud_event) = 0;
 };
 
-} // format
-} // cloudevents
+}  // namespace format
+}  // namespace cloudevents
 
 #endif //CLOUDEVENTCPPSDK_V1_EVENTFORMAT_FORMATTER_H_

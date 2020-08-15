@@ -77,4 +77,4 @@ TEST(Decode, FillTwo) {
 }
 
 
-} // base64
+}  // namespace base64

@@ -10,7 +10,7 @@ namespace format {
  */
 enum class Format {kJson};
 
-} // format
-} // cloudevents
+}  // namespace format
+}  // namespace cloudevents
 
-#endif //CLOUDEVENTCPPSDK_V1_EVENTFORMAT_FORMAT_H_
+#endif  // CLOUDEVENTCPPSDK_V1_EVENTFORMAT_FORMAT_H_
