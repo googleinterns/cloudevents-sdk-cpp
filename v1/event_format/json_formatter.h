@@ -20,9 +20,9 @@ class JsonFormatter: public Formatter {
   absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> Serialize(
     const io::cloudevents::v1::CloudEvent& cloud_event) override;
 
-//   // Create CloudEvent from Json-formatted serialization
-//   absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
-//     const StructuredCloudEvent& structured_ce) override;
+  // Create CloudEvent from Json-formatted serialization
+  absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
+    const StructuredCloudEvent& structured_ce) override;
 
  private:
 //   // Convert from CE to JSON Type System according to
