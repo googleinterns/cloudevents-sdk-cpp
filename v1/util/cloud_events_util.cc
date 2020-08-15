@@ -7,6 +7,7 @@ namespace cloudevents_util {
 
 using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
+using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
 
 absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
@@ -58,18 +59,19 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
     cloud_event.set_type(val);
   } else if (key == "time") {
     CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string(val);
-    if (key == "id") {
-        cloud_event.set_id(val);
-    } else if (key == "source") {
-        cloud_event.set_source(val);
-    } else if (key == "spec_version") {
-        cloud_event.set_spec_version(val);
-    } else if (key == "type") {
-        cloud_event.set_type(val);
-    } else {
-        (*cloud_event.mutable_attributes())[key] = attr;
+    Timestamp timestamp;
+    if (!TimeUtil::FromString(val, &timestamp)) {
+      return absl::InvalidArgumentError(kErrTimeInvalid);
     }
+    *attr.mutable_ce_timestamp() = timestamp;
+    (*cloud_event.mutable_attributes())[key] = attr;
+  } else {
+    // default assumes unrecognized attributes to be of type string
+    CloudEvent_CloudEventAttribute attr;
+    attr.set_ce_string(val);
+    (*cloud_event.mutable_attributes())[key] = attr;
+  }
+  return absl::OkStatus();
 }
 
 absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(
