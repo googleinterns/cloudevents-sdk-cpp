@@ -11,5 +11,13 @@ constexpr char kErrUnkFormat[] = "A Format has not been handled.";
 constexpr char kErrUnkFormatStr[] = "The given format is not recognized by the SDK.";
 constexpr char kErrUnkFormatter[] = "Could not find formatter for given format.";
 
+absl::StatusOr<Format> FormatterUtil::FormatFromStr(
+    absl::string_view format_str) {
+  if (format_str == "json") {
+    return Format::kJson;
+  }
+  return absl::InvalidArgumentError(kErrUnkFormatStr);
+}
+
 }  // namespace formatter_util
 }  // namespace cloudevents
