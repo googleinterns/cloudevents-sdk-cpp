@@ -12,7 +12,7 @@ namespace cloudevents_util {
 class CloudEventsUtil {
     public:
         // validate if given CloudEvent fulfills requirements to be valid
-        static bool IsValid(const io::cloudevents::v1::CloudEvent& cloud_event);
+        static absl::Status IsValid(const io::cloudevents::v1::CloudEvent& cloud_event);
 
         // get metadata from CloudEvent in a single map
         static absl::StatusOr<absl::flat_hash_map<
@@ -22,13 +22,14 @@ class CloudEventsUtil {
         // TODO (#44): Overload SetMetadata to accept a map of attributes
 
         // set metadata without dealing with CloudEvent proto structure
-        static void SetMetadata(const std::string& key, const std::string& val,
+        static absl::Status SetMetadata(const std::string& key, const std::string& val,
             io::cloudevents::v1::CloudEvent& cloud_event);
 
         // convert CloudEvent attributes to canonical string representaiton
         // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
         static absl::StatusOr<std::string> StringifyCeType(
             const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
+
 };
 
 }  // namespace cloudevents_util

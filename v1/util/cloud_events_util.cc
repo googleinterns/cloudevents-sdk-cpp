@@ -9,20 +9,22 @@ using ::io::cloudevents::v1::CloudEvent;
 using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::util::TimeUtil;
 
-bool CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
-    return !(cloud_event.id().empty() ||
-        cloud_event.source().empty() ||
-        cloud_event.spec_version().empty() ||
-        cloud_event.type().empty());
+absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
+  if (cloud_event.id().empty() ||
+      cloud_event.source().empty() ||
+      cloud_event.spec_version().empty() ||
+      cloud_event.type().empty()) {
+    return absl::InvalidArgumentError(kErrCeInvalid);
+  }
+  return absl::OkStatus();
 }
 
 absl::StatusOr<
-        absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
-        CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
-    if (!CloudEventsUtil::IsValid(cloud_event)) {
-        return absl::InvalidArgumentError(
-            "GetMetadata can only be called with valid Cloud Event.");
-    }
+    absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
+    CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
+  if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
+    return is_valid;
+  }
 
     // create absl::flat_hash_map from protobuf map of optional/ extensionattrs
     absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> attrs(
@@ -43,9 +45,18 @@ absl::StatusOr<
     return attrs;
 }
 
-void CloudEventsUtil::SetMetadata(const std::string& key,
-        const std::string& val, CloudEvent& cloud_event){
-    // TODO (#39): Should we try to infer CE Type from serialization?
+absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
+    const std::string& val, CloudEvent& cloud_event){
+  // TODO (#39): Recognize URI and URI Reference types
+  if (key == "id") {
+    cloud_event.set_id(val);
+  } else if (key == "source") {
+    cloud_event.set_source(val);
+  } else if (key == "spec_version") {
+    cloud_event.set_spec_version(val);
+  } else if (key == "type") {
+    cloud_event.set_type(val);
+  } else if (key == "time") {
     CloudEvent_CloudEventAttribute attr;
     attr.set_ce_string(val);
     if (key == "id") {
