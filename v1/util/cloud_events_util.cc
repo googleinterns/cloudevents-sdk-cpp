@@ -32,23 +32,18 @@ absl::StatusOr<
     return is_valid;
   }
 
-    // create absl::flat_hash_map from protobuf map of optional/ extensionattrs
-    absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> attrs(
-        (cloud_event.attributes()).begin(),
-        cloud_event.attributes().end());
+  // create absl::flat_hash_map from protobuf map of optional/ extensionattrs
+  absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> attrs(
+    (cloud_event.attributes()).begin(),
+    cloud_event.attributes().end());
 
-    // insert required attrs
-    CloudEvent_CloudEventAttribute attr_val;
-    attr_val.set_ce_string(cloud_event.id());
-    attrs["id"] = attr_val;
-    attr_val.set_ce_string(cloud_event.source());
-    attrs["source"] = attr_val;
-    attr_val.set_ce_string(cloud_event.spec_version());
-    attrs["spec_version"] = attr_val;
-    attr_val.set_ce_string(cloud_event.type());
-    attrs["type"] = attr_val;
+  // insert required attrs
+  attrs["id"] = ToCeString(cloud_event.id());
+  attrs["source"] = ToCeString(cloud_event.source());
+  attrs["spec_version"] = ToCeString(cloud_event.spec_version());
+  attrs["type"] = ToCeString(cloud_event.type());
 
-    return attrs;
+  return attrs;
 }
 
 absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
@@ -79,31 +74,37 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
   return absl::OkStatus();
 }
 
-absl::StatusOr<std::string> CloudEventsUtil::StringifyCeType(
-        const CloudEvent_CloudEventAttribute& attr){
-    switch (attr.attr_oneof_case()) {
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
-            // StatusOr requires explicit conversion
-            return std::string(attr.ce_boolean() ? "true" : "false");
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
-            // skipping validity checks as protobuf generates int32 for sfixed32
-            return std::to_string(attr.ce_integer());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
-            return attr.ce_string();
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
-            return base64::base64_encode(attr.ce_binary());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
-            return attr.ce_uri();
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
-            return attr.ce_uri_reference();
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
-            // protobuf also uses RFC3339 representation
-            return TimeUtil::ToString(attr.ce_timestamp());
-        case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
-            return absl::InvalidArgumentError(
-                "Cloud Event metadata attribute not set.");
-    }
-    return absl::InternalError("A CE type is not handled in StringifyCeType.");
+absl::StatusOr<std::string> CloudEventsUtil::ToString(
+    const CloudEvent_CloudEventAttribute& attr){
+  switch (attr.attr_oneof_case()) {
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
+      // StatusOr requires explicit conversion
+      return std::string(attr.ce_boolean() ? "true" : "false");
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
+      // skipping validity checks as protobuf generates int32 for sfixed32
+      return std::to_string(attr.ce_integer());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
+      return attr.ce_string();
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
+      return base64::base64_encode(attr.ce_binary());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
+      return attr.ce_uri();
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
+      return attr.ce_uri_reference();
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
+      // protobuf also uses RFC3339 representation
+      return TimeUtil::ToString(attr.ce_timestamp());
+    case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
+      return absl::InvalidArgumentError(kErrAttrNotSet);
+  }
+  return absl::InternalError(kErrAttrNotHandled);
+}
+
+CloudEvent_CloudEventAttribute CloudEventsUtil::ToCeString(
+    const std::string& val) {
+  CloudEvent_CloudEventAttribute ce_str;
+  ce_str.set_ce_string(val);
+  return ce_str;
 }
 
 }  // namespace cloudevents_util
