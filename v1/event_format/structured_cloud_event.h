@@ -11,14 +11,14 @@ namespace format {
  * according to an EventFormat spec.
  */
 struct StructuredCloudEvent {
-    // The EventFormat spec used to create this serialization
-    Format format;
+  // The EventFormat spec used to create this serialization
+  Format format;
 
-    // The serialization of the CloudEvent
-    std::string serialization;
+  // The serialization of the CloudEvent
+  std::string serialization;
 };
 
-} // format
-} // cloudevents
+}  // namespace format
+}  // namespace cloudevents
 
-#endif //CLOUDEVENTCPPSDK_V1_EVENTFORMAT_STRUCTUREDCLOUDEVENT_H_
+#endif  // CLOUDEVENTCPPSDK_V1_EVENTFORMAT_STRUCTUREDCLOUDEVENT_H_

@@ -34,7 +34,7 @@ std::string base64_encode_mime(std::string_view s);
 std::string base64_decode(std::string_view s, bool remove_linebreaks = false);
 #endif  // __cplusplus >= 201703L
 
-} // base64
+}  // namespace base64
 
-#endif /* BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A */
+#endif  /* BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A */
 
