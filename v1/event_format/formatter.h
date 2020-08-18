@@ -16,15 +16,19 @@ namespace format {
 class Formatter {
  public:
   // Marshal a CloudEvent into a StructuredCloudEvent
-  virtual absl::StatusOr<StructuredCloudEvent> Serialize(
+  virtual absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> Serialize(
     const io::cloudevents::v1::CloudEvent& cloud_event) = 0;
-  
+
   // Marshal a StructuredCloudEvent into a CloudEvent
   virtual absl::StatusOr<io::cloudevents::v1::CloudEvent> Deserialize(
     const StructuredCloudEvent& structured_cloud_event) = 0;
+
+  // Pure virtual destructor as any class with virtual functions
+  // should have a virtual destructor
+  virtual ~Formatter(){};
 };
 
 }  // namespace format
 }  // namespace cloudevents
 
-#endif //CLOUDEVENTCPPSDK_V1_EVENTFORMAT_FORMATTER_H_
+#endif  // CLOUDEVENTCPPSDK_V1_EVENTFORMAT_FORMATTER_H_
