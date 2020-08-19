@@ -33,6 +33,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "@boost//:algorithm",
         "//third_party/statusor:statusor_lib",
         "//proto:cloud_event_cc_proto",
         "//v1/event_format:json_formatter_lib",

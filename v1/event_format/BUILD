@@ -9,9 +9,9 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "@com_github_open_source_parsers_jsoncpp//:jsoncpp",
         "//proto:cloud_event_cc_proto",
         "//third_party/statusor:statusor_lib",
-        "@com_github_open_source_parsers_jsoncpp//:jsoncpp",
         "//v1/util:cloud_events_util_lib",
     ],
 )
@@ -20,8 +20,8 @@ cc_test(
    name = "json_formatter_test",
    srcs = ["json_formatter_test.cc"],
    deps = [
-       ":json_formatter_lib",
-       "@gtest//:gtest",
-       "@gtest//:gtest_main"
+        "@gtest//:gtest",
+        "@gtest//:gtest_main",
+        ":json_formatter_lib",
    ],
 )
