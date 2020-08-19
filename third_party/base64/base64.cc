@@ -247,4 +247,4 @@ std::string base64_decode(std::string_view s, bool remove_linebreaks) {
 
 #endif  // __cplusplus >= 201703L
 
-} // base64
+}  // namespace base64
