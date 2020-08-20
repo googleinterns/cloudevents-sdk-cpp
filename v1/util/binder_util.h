@@ -8,9 +8,9 @@ namespace binder_util {
 
 class BinderUtil {
  public:
-  // // add prefix to Message attributes containing
-  // // Binary-ContentMode CloudEvent Metadata
-  // static void AddMetadataPrefix(std::string& key);
+  // add prefix to Message attributes containing
+  // Binary-ContentMode CloudEvent Metadata
+  static void AddMetadataPrefix(std::string& key);
 
   // // if Message attribute has CloudEvent prefix, strip
   // // else, return InvalidArgument status
