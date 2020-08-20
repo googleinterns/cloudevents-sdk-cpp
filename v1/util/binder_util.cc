@@ -25,5 +25,9 @@ absl::Status BinderUtil::StripMetadataPrefix(std::string& key) {
   return absl::OkStatus();
 }
 
+void BinderUtil::AddContentTypePrefix(std::string& key) {
+  key = kContentTypePrefix+key;
+}
+
 }  // namespace binder_util
 }  // namespace cloudevents

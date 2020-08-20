@@ -16,9 +16,9 @@ class BinderUtil {
   // else, return InvalidArgument status
   static absl::Status StripMetadataPrefix(std::string& key);
 
-  // // add prefix to content-type value to indicate
-  // // Structured-ContentMode payload
-  // static void AddContentTypePrefix(std::string& val);
+  // add prefix to content-type value to indicate
+  // Structured-ContentMode payload
+  static void AddContentTypePrefix(std::string& val);
 
   // // if contenttype value has CloudEvent prefix, strip
   // // else, return InvalidArgument status
