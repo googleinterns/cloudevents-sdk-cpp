@@ -17,5 +17,13 @@ void BinderUtil::AddMetadataPrefix(std::string& key) {
   key = kMetadataPrefix+key;
 }
 
+absl::Status BinderUtil::StripMetadataPrefix(std::string& key) {
+  if (key.rfind(kMetadataPrefix, 0) != 0) {
+    return absl::InvalidArgumentError(kErrNoPrefix);
+  }
+  key.erase(0, kMetadataPrefixLen);
+  return absl::OkStatus();
+}
+
 }  // namespace binder_util
 }  // namespace cloudevents
