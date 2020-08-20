@@ -12,9 +12,9 @@ class BinderUtil {
   // Binary-ContentMode CloudEvent Metadata
   static void AddMetadataPrefix(std::string& key);
 
-  // // if Message attribute has CloudEvent prefix, strip
-  // // else, return InvalidArgument status
-  // static absl::Status StripMetadataPrefix(std::string& key);
+  // if Message attribute has CloudEvent prefix, strip
+  // else, return InvalidArgument status
+  static absl::Status StripMetadataPrefix(std::string& key);
 
   // // add prefix to content-type value to indicate
   // // Structured-ContentMode payload
