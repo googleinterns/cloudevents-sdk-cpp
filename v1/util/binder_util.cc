@@ -29,5 +29,13 @@ void BinderUtil::AddContentTypePrefix(std::string& key) {
   key = kContentTypePrefix+key;
 }
 
+absl::Status BinderUtil::StripContentTypePrefix(std::string& key) {
+  if (key.rfind(kContentTypePrefix, 0) != 0) {
+    return absl::InvalidArgumentError(kErrNoPrefix);
+  }
+  key.erase(0, kContentTypePrefixLen);
+  return absl::OkStatus();
+}
+
 }  // namespace binder_util
 }  // namespace cloudevents
