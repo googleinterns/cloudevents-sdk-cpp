@@ -24,3 +24,25 @@ cc_test(
        "@gtest//:gtest_main"
    ],
 )
+
+cc_library(
+    name = "binder_util_lib",
+    srcs = ["binder_util.cc"],
+    hdrs = [
+        "binder_util.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/statusor:statusor_lib",
+    ],
+)
+
+cc_test(
+   name = "binder_util_test",
+   srcs = ["binder_util_test.cc"],
+   deps = [
+       ":binder_util_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)
