@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <cstdlib>
 
+namespace cloudevents_base64 {
+    
 typedef long os_time_t;
 
 /**
@@ -509,6 +511,7 @@ static inline void * os_realloc_array(void *ptr, size_t nmemb, size_t size)
  */
 size_t os_strlcpy(char *dest, const char *src, size_t siz);
 
+}  // namespace cloudevents_base64
 
 #ifdef OS_REJECT_C_LIB_FUNCTIONS
 #define malloc OS_DO_NOT_USE_malloc

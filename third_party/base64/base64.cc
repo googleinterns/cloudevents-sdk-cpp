@@ -23,7 +23,7 @@
 
 #include "base64.h"
 
-namespace base64 {
+namespace cloudevents_base64 {
 
  //
  // Depending on the url parameter in base64_chars, one of
@@ -247,4 +247,4 @@ std::string base64_decode(std::string_view s, bool remove_linebreaks) {
 
 #endif  // __cplusplus >= 201703L
 
-}  // namespace base64
+}  // namespace cloudevents_base64

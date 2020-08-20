@@ -25,8 +25,7 @@
 
 //#include "common/common/assert.h"
 
-namespace absl {
-
+namespace cloudevents_absl {
 namespace internal_statusor {
 
 void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
@@ -38,6 +37,5 @@ void Helper::HandleInvalidStatusCtorArg(absl::Status* status) {
 
 void Helper::Crash(const absl::Status&) { abort(); }
 
-} // namespace internal_statusor
-
-} // namespace absl
+}  // namespace internal_statusor
+}  // namespace cloudevents_absl
