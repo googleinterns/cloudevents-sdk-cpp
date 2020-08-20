@@ -27,7 +27,7 @@ class Formatter {
   // Pure virtual destructor as any class with virtual functions
   // should have a virtual destructor
   virtual ~Formatter(){};
-};
+}
 
 }  // namespace format
 }  // namespace cloudevents
