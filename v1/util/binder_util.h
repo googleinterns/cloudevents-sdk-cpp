@@ -20,9 +20,9 @@ class BinderUtil {
   // Structured-ContentMode payload
   static void AddContentTypePrefix(std::string& val);
 
-  // // if contenttype value has CloudEvent prefix, strip
-  // // else, return InvalidArgument status
-  // static absl::Status StripContentTypePrefix(std::string& key);
+  // if contenttype value has CloudEvent prefix, strip
+  // else, return InvalidArgument status
+  static absl::Status StripContentTypePrefix(std::string& key);
 };
 
 }  // namespace binder_util
