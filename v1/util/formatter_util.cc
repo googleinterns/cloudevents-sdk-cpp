@@ -15,7 +15,7 @@ constexpr char kErrUnkFormat[] = "A Format has not been handled.";
 constexpr char kErrUnkFormatStr[] = "The given format is not recognized by the SDK.";
 constexpr char kErrUnkFormatter[] = "Could not find formatter for given format.";
 
-absl::StatusOr<Format> FormatterUtil::FormatFromStr(
+cloudevents_absl::StatusOr<Format> FormatterUtil::FormatFromStr(
     absl::string_view format_str) {
   if (boost::iequals(format_str, kJsonStr)) {
     return Format::kJson;
@@ -23,16 +23,16 @@ absl::StatusOr<Format> FormatterUtil::FormatFromStr(
   return absl::InvalidArgumentError(kErrUnkFormatStr);
 }
 
-absl::StatusOr<std::string> FormatterUtil::FormatToStr(
+cloudevents_absl::StatusOr<std::string> FormatterUtil::FormatToStr(
     const Format& format) {
   if (format == Format::kJson) {
-    // explicit type conversion to accomodate absl::StatusOr
+    // explicit type conversion to accomodate cloudevents_absl::StatusOr
     return std::string(kJsonStr);
   }
   return absl::InternalError(kErrUnkFormat);
 }
 
-absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
+cloudevents_absl::StatusOr<std::unique_ptr<Formatter>> FormatterUtil::GetFormatter(
     const Format& format) {
   if (format == Format::kJson) {
     std::unique_ptr<Formatter> formatter = absl::make_unique<JsonFormatter>();

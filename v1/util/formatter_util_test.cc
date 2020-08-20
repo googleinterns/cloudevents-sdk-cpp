@@ -10,7 +10,7 @@ using ::cloudevents::format::Formatter;
 using ::cloudevents::format::JsonFormatter;
 
 TEST(FormatterUtilTest, FormatFromStr_Json) {
-  absl::StatusOr<Format> format = FormatterUtil::FormatFromStr("json");
+  cloudevents_absl::StatusOr<Format> format = FormatterUtil::FormatFromStr("json");
   ASSERT_TRUE(format.ok());
   ASSERT_EQ(*format, Format::kJson);
 }
@@ -21,14 +21,14 @@ TEST(FormatterUtilTest, FormatFromStr_Invalid) {
 }
 
 TEST(FormatterUtilTest, FormatToStr_Json) {
-  absl::StatusOr<std::string> format_str = FormatterUtil::FormatToStr(
+  cloudevents_absl::StatusOr<std::string> format_str = FormatterUtil::FormatToStr(
     Format::kJson);
   ASSERT_TRUE(format_str.ok());
   ASSERT_EQ(*format_str, "json");
 }
 
 TEST(FormatterUtilTest, GetFormatter_Json) {
-  absl::StatusOr<std::unique_ptr<Formatter>> get_formatter;
+  cloudevents_absl::StatusOr<std::unique_ptr<Formatter>> get_formatter;
   get_formatter = FormatterUtil::GetFormatter(Format::kJson);
   ASSERT_TRUE(get_formatter.ok());
   // dereference twice

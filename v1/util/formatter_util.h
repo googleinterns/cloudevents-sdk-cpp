@@ -14,15 +14,15 @@ class FormatterUtil {
  public:
   // Converts a given string to a cloudevents::format::Format
   // Throws InternalError() if string cannot be mapped succesfully.
-  static absl::StatusOr<cloudevents::format::Format> FormatFromStr(
+  static cloudevents_absl::StatusOr<cloudevents::format::Format> FormatFromStr(
     absl::string_view format_str);
 
   // Converts a cloudevents::format::Format to its string representation
-  static absl::StatusOr<std::string> FormatToStr(
+  static cloudevents_absl::StatusOr<std::string> FormatToStr(
     const cloudevents::format::Format& format);
 
   // Returns Formatter that handles the given Format
-  static absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+  static cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
     GetFormatter(const cloudevents::format::Format& format);
 };
 
