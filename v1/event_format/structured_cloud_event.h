@@ -6,7 +6,7 @@
 namespace cloudevents {
 namespace format {
 
-// An internal representation of a CloudEvent that has been formatted/ serialized
+// An internal representation of a CloudEvent that has been formatted
 // according to an EventFormat spec.
 struct StructuredCloudEvent {
   // The EventFormat spec used to create this serialization

@@ -22,7 +22,8 @@ class FormatterUtil {
     const cloudevents::format::Format& format);
 
   // Returns Formatter that handles the given Format
-  static cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+  static cloudevents_absl::StatusOr<
+    std::unique_ptr<cloudevents::format::Formatter>>
     GetFormatter(const cloudevents::format::Format& format);
 };
 
