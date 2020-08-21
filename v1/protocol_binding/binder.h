@@ -28,6 +28,55 @@ namespace binding {
 template <typename Message>
 class Binder {
  public:
+  // Create Binary-ContentMode Message containing CloudEvent
+  cloudevents_absl::StatusOr<Message> Bind(
+      const io::cloudevents::v1::CloudEvent& cloud_event) {
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        cloud_event); !valid.ok()) {
+      return valid;
+    }
+
+    cloudevents_absl::StatusOr<absl::flat_hash_map<
+      std::string, io::cloudevents::v1::CloudEvent_CloudEventAttribute>>
+      attrs = cloudevents::cloudevents_util::CloudEventsUtil::
+      GetMetadata(cloud_event);
+
+    if (!attrs.ok()) {
+      return attrs.status();
+    }
+
+    Message msg;
+    for (auto const& attr : (*attrs)) {
+      std::string key = attr.first;
+      cloudevents::binder_util::BinderUtil::AddMetadataPrefix(key);
+      if (auto bind_metadata = BindMetadata(key, attr.second, msg);
+          !bind_metadata.ok()) {
+        return bind_metadata;
+      }
+    }
+
+    switch (cloud_event.data_oneof_case()) {
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kBinaryData:
+        if (auto set_bin_data = BindDataBinary(cloud_event.binary_data(), msg);
+          !set_bin_data.ok()) {
+          return set_bin_data;
+        }
+        break;
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kTextData:
+        if (auto set_text_data = BindDataText(cloud_event.text_data(), msg);
+          !set_text_data.ok()) {
+          return set_text_data;
+        }
+        break;
+      case io::cloudevents::v1::CloudEvent::DataOneofCase::kProtoData:
+        // TODO (#17): CloudEvent Any in JsonFormatter
+        return absl::UnimplementedError("protobuf::Any not supported yet.");
+      case io::cloudevents::v1::CloudEvent::DATA_ONEOF_NOT_SET:
+        break;
+    }
+
+    return msg;
+  }
 
  private:
   // The following operations are protocol-specific and
@@ -62,9 +111,7 @@ class Binder {
 
   virtual cloudevents_absl::StatusOr<std::string> GetContentType(const Message& message) = 0;
 
-  virtual cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) = 0;
-
-};
+  virtual cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) = 0;};
 
 }  // namespace binding
 }  // namespace cloudevents
