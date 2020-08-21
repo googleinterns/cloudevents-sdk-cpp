@@ -99,5 +99,29 @@ Status HttpBinder<IsReq>::UnbindData(
   return OkStatus();
 }
 
+// _____ Operations used in Unbind Structured _____
+
+template <bool IsReq>
+StatusOr<std::string> HttpBinder<IsReq>::GetContentType(
+    const message<IsReq, string_body>& http_msg) {
+  auto iter = http_msg.base().find(kHttpContentKey);
+  if (iter == http_msg.base().end()) {
+    // If kHttpContentKey not present, Binary-ContentMode
+    // StatusOr<> requires explicit typecasting
+    return std::string("");
+  }
+  // kHttpContentKey and ce-datacontenttype should be mutually exclusive
+  if (http_msg.base().find("ce-datacontenttype") != http_msg.base().end()) {
+    return absl::InvalidArgumentError(kErrAmbiguousContentMode);
+  }
+  return std::string(iter->value());
+}
+
+template <bool IsReq>
+StatusOr<std::string> HttpBinder<IsReq>::GetPayload(
+    const message<IsReq, string_body>& http_msg) {
+  return http_msg.body();
+}
+
 }  // namespace binding
 }  // namespace cloudevents

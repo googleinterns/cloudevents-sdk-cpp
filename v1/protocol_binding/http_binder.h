@@ -58,6 +58,17 @@ class HttpBinder: public Binder<
     IsReq, boost::beast::http::string_body>& http_msg,
     io::cloudevents::v1::CloudEvent& cloud_event) override;
 
+  // _____ Operations used in Unbind Structured _____
+
+  cloudevents_absl::StatusOr<std::string> GetContentType(
+    const boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+
+  cloudevents_absl::StatusOr<std::string> GetPayload(
+    const boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+};
+
 }  // namespace binding
 }  // namespace cloudevents
 
