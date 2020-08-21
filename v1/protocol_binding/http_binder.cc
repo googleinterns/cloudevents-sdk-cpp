@@ -51,5 +51,21 @@ Status HttpBinder<IsReq>::BindDataText(const std::string& text_data,
   return OkStatus();
 }
 
+// _____ Operations used in Bind Structured _____
+
+template <bool IsReq>
+Status HttpBinder<IsReq>::BindContentType(const std::string& contenttype,
+    message<IsReq, string_body>& http_msg) {
+  http_msg.base().set(kHttpContentKey, contenttype);
+  return OkStatus();
+}
+
+template <bool IsReq>
+Status HttpBinder<IsReq>::BindDataStructured(const std::string& payload,
+    message<IsReq, string_body>& http_msg) {
+  http_msg.body() = payload;
+  return OkStatus();
+}
+
 }  // namespace binding
 }  // namespace cloudevents

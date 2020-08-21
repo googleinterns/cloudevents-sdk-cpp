@@ -36,6 +36,16 @@ class HttpBinder: public Binder<
     boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
 
+  // _____ Operations used in Bind Structured _____
+
+  absl::Status BindContentType(const std::string& contenttype,
+    boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+
+  absl::Status BindDataStructured(const std::string& payload,
+    boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+
 }  // namespace binding
 }  // namespace cloudevents
 
