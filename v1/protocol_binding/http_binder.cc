@@ -123,5 +123,9 @@ StatusOr<std::string> HttpBinder<IsReq>::GetPayload(
   return http_msg.body();
 }
 
+// _____ explicit instantiations _____
+template class HttpBinder<true>;
+template class HttpBinder<false>;
+
 }  // namespace binding
 }  // namespace cloudevents

@@ -69,6 +69,10 @@ class HttpBinder: public Binder<
     IsReq, boost::beast::http::string_body>& http_msg) override;
 };
 
+// _____ Concrete Binders _____
+class HttpReqBinder: public HttpBinder<true> {};
+class HttpResBinder: public HttpBinder<false> {};
+
 }  // namespace binding
 }  // namespace cloudevents
 
