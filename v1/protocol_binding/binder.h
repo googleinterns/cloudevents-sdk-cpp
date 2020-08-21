@@ -17,13 +17,15 @@ namespace cloudevents {
 namespace binding {
 
 // Template for marshalling between protocol-specific Messages and CloudEvents.
-// Each supported ProtocolBinding will implement template specialization 
+// Each supported ProtocolBinding will implement template specialization
 // for the protected functions.
 //
 // User will interact with the public method functions Bind() and Unbind().
 // Bind() will marhsal a CloudEvent to a protocol-specific Message.
 // Unbind() will marshal a protocol-specific message to a CloudEvent.
-// To create a StructuredContentMode Message, pass a EventFormat parameter to Bind().
+//
+// To create a StructuredContentMode Message
+// pass an additional EventFormat parameter to Bind().
 // Code samples available in README.md.
 template <typename Message>
 class Binder {
@@ -95,14 +97,15 @@ class Binder {
       return get_formatter.status();
     }
 
-    cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::StructuredCloudEvent>>
-      serialization = (*get_formatter)->Serialize(cloud_event);
+    cloudevents_absl::StatusOr<std::unique_ptr<
+      cloudevents::format::StructuredCloudEvent>> serialization =
+      (*get_formatter)->Serialize(cloud_event);
     if (!serialization.ok()) {
       return serialization.status();
     }
 
-    cloudevents_absl::StatusOr<std::string> format_str = cloudevents::formatter_util::
-      FormatterUtil::FormatToStr((*serialization)->format);
+    cloudevents_absl::StatusOr<std::string> format_str = cloudevents::
+      formatter_util::FormatterUtil::FormatToStr((*serialization)->format);
     if (!format_str.ok()) {
         return format_str.status();
     }
@@ -127,12 +130,14 @@ class Binder {
   // Create CloudEvent from given Message
   cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(
       const Message& message) {
-    cloudevents_absl::StatusOr<std::string> contenttype = GetContentType(message);
+    cloudevents_absl::StatusOr<std::string> contenttype =
+      GetContentType(message);
     if (!contenttype.ok()) {
       return contenttype.status();
     }
     std::string format_str = *contenttype;
-    if (!cloudevents::binder_util::BinderUtil::StripContentTypePrefix(format_str).ok()) {
+    if (!cloudevents::binder_util::BinderUtil::
+        StripContentTypePrefix(format_str).ok()) {
       // Unbind Binary-ContentMode Message
       io::cloudevents::v1::CloudEvent cloud_event;
       if (auto unbind_metadata = UnbindMetadata(message, cloud_event);
@@ -172,8 +177,8 @@ class Binder {
     structured_cloud_event.format = *format;
     structured_cloud_event.serialized_data = *get_payload;
 
-    cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
-      (*get_formatter)->Deserialize(structured_cloud_event);
+    cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization
+      = (*get_formatter)->Deserialize(structured_cloud_event);
     if (!deserialization.ok()){
       return deserialization.status();
     }
@@ -191,14 +196,17 @@ class Binder {
   // will be overriden for each supported ProtocolBinding
 
   // _____ Virtual Operations used in Bind Binary _____
- 
+
   virtual absl::Status BindMetadata(const std::string& key,
       const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
       Message& msg) = 0;
 
-  virtual absl::Status BindDataBinary(const std::string& bin_data, Message& msg) = 0;
-  virtual absl::Status BindDataText(const std::string& text_data, Message& msg) = 0;
-  
+  virtual absl::Status BindDataBinary(const std::string& bin_data,
+    Message& msg) = 0;
+
+  virtual absl::Status BindDataText(const std::string& text_data,
+    Message& msg) = 0;
+
   // _____ Virtual Operations used in Bind Structured _____
 
   virtual absl::Status BindContentType(const std::string& contenttype,
@@ -217,9 +225,12 @@ class Binder {
 
   // _____ Virtual Operations used in Unbind Structured _____
 
-  virtual cloudevents_absl::StatusOr<std::string> GetContentType(const Message& message) = 0;
+  virtual cloudevents_absl::StatusOr<std::string> GetContentType(
+    const Message& message) = 0;
 
-  virtual cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) = 0;};
+  virtual cloudevents_absl::StatusOr<std::string> GetPayload(
+    const Message& message) = 0;
+};
 
 }  // namespace binding
 }  // namespace cloudevents
