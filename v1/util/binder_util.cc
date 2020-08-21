@@ -14,7 +14,7 @@ constexpr size_t kContentTypePrefixLen = strlen(kContentTypePrefix);
 constexpr char kErrNoPrefix[] = "Prefix is not present in the given value.";
 
 void BinderUtil::AddMetadataPrefix(std::string& key) {
-  key = kMetadataPrefix+key;
+  key = kMetadataPrefix + key;
 }
 
 absl::Status BinderUtil::StripMetadataPrefix(std::string& key) {
@@ -26,7 +26,7 @@ absl::Status BinderUtil::StripMetadataPrefix(std::string& key) {
 }
 
 void BinderUtil::AddContentTypePrefix(std::string& key) {
-  key = kContentTypePrefix+key;
+  key = kContentTypePrefix + key;
 }
 
 absl::Status BinderUtil::StripContentTypePrefix(std::string& key) {
