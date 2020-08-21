@@ -58,6 +58,12 @@ class Binder {
   virtual absl::Status UnbindData(const Message& message,
       io::cloudevents::v1::CloudEvent& cloud_event) = 0;
 
+  // _____ Virtual Operations used in Unbind Structured _____
+
+  virtual cloudevents_absl::StatusOr<std::string> GetContentType(const Message& message) = 0;
+
+  virtual cloudevents_absl::StatusOr<std::string> GetPayload(const Message& message) = 0;
+
 };
 
 }  // namespace binding
