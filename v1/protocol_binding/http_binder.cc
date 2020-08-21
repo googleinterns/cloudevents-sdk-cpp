@@ -67,5 +67,37 @@ Status HttpBinder<IsReq>::BindDataStructured(const std::string& payload,
   return OkStatus();
 }
 
+// _____ Operations used in Unbind Binary _____
+
+template <bool IsReq>
+Status HttpBinder<IsReq>::UnbindMetadata(
+    const message<IsReq, string_body>& http_msg, CloudEvent& cloud_event) {
+  for (auto it = http_msg.base().begin(); it != http_msg.base().end(); ++it) {
+    std::string header_key = (*it).name_string().to_string();
+    std::string header_val = (*it).value().to_string();
+    if (header_key == kHttpContentKey) {
+      if (auto set_contenttype = CloudEventsUtil::SetContentType(header_val,
+          cloud_event); !set_contenttype.ok()) {
+        return set_contenttype;
+      }
+    } else if (BinderUtil::StripMetadataPrefix(header_key).ok()) {
+      if (auto set_metadata = CloudEventsUtil::SetMetadata(header_key,
+          header_val, cloud_event); !set_metadata.ok()) {
+        return set_metadata;
+      }
+    }
+  }
+  return OkStatus();
+}
+
+template <bool IsReq>
+Status HttpBinder<IsReq>::UnbindData(
+    const message<IsReq, string_body>& http_msg, CloudEvent& cloud_event) {
+  if (!http_msg.body().empty()) {
+    cloud_event.set_text_data(http_msg.body());
+  }
+  return OkStatus();
+}
+
 }  // namespace binding
 }  // namespace cloudevents

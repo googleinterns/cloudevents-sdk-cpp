@@ -46,6 +46,18 @@ class HttpBinder: public Binder<
     boost::beast::http::message<
     IsReq, boost::beast::http::string_body>& http_msg) override;
 
+  // _____ Operations used in Unbind Binary _____
+
+  absl::Status UnbindMetadata(
+    const boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg,
+    io::cloudevents::v1::CloudEvent& cloud_event) override;
+
+  absl::Status UnbindData(
+    const boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg,
+    io::cloudevents::v1::CloudEvent& cloud_event) override;
+
 }  // namespace binding
 }  // namespace cloudevents
 
