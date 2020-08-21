@@ -27,13 +27,14 @@ constexpr char kErrProtobufAny[] = "protobuf::Any not supported yet.";
 constexpr char kErrNotJson[] = "The given serialized data should not be handled by JsonFormatter because it is not JSON-formatted.";
 constexpr char kErrTwoPayloads[] = "The given serialized data is invalid because it contains two data payloads.";
 
-absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
+cloudevents_absl::StatusOr<
+    std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
     const CloudEvent& cloud_event) {
   if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
     return is_valid;
   }
 
-  absl::StatusOr<CeAttrMap> attrs = CloudEventsUtil::GetMetadata(
+  cloudevents_absl::StatusOr<CeAttrMap> attrs = CloudEventsUtil::GetMetadata(
     cloud_event);
   if (!attrs.ok()) {
     return attrs.status();
@@ -41,7 +42,8 @@ absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
 
   Json::Value root;
   for (auto const& attr : *attrs) {
-    absl::StatusOr<Json::Value> json_printed = PrintToJson(attr.second);
+    cloudevents_absl::StatusOr<Json::Value> json_printed =
+      PrintToJson(attr.second);
     if (!json_printed.ok()) {
       return json_printed.status();
     }
@@ -71,7 +73,7 @@ absl::StatusOr<std::unique_ptr<StructuredCloudEvent>> JsonFormatter::Serialize(
   return structured_ce;
 }
 
-absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
+cloudevents_absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
     const StructuredCloudEvent& structured_ce) {
   // Validate that this is the right format to be handled by this object
   if (structured_ce.format != Format::kJson) {
@@ -119,7 +121,7 @@ absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
   return cloud_event;
 }
 
-absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
+cloudevents_absl::StatusOr<Json::Value> JsonFormatter::PrintToJson(
     const CloudEvent_CloudEventAttribute& attr){
   switch (attr.attr_oneof_case()) {
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:

@@ -25,7 +25,7 @@ absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
   return absl::OkStatus();
 }
 
-absl::StatusOr<
+cloudevents_absl::StatusOr<
     absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
     CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
   if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
@@ -47,7 +47,7 @@ absl::StatusOr<
 }
 
 absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
-    const std::string& val, CloudEvent& cloud_event){
+    const std::string& val, CloudEvent& cloud_event) {
   // TODO (#39): Recognize URI and URI Reference types
   if (key == "id") {
     cloud_event.set_id(val);
@@ -74,7 +74,7 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
   return absl::OkStatus();
 }
 
-absl::StatusOr<std::string> CloudEventsUtil::ToString(
+cloudevents_absl::StatusOr<std::string> CloudEventsUtil::ToString(
     const CloudEvent_CloudEventAttribute& attr){
   switch (attr.attr_oneof_case()) {
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
@@ -86,7 +86,7 @@ absl::StatusOr<std::string> CloudEventsUtil::ToString(
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
       return attr.ce_string();
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
-      return base64::base64_encode(attr.ce_binary());
+      return cloudevents_base64::base64_encode(attr.ce_binary());
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
       return attr.ce_uri();
     case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
