@@ -124,6 +124,68 @@ class Binder {
     return msg;
   }
 
+  // Create CloudEvent from given Message
+  cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> Unbind(
+      const Message& message) {
+    cloudevents_absl::StatusOr<std::string> contenttype = GetContentType(message);
+    if (!contenttype.ok()) {
+      return contenttype.status();
+    }
+    std::string format_str = *contenttype;
+    if (!cloudevents::binder_util::BinderUtil::StripContentTypePrefix(format_str).ok()) {
+      // Unbind Binary-ContentMode Message
+      io::cloudevents::v1::CloudEvent cloud_event;
+      if (auto unbind_metadata = UnbindMetadata(message, cloud_event);
+          !unbind_metadata.ok()) {
+        return unbind_metadata;
+      }
+      if (auto unbind_data = UnbindData(message, cloud_event);
+          !unbind_data.ok()) {
+        return unbind_data;
+      }
+      if (auto is_valid = cloudevents::cloudevents_util::CloudEventsUtil::
+          IsValid(cloud_event); !is_valid.ok()) {
+        return is_valid;
+      }
+      return cloud_event;
+    }
+
+    cloudevents_absl::StatusOr<cloudevents::format::Format> format =
+      cloudevents::formatter_util::FormatterUtil::FormatFromStr(format_str);
+    if (!format.ok()){
+      return format.status();
+    }
+
+    cloudevents_absl::StatusOr<std::string> get_payload = GetPayload(message);
+    if (!get_payload.ok()) {
+      return get_payload.status();
+    }
+
+    cloudevents_absl::StatusOr<std::unique_ptr<cloudevents::format::Formatter>>
+      get_formatter = cloudevents::formatter_util::FormatterUtil::
+      GetFormatter(*format);
+    if (!get_formatter.ok()) {
+      return get_formatter.status();
+    }
+
+    cloudevents::format::StructuredCloudEvent structured_cloud_event;
+    structured_cloud_event.format = *format;
+    structured_cloud_event.serialized_data = *get_payload;
+
+    cloudevents_absl::StatusOr<io::cloudevents::v1::CloudEvent> deserialization =
+      (*get_formatter)->Deserialize(structured_cloud_event);
+    if (!deserialization.ok()){
+      return deserialization.status();
+    }
+
+    if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
+        *deserialization); !valid.ok()) {
+      return valid;
+    }
+
+    return *deserialization;
+  }
+
  private:
   // The following operations are protocol-specific and
   // will be overriden for each supported ProtocolBinding
