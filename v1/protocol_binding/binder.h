@@ -41,6 +41,14 @@ class Binder {
 
   virtual absl::Status BindDataBinary(const std::string& bin_data, Message& msg) = 0;
   virtual absl::Status BindDataText(const std::string& text_data, Message& msg) = 0;
+  
+  // _____ Virtual Operations used in Bind Structured _____
+
+  virtual absl::Status BindContentType(const std::string& contenttype,
+      Message& message) = 0;
+
+  virtual absl::Status BindDataStructured(const std::string& payload,
+      Message& message) = 0;
 
 };
 
