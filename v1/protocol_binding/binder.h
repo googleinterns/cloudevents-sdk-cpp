@@ -32,7 +32,16 @@ class Binder {
  private:
   // The following operations are protocol-specific and
   // will be overriden for each supported ProtocolBinding
-  
+
+  // _____ Virtual Operations used in Bind Binary _____
+ 
+  virtual absl::Status BindMetadata(const std::string& key,
+      const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
+      Message& msg) = 0;
+
+  virtual absl::Status BindDataBinary(const std::string& bin_data, Message& msg) = 0;
+  virtual absl::Status BindDataText(const std::string& text_data, Message& msg) = 0;
+
 };
 
 }  // namespace binding
