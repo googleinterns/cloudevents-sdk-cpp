@@ -20,6 +20,21 @@ template <bool IsReq>
 class HttpBinder: public Binder<
   boost::beast::http::message<IsReq, boost::beast::http::string_body>> {
  private:
+  // _____ Operations used in Bind Binary _____
+
+  absl::Status BindMetadata(const std::string& key,
+    const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
+    boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+
+  absl::Status BindDataBinary(const std::string& bin_data,
+    boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
+
+
+  absl::Status BindDataText(const std::string& text_data,
+    boost::beast::http::message<
+    IsReq, boost::beast::http::string_body>& http_msg) override;
 
 }  // namespace binding
 }  // namespace cloudevents
