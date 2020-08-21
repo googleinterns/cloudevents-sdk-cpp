@@ -50,6 +50,14 @@ class Binder {
   virtual absl::Status BindDataStructured(const std::string& payload,
       Message& message) = 0;
 
+  // _____ Virtual Operations used in Unbind Binary _____
+
+  virtual absl::Status UnbindMetadata(const Message& message,
+      io::cloudevents::v1::CloudEvent& cloud_event) = 0;
+
+  virtual absl::Status UnbindData(const Message& message,
+      io::cloudevents::v1::CloudEvent& cloud_event) = 0;
+
 };
 
 }  // namespace binding
