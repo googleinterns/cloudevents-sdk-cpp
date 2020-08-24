@@ -15,17 +15,74 @@ The PubsubMessage class (generated from protobuf) is based on [Google API](https
 ## Setup
 Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
 
-## Binding a CloudEvent to a Protocol
+## Binding a CloudEvent to a Protocol-Message
 ### BinaryContentMode
-_Coming soon_
+```
+// import the header for the binder of the protocol message you're working with
+#include "//v1/protocol_binding/pubsub_binder.h"
+ 
+using ::google::pubsub::v1::PubsubMessage;
+using ::cloudevents::binder::Binder
+
+// create a CloudEvent
+CloudEvent my_cloud_event;
+my_cloud_event.set_id("my_id");
+my_cloud_event.set_source("my_source");
+my_cloud_event.set_spec_version("1.0");
+my_cloud_event.set_type("my_type");
+my_cloud_event.set_binary_data("1010");
+
+// Initialize the binder
+Binder<PubsubMessage> pubsub_binder;
+
+// Create the Message
+PubsubMessage usable_message = pubsub_binder.bind(my_cloud_event);
+```
 
 ### StructuredContentMode
-_Coming soon_
+```
+// import the header for formats
+#include "//v1/event_format/format.h"
 
-## Event-formats
-To specify an event-format you want to use:
-1. Import the header file `//v1/event_format/format`.
-2. Pass in the format parameter as `cloudevents::format::_A_FORMAT`. For a specific sample check the documentation on StructuredContentMode.
+// import the header for the binder of the protocol message you're working with
+#include "//v1/protocol_binding/pubsub_binder.h"
+
+using ::google::pubsub::v1::PubsubMessage;
+using ::cloudevents::binder::Binder
+using ::cloudevents::format::Format
+
+// create a CloudEvent
+CloudEvent my_cloud_event;
+my_cloud_event.set_id("my_id");
+my_cloud_event.set_source("my_source");
+my_cloud_event.set_spec_version("1.0");
+my_cloud_event.set_type("my_type");
+my_cloud_event.set_binary_data("1010");
+
+// Initialize the binder
+Binder<PubsubMessage> pubsub_binder;
+
+// Specify the EventFormat to be used and create the Message
+PubsubMessage usable_message = pubsub_binder.Bind(my_cloud_event, Format::kJson);
+```
+
+## Unbind a CloudEvent from a Protocol-Message
+```
+// import the header for the binder of the protocol message you're working with
+#include "//v1/protocol_binding/pubsub_binder.h"
+
+using ::google::pubsub::v1::PubsubMessage;
+using ::cloudevents::binder::Binder
+using ::cloudevents::format::Format
+
+PubsubMessage my_pusub_msg; // how you get this message is out of scope for this SDK
+
+// Initialize the binder
+Binder<PubsubMessage> pubsub_binder;
+
+// Create the CloudEvent
+CloudEvent my_cloud_event = pubsub_binder.Unbind(my_pusub_msg);
+```
 
 # Samples
 Run-able code samples are available in the `/samples` folder.
