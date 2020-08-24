@@ -35,7 +35,7 @@ class UnbindBinaryReqTest : public ::testing::Test {
   void SetUp() override {
     http_req.base().set("ce-id", "1");
     http_req.base().set("ce-source", "2");
-    http_req.base().set("ce-spec_version", "3");
+    http_req.base().set("ce-specversion", "3");
     http_req.base().set("ce-type", "4");
   }
   HttpReqBinder binder;
@@ -48,7 +48,7 @@ class UnbindStructuredReqTest : public ::testing::Test {
   void SetUp() override {
     http_req.base().set("content-type", "application/cloudevents+json");
   }
-  std::string valid_payload = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
+  std::string valid_payload = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"specversion\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
   HttpReqBinder binder;
   HttpRequest http_req;
 };
@@ -59,7 +59,7 @@ class UnbindBinaryResTest : public ::testing::Test {
   void SetUp() override {
     http_res.base().set("ce-id", "1");
     http_res.base().set("ce-source", "2");
-    http_res.base().set("ce-spec_version", "3");
+    http_res.base().set("ce-specversion", "3");
     http_res.base().set("ce-type", "4");
   }
   HttpResBinder binder;
@@ -72,7 +72,7 @@ class UnbindStructuredResTest : public ::testing::Test {
   void SetUp() override {
     http_res.base().set("content-type", "application/cloudevents+json");
   }
-  std::string valid_payload = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"spec_version\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
+  std::string valid_payload = "{\n\t\"id\" : \"1\",\n\t\"source\" : \"/test\",\n\t\"specversion\" : \"1.0\",\n\t\"type\" : \"test\"\n}";
   HttpResBinder binder;
   HttpResponse http_res;
 };
@@ -96,7 +96,7 @@ TEST_F(BindTest, BinaryReq_Required) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
 }
 
@@ -110,7 +110,7 @@ TEST_F(BindTest, BinaryReq_Optional) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
 }
 
@@ -123,7 +123,7 @@ TEST_F(BindTest, BinaryReq_BinData) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
   ASSERT_EQ((*bind).body(), "1010");
 }
@@ -137,7 +137,7 @@ TEST_F(BindTest, BinaryReq_TextData) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
   ASSERT_EQ((*bind).body(), "hello");
 }
@@ -149,7 +149,7 @@ TEST_F(BindTest, StructuredReq_Required) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredReq_Optional) {
@@ -162,7 +162,7 @@ TEST_F(BindTest, StructuredReq_Optional) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"opt\" : \"5\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"opt\" : \"5\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredReq_BinData) {
@@ -173,7 +173,7 @@ TEST_F(BindTest, StructuredReq_BinData) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"data_base64\" : \"1010\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"data_base64\" : \"1010\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredReq_TextData) {
@@ -184,7 +184,7 @@ TEST_F(BindTest, StructuredReq_TextData) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"data\" : \"hello\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"data\" : \"hello\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(UnbindBinaryReqTest, Required) {
@@ -298,7 +298,7 @@ TEST_F(BindTest, BinaryRes_Required) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
 }
 
@@ -313,7 +313,7 @@ TEST_F(BindTest, BinaryRes_Optional) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
   ASSERT_EQ((*bind).base()["ce-opt"], "5");
 }
@@ -327,7 +327,7 @@ TEST_F(BindTest, BinaryRes_BinData) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
   ASSERT_EQ((*bind).body(), "1010");
 }
@@ -341,7 +341,7 @@ TEST_F(BindTest, BinaryRes_TextData) {
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");
-  ASSERT_EQ((*bind).base()["ce-spec_version"], "3");
+  ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
   ASSERT_EQ((*bind).body(), "hello");
 }
@@ -353,7 +353,7 @@ TEST_F(BindTest, StructuredRes_Required) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredRes_Optional) {
@@ -366,7 +366,7 @@ TEST_F(BindTest, StructuredRes_Optional) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"opt\" : \"5\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"id\" : \"1\",\n\t\"opt\" : \"5\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredRes_BinData) {
@@ -377,7 +377,7 @@ TEST_F(BindTest, StructuredRes_BinData) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"data_base64\" : \"1010\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"data_base64\" : \"1010\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(BindTest, StructuredRes_TextData) {
@@ -388,7 +388,7 @@ TEST_F(BindTest, StructuredRes_TextData) {
 
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["content-type"], "application/cloudevents+json");
-  ASSERT_EQ((*bind).body(), "{\n\t\"data\" : \"hello\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"spec_version\" : \"3\",\n\t\"type\" : \"4\"\n}");
+  ASSERT_EQ((*bind).body(), "{\n\t\"data\" : \"hello\",\n\t\"id\" : \"1\",\n\t\"source\" : \"2\",\n\t\"specversion\" : \"3\",\n\t\"type\" : \"4\"\n}");
 }
 
 TEST_F(UnbindBinaryResTest, Required) {
