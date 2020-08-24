@@ -45,13 +45,13 @@ class PubsubBinder: public Binder<google::pubsub::v1::PubsubMessage> {
     const google::pubsub::v1::PubsubMessage& pubsub_msg,
     io::cloudevents::v1::CloudEvent& cloud_event) override;
 
-  // // _____ Operations used in Unbind Structured _____
+  // _____ Operations used in Unbind Structured _____
 
-  // cloudevents_absl::StatusOr<std::string> GetContentType(
-  //   const google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  cloudevents_absl::StatusOr<std::string> GetContentType(
+    const google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
-  // cloudevents_absl::StatusOr<std::string> GetPayload(
-  //   const google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  cloudevents_absl::StatusOr<std::string> GetPayload(
+    const google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 };
 
 }  // namespace binding

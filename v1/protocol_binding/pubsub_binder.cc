@@ -87,5 +87,24 @@ absl::Status PubsubBinder::UnbindData(
   return absl::OkStatus();
 }
 
+// _____ Specializations for Unbind Structured _____
+
+StatusOr<std::string> PubsubBinder::GetContentType(
+    const PubsubMessage& pubsub_msg) {
+  google::protobuf::Map<std::string, std::string> attrs =
+    pubsub_msg.attributes();
+  auto ind = attrs.find(kPubsubContenttypeKey);
+  if (ind == attrs.end()) {
+    return std::string("");
+  }
+  return ind -> second;
+}
+
+StatusOr<std::string> PubsubBinder::GetPayload(
+    const PubsubMessage& pubsub_msg) {
+  // get payload and base64 decode
+  return base64_decode(pubsub_msg.data());
+}
+
 }  // namespace binding
 }  // namespace cloudevents
