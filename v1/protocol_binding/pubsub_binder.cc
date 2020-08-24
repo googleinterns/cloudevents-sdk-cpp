@@ -59,5 +59,33 @@ absl::Status PubsubBinder::BindDataStructured(
   return absl::OkStatus();
 }
 
+// _____ Specializations for Unbind Binary _____
+
+absl::Status PubsubBinder::UnbindMetadata(
+    const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
+  for (auto const& attr : pubsub_msg.attributes()) {
+    std::string key = attr.first;
+    if (key == kPubsubContenttypeKey) {
+        if (auto set_contenttype = CloudEventsUtil::SetContentType(attr.second,
+          cloud_event); !set_contenttype.ok()) {
+        return set_contenttype;
+      }
+    } else if (BinderUtil::StripMetadataPrefix(key).ok()){
+      if (auto set_md = CloudEventsUtil::SetMetadata(key, attr.second,
+          cloud_event); !set_md.ok()) {
+        return set_md;
+      }
+    }
+  }
+  return absl::OkStatus();
+}
+
+absl::Status PubsubBinder::UnbindData(
+    const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
+  // both CloudEvent.binary_data and Pubsub.payload uses base64 encoding
+  cloud_event.set_binary_data(pubsub_msg.data());
+  return absl::OkStatus();
+}
+
 }  // namespace binding
 }  // namespace cloudevents

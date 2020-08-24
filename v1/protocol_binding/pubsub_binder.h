@@ -35,15 +35,15 @@ class PubsubBinder: public Binder<google::pubsub::v1::PubsubMessage> {
   absl::Status BindDataStructured(const std::string& payload,
     google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
-  // // _____ Operations used in Unbind Binary _____
+  // _____ Operations used in Unbind Binary _____
 
-  // absl::Status UnbindMetadata(
-  //   const google::pubsub::v1::PubsubMessage& pubsub_msg,
-  //   io::cloudevents::v1::CloudEvent& cloud_event) override;
+  absl::Status UnbindMetadata(
+    const google::pubsub::v1::PubsubMessage& pubsub_msg,
+    io::cloudevents::v1::CloudEvent& cloud_event) override;
 
-  // absl::Status UnbindData(
-  //   const google::pubsub::v1::PubsubMessage& pubsub_msg,
-  //   io::cloudevents::v1::CloudEvent& cloud_event) override;
+  absl::Status UnbindData(
+    const google::pubsub::v1::PubsubMessage& pubsub_msg,
+    io::cloudevents::v1::CloudEvent& cloud_event) override;
 
   // // _____ Operations used in Unbind Structured _____
 
