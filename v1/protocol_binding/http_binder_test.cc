@@ -211,7 +211,7 @@ TEST_F(UnbindBinaryReqTest, Optional) {
 }
 
 TEST_F(UnbindBinaryReqTest, Data) {
-  http_req.body() = "hello";
+  http_req.body() = "1010";
 
   StatusOr<CloudEvent> unbind = binder.Unbind(http_req);
 
@@ -220,7 +220,7 @@ TEST_F(UnbindBinaryReqTest, Data) {
   ASSERT_EQ((*unbind).source(), "2");
   ASSERT_EQ((*unbind).spec_version(), "3");
   ASSERT_EQ((*unbind).type(), "4");
-  ASSERT_EQ((*unbind).text_data(), "hello");
+  ASSERT_EQ((*unbind).binary_data(), "1010");
 }
 
 TEST_F(UnbindStructuredReqTest, Required) {
@@ -415,7 +415,7 @@ TEST_F(UnbindBinaryResTest, Optional) {
 }
 
 TEST_F(UnbindBinaryResTest, Data) {
-  http_res.body() = "hello";
+  http_res.body() = "1010";
 
   StatusOr<CloudEvent> unbind = binder.Unbind(http_res);
 
@@ -424,7 +424,7 @@ TEST_F(UnbindBinaryResTest, Data) {
   ASSERT_EQ((*unbind).source(), "2");
   ASSERT_EQ((*unbind).spec_version(), "3");
   ASSERT_EQ((*unbind).type(), "4");
-  ASSERT_EQ((*unbind).text_data(), "hello");
+  ASSERT_EQ((*unbind).binary_data(), "1010");
 }
 
 TEST_F(UnbindStructuredResTest, Required) {

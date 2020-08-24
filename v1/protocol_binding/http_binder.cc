@@ -94,7 +94,7 @@ template <bool IsReq>
 Status HttpBinder<IsReq>::UnbindData(
     const message<IsReq, string_body>& http_msg, CloudEvent& cloud_event) {
   if (!http_msg.body().empty()) {
-    cloud_event.set_text_data(http_msg.body());
+    cloud_event.set_binary_data(http_msg.body());
   }
   return OkStatus();
 }
