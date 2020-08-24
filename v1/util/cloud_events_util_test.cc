@@ -204,6 +204,17 @@ TEST(CloudEventsUtilTest, SetMetadata_Time) {
   ASSERT_EQ(TimeUtil::ToString(attr.ce_timestamp()), timestamp_str);
 }
 
+TEST(CloudEventsUtilTest, SetContentType) {
+  std::string type = "test";
+  CloudEvent cloud_event;
+
+  absl::Status set_content_type = CloudEventsUtil::SetContentType(type,
+    cloud_event);
+
+  ASSERT_TRUE(set_content_type.ok());
+  ASSERT_EQ(cloud_event.attributes().at("datacontenttype").ce_string(), type);
+}
+
 TEST(CloudEventsUtilTest, ToString_BoolFalse) {
   CloudEvent_CloudEventAttribute attr;
   attr.set_ce_boolean(false);

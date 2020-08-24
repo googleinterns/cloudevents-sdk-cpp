@@ -27,14 +27,18 @@ class CloudEventsUtil {
     const std::string& val,
     io::cloudevents::v1::CloudEvent& cloud_event);
 
+  // set datacontenttype to the given value
+  static absl::Status SetContentType(const std::string& val,
+    io::cloudevents::v1::CloudEvent& cloud_event);
+
   // convert CloudEvent attributes to canonical string representaiton
   // https://github.com/cloudevents/spec/blob/master/spec.md#type-system
   static cloudevents_absl::StatusOr<std::string> ToString(
     const io::cloudevents::v1::CloudEvent_CloudEventAttribute& attr);
 
+ private:
   // convert std::string to ce-string.
   // ce-string is the default ce-type for unrecognized metadata
- private:
   static io::cloudevents::v1::CloudEvent_CloudEventAttribute ToCeString(
     const std::string& val);
 };

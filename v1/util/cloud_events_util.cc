@@ -74,6 +74,11 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
   return absl::OkStatus();
 }
 
+absl::Status CloudEventsUtil::SetContentType(const std::string& val,
+    CloudEvent& cloud_event) {
+  return SetMetadata("datacontenttype", val, cloud_event);
+}
+
 cloudevents_absl::StatusOr<std::string> CloudEventsUtil::ToString(
     const CloudEvent_CloudEventAttribute& attr){
   switch (attr.attr_oneof_case()) {
