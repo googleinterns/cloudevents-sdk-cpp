@@ -14,18 +14,18 @@ namespace binding {
 // Uses GoogleApi's PubsubMessage proto.
 class PubsubBinder: public Binder<google::pubsub::v1::PubsubMessage> {
  private:
-  // // _____ Operations used in Bind Binary _____
+  // _____ Operations used in Bind Binary _____
 
-  // absl::Status BindMetadata(const std::string& key,
-  //   const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
-  //   google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  absl::Status BindMetadata(const std::string& key,
+    const io::cloudevents::v1::CloudEvent_CloudEventAttribute& val,
+    google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
-  // absl::Status BindDataBinary(const std::string& bin_data,
-  //   google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  absl::Status BindDataBinary(const std::string& bin_data,
+    google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
 
-  // absl::Status BindDataText(const std::string& text_data,
-  //   google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  absl::Status BindDataText(const std::string& text_data,
+    google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
   // // _____ Operations used in Bind Structured _____
 

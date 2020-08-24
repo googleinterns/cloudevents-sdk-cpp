@@ -16,5 +16,34 @@ typedef absl::flat_hash_map<std::string, CeAttr> CeAttrMap;
 
 inline static const std::string kPubsubContenttypeKey = "content-type";
 
+// _____ Specializations for Bind Binary _____
+
+absl::Status PubsubBinder::BindMetadata(const std::string& key,
+    const CeAttr& val, PubsubMessage& pubsub_msg) {
+  StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
+  if (!val_str.ok()) {
+    return val_str.status();
+  }
+  (*pubsub_msg.mutable_attributes())[key] = *val_str;
+  return absl::OkStatus();
+}
+
+absl::Status PubsubBinder::BindDataBinary(const std::string& bin_data,
+    PubsubMessage& pubsub_msg) {
+  // both CloudEvent.data and pubsub_msg.data are base64 encoded
+  pubsub_msg.set_data(bin_data);
+  return absl::OkStatus();
+}
+
+absl::Status PubsubBinder::BindDataText(const std::string& text_data,
+    PubsubMessage& pubsub_msg) {
+  StatusOr<std::string> encoded = base64_encode(text_data);
+  if (!encoded.ok()) {
+    return encoded.status();
+  }
+  pubsub_msg.set_data(*encoded);
+  return absl::OkStatus();
+}
+
 }  // namespace binding
 }  // namespace cloudevents
