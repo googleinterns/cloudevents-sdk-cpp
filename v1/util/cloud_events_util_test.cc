@@ -89,7 +89,7 @@ TEST(CloudEventsUtilTest, GetMetadata_NoOptional) {
   ASSERT_TRUE(get_metadata.ok());
   ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
   ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["specversion"].ce_string(), "1.0");
   ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
 }
 
@@ -110,7 +110,7 @@ TEST(CloudEventsUtilTest, GetMetadata_OneOptional) {
   ASSERT_TRUE(get_metadata.ok());
   ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
   ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["specversion"].ce_string(), "1.0");
   ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
   ASSERT_EQ((*get_metadata)["test_key"].ce_string(), "test_val");
 }
@@ -133,7 +133,7 @@ TEST(CloudEventsUtilTest, GetMetadata_TwoOptional) {
   ASSERT_TRUE(get_metadata.ok());
   ASSERT_EQ((*get_metadata)["id"].ce_string(), "1");
   ASSERT_EQ((*get_metadata)["source"].ce_string(), "/test");
-  ASSERT_EQ((*get_metadata)["spec_version"].ce_string(), "1.0");
+  ASSERT_EQ((*get_metadata)["specversion"].ce_string(), "1.0");
   ASSERT_EQ((*get_metadata)["type"].ce_string(), "test");
   ASSERT_EQ((*get_metadata)["test_key1"].ce_string(), "test_val1");
   ASSERT_EQ((*get_metadata)["test_key2"].ce_string(), "test_val2");
@@ -162,7 +162,7 @@ TEST(CloudEventsUtilTest, SetMetadata_Source) {
 TEST(CloudEventsUtilTest, SetMetadata_SpecVersion) {
   CloudEvent cloud_event;
 
-  absl::Status set_meta = CloudEventsUtil::SetMetadata("spec_version", "1.xx",
+  absl::Status set_meta = CloudEventsUtil::SetMetadata("specversion", "1.xx",
     cloud_event);
 
   ASSERT_TRUE(set_meta.ok());

@@ -38,9 +38,12 @@ cloudevents_absl::StatusOr<
     cloud_event.attributes().end());
 
   // insert required attrs
+  // CE Spec defines attribute as "specversion" while
+  // proprietary proto defines it as "spec_version"
+  // https://github.com/cloudevents/spec/blob/master/spec.md#specversion
   attrs["id"] = ToCeString(cloud_event.id());
   attrs["source"] = ToCeString(cloud_event.source());
-  attrs["spec_version"] = ToCeString(cloud_event.spec_version());
+  attrs["specversion"] = ToCeString(cloud_event.spec_version());
   attrs["type"] = ToCeString(cloud_event.type());
 
   return attrs;
@@ -49,11 +52,14 @@ cloudevents_absl::StatusOr<
 absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
     const std::string& val, CloudEvent& cloud_event) {
   // TODO (#39): Recognize URI and URI Reference types
+  // CE Spec defines attribute as "specversion" while
+  // proprietary proto defines it as "spec_version"
+  // https://github.com/cloudevents/spec/blob/master/spec.md#specversion
   if (key == "id") {
     cloud_event.set_id(val);
   } else if (key == "source") {
     cloud_event.set_source(val);
-  } else if (key == "spec_version") {
+  } else if (key == "specversion") {
     cloud_event.set_spec_version(val);
   } else if (key == "type") {
     cloud_event.set_type(val);
