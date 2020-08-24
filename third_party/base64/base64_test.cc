@@ -3,8 +3,7 @@
 
 #include <gtest/gtest.h>
 
-namespace base64 {
-
+namespace cloudevents_base64 {
 
 // Test all possibilites of fill bytes (none, one =, two ==)
 // References calculated with: https://www.base64encode.org/
@@ -76,5 +75,4 @@ TEST(Decode, FillTwo) {
    ASSERT_EQ(rest2_decoded, rest2_original);
 }
 
-
-}  // namespace base64
+}  // namespace cloudevents_base64
