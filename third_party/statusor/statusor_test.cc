@@ -25,7 +25,7 @@ limitations under the License.
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-namespace absl {
+namespace cloudevents_absl {
 namespace {
 
 
@@ -150,8 +150,8 @@ TEST(StatusOr, TestMoveWithValuesAndErrors) {
   StatusOr<std::string> status_or(std::string(1000, '0'));
   StatusOr<std::string> value1(std::string(1000, '1'));
   StatusOr<std::string> value2(std::string(1000, '2'));
-  StatusOr<std::string> error1(Status(absl::StatusCode::kUnknown, "error1"));
-  StatusOr<std::string> error2(Status(absl::StatusCode::kUnknown, "error2"));
+  StatusOr<std::string> error1(absl::Status(absl::StatusCode::kUnknown, "error1"));
+  StatusOr<std::string> error2(absl::Status(absl::StatusCode::kUnknown, "error2"));
 
   ASSERT_TRUE(status_or.ok());
   EXPECT_EQ(std::string(1000, '0'), status_or.value());
@@ -181,8 +181,8 @@ TEST(StatusOr, TestCopyWithValuesAndErrors) {
   StatusOr<std::string> status_or(std::string(1000, '0'));
   StatusOr<std::string> value1(std::string(1000, '1'));
   StatusOr<std::string> value2(std::string(1000, '2'));
-  StatusOr<std::string> error1(Status(absl::StatusCode::kUnknown, "error1"));
-  StatusOr<std::string> error2(Status(absl::StatusCode::kUnknown, "error2"));
+  StatusOr<std::string> error1(absl::Status(absl::StatusCode::kUnknown, "error1"));
+  StatusOr<std::string> error2(absl::Status(absl::StatusCode::kUnknown, "error2"));
 
   ASSERT_TRUE(status_or.ok());
   EXPECT_EQ(std::string(1000, '0'), status_or.value());
@@ -229,7 +229,7 @@ TEST(StatusOrDeathTest, TestDefaultCtorValue) {
 }
 
 TEST(StatusOr, TestStatusCtor) {
-  StatusOr<int> thing(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int> thing(absl::Status(absl::StatusCode::kCancelled, ""));
   EXPECT_FALSE(thing.ok());
   EXPECT_EQ(thing.status().code(), absl::StatusCode::kCancelled);
 }
@@ -250,7 +250,7 @@ TEST(StatusOr, TestCopyCtorStatusOk) {
 }
 
 TEST(StatusOr, TestCopyCtorStatusNotOk) {
-  StatusOr<int> original(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int> original(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<int> copy(original);
   EXPECT_EQ(copy.status(), original.status());
 }
@@ -273,7 +273,7 @@ TEST(StatusOr, TestCopyCtorStatusOKConverting) {
 }
 
 TEST(StatusOr, TestCopyCtorStatusNotOkConverting) {
-  StatusOr<int> original(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int> original(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<double> copy(original);
   EXPECT_EQ(copy.status(), original.status());
 }
@@ -288,7 +288,7 @@ TEST(StatusOr, TestAssignmentStatusOk) {
 }
 
 TEST(StatusOr, TestAssignmentStatusNotOk) {
-  StatusOr<int> source(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int> source(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<int> target;
   target = source;
   EXPECT_EQ(target.status(), source.status());
@@ -297,9 +297,9 @@ TEST(StatusOr, TestAssignmentStatusNotOk) {
 TEST(StatusOr, TestStatus) {
   StatusOr<int> good(4);
   EXPECT_TRUE(good.ok());
-  StatusOr<int> bad(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int> bad(absl::Status(absl::StatusCode::kCancelled, ""));
   EXPECT_FALSE(bad.ok());
-  EXPECT_EQ(bad.status(), Status(absl::StatusCode::kCancelled, ""));
+  EXPECT_EQ(bad.status(), absl::Status(absl::StatusCode::kCancelled, ""));
 }
 
 TEST(StatusOr, TestValue) {
@@ -315,12 +315,12 @@ TEST(StatusOr, TestValueConst) {
 }
 
 TEST(StatusOrDeathTest, TestValueNotOk) {
-  StatusOr<int> thing(Status(absl::StatusCode::kCancelled, "cancelled"));
+  StatusOr<int> thing(absl::Status(absl::StatusCode::kCancelled, "cancelled"));
   EXPECT_DEATH(thing.value(), "");
 }
 
 TEST(StatusOrDeathTest, TestValueNotOkConst) {
-  const StatusOr<int> thing(Status(absl::StatusCode::kUnknown, ""));
+  const StatusOr<int> thing(absl::Status(absl::StatusCode::kUnknown, ""));
   EXPECT_DEATH(thing.value(), "");
 }
 
@@ -336,9 +336,9 @@ TEST(StatusOrDeathTest, TestPointerDefaultCtorValue) {
 }
 
 TEST(StatusOr, TestPointerStatusCtor) {
-  StatusOr<int*> thing(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int*> thing(absl::Status(absl::StatusCode::kCancelled, ""));
   EXPECT_FALSE(thing.ok());
-  EXPECT_EQ(thing.status(), Status(absl::StatusCode::kCancelled, ""));
+  EXPECT_EQ(thing.status(), absl::Status(absl::StatusCode::kCancelled, ""));
 }
 
 TEST(StatusOr, TestPointerValueCtor) {
@@ -357,7 +357,7 @@ TEST(StatusOr, TestPointerCopyCtorStatusOk) {
 }
 
 TEST(StatusOr, TestPointerCopyCtorStatusNotOk) {
-  StatusOr<int*> original(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int*> original(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<int*> copy(original);
   EXPECT_EQ(copy.status(), original.status());
 }
@@ -372,7 +372,7 @@ TEST(StatusOr, TestPointerCopyCtorStatusOKConverting) {
 }
 
 TEST(StatusOr, TestPointerCopyCtorStatusNotOkConverting) {
-  StatusOr<Derived*> original(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<Derived*> original(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<Base2*> copy(original);
   EXPECT_EQ(copy.status(), original.status());
 }
@@ -387,7 +387,7 @@ TEST(StatusOr, TestPointerAssignmentStatusOk) {
 }
 
 TEST(StatusOr, TestPointerAssignmentStatusNotOk) {
-  StatusOr<int*> source(Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<int*> source(absl::Status(absl::StatusCode::kCancelled, ""));
   StatusOr<int*> target;
   target = source;
   EXPECT_EQ(target.status(), source.status());
@@ -397,8 +397,8 @@ TEST(StatusOr, TestPointerStatus) {
   const int kI = 0;
   StatusOr<const int*> good(&kI);
   EXPECT_TRUE(good.ok());
-  StatusOr<const int*> bad(Status(absl::StatusCode::kCancelled, ""));
-  EXPECT_EQ(bad.status(), Status(absl::StatusCode::kCancelled, ""));
+  StatusOr<const int*> bad(absl::Status(absl::StatusCode::kCancelled, ""));
+  EXPECT_EQ(bad.status(), absl::Status(absl::StatusCode::kCancelled, ""));
 }
 
 TEST(StatusOr, TestPointerValue) {
@@ -423,16 +423,16 @@ TEST(StatusOr, TestPointerValueConst) {
 // }
 
 TEST(StatusOrDeathTest, TestPointerValueNotOk) {
-  StatusOr<int*> thing(Status(absl::StatusCode::kCancelled, "cancelled"));
+  StatusOr<int*> thing(absl::Status(absl::StatusCode::kCancelled, "cancelled"));
   EXPECT_DEATH(thing.value(), "");
 }
 
 TEST(StatusOrDeathTest, TestPointerValueNotOkConst) {
-  const StatusOr<int*> thing(Status(absl::StatusCode::kCancelled, "cancelled"));
+  const StatusOr<int*> thing(absl::Status(absl::StatusCode::kCancelled, "cancelled"));
   EXPECT_DEATH(thing.value(), "");
 }
 
 // Benchmarks were removed as we not intend to change forked code.
 
-} // namespace
-} // namespace absl
+}  // namespace
+}  // namespace cloudevents_absl

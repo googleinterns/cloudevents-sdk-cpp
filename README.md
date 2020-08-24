@@ -9,14 +9,26 @@ The CloudEvent class (generated from protobuf) is based on this [open PR to the 
 
 The PubsubMessage class (generated from protobuf) is based on [Google API](https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto#L188).
 
-
 **This is not an officially supported Google product.**
+
+# User Guide
+## Setup
+Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
+
+## Binding a CloudEvent to a Protocol
+### BinaryContentMode
+_Coming soon_
+
+### StructuredContentMode
+_Coming soon_
+
+## Event-formats
+To specify an event-format you want to use:
+1. Import the header file `//v1/event_format/format`.
+2. Pass in the format parameter as `cloudevents::format::_A_FORMAT`. For a specific sample check the documentation on StructuredContentMode.
 
 # Samples
 Run-able code samples are available in the `/samples` folder.
-
-### Setup
-Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
 
 ### Run
 1. Create executable <br/>

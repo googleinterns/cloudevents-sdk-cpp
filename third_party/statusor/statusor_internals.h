@@ -30,7 +30,7 @@
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
 
-namespace absl {
+namespace cloudevents_absl {
 
 namespace internal_statusor {
 
@@ -244,6 +244,6 @@ template <> struct TraitsBase<false, false> {
 
 } // namespace internal_statusor
 
-} // namespace absl
+} // namespace cloudevents_absl
 
 #endif
