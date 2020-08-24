@@ -45,5 +45,19 @@ absl::Status PubsubBinder::BindDataText(const std::string& text_data,
   return absl::OkStatus();
 }
 
+// _____ Specializations for Bind Structured _____
+
+absl::Status PubsubBinder::BindContentType(
+    const std::string& contenttype, PubsubMessage& pubsub_msg) {
+  (*pubsub_msg.mutable_attributes())[kPubsubContenttypeKey] = contenttype;
+  return absl::OkStatus();
+}
+
+absl::Status PubsubBinder::BindDataStructured(
+    const std::string& payload, PubsubMessage& pubsub_msg) {
+  pubsub_msg.set_data(payload);
+  return absl::OkStatus();
+}
+
 }  // namespace binding
 }  // namespace cloudevents

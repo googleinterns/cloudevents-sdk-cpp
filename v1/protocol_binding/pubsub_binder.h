@@ -27,13 +27,13 @@ class PubsubBinder: public Binder<google::pubsub::v1::PubsubMessage> {
   absl::Status BindDataText(const std::string& text_data,
     google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
-  // // _____ Operations used in Bind Structured _____
+  // _____ Operations used in Bind Structured _____
 
-  // absl::Status BindContentType(const std::string& contenttype,
-  //   google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  absl::Status BindContentType(const std::string& contenttype,
+    google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
-  // absl::Status BindDataStructured(const std::string& payload,
-  //   google::pubsub::v1::PubsubMessage& pubsub_msg) override;
+  absl::Status BindDataStructured(const std::string& payload,
+    google::pubsub::v1::PubsubMessage& pubsub_msg) override;
 
   // // _____ Operations used in Unbind Binary _____
 
