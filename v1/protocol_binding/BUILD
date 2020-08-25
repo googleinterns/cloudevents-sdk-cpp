@@ -7,14 +7,11 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//third_party/base64:base64_lib",
-        "//third_party/statusor:statusor_lib",
         "//proto:cloud_event_cc_proto",
-        "//proto:pubsub_cc_proto",
-        "//v1/event_format:json_formatter_lib",
+        "//third_party/statusor:statusor_lib",
         "//v1/util:binder_util_lib",
-        "//v1/util:formatter_util_lib",
         "//v1/util:cloud_events_util_lib",
+        "//v1/util:formatter_util_lib",
 
     ],
 )
