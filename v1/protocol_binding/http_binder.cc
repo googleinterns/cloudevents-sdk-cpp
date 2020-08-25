@@ -1,8 +1,7 @@
 #include "http_binder.h"
 
-#include "third_party/statusor/statusor.h"
-#include "proto/cloud_event.pb.h"
 #include "v1/util/binder_util.h"
+#include "v1/util/cloud_events_util.h"
 
 namespace cloudevents {
 namespace binding {

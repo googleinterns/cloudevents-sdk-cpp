@@ -27,6 +27,10 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "@boost//:beast",
+        "//proto:cloud_event_cc_proto",
+        "//third_party/statusor:statusor_lib",
+        "//v1/util:binder_util_lib",
+        "//v1/util:cloud_events_util_lib",
         ":binder_lib",
     ],
 )
