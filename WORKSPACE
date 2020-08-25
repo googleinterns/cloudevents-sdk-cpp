@@ -54,14 +54,14 @@ git_repository(
 # Used to get PubSub message proto
 
 http_archive(
-    name = "googleapis",
+    name = "com_google_googleapis",
     urls = ["https://github.com/googleapis/googleapis/archive/master.zip"],
     # commented out SHA as it is flaky
     #sha256 = "58d0c3e2bf38d25c4a0be7939166ca263bfc4fe58d3cfc83d05576cb04b97cc7",
     strip_prefix = "googleapis-master",
 )
 
-load("@googleapis//:repository_rules.bzl", "switched_rules_by_language")
+load("@com_google_googleapis//:repository_rules.bzl", "switched_rules_by_language")
 
 switched_rules_by_language(
     name = "com_google_googleapis_imports",
