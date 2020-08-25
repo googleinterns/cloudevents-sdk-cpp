@@ -38,8 +38,6 @@ absl::Status WriteToFile(std::string file_path, io::cloudevents::v1::CloudEvent*
 }
 
 absl::Status PopulateEvent(io::cloudevents::v1::CloudEvent* event){
-    // TODO (#7): Abstract this out to a Buider with validation.
-
     GetUserInput("Enter id", *event -> mutable_id());
     GetUserInput("Enter source", *event -> mutable_source());
     GetUserInput("Enter spec_version", *event -> mutable_spec_version());
@@ -49,7 +47,6 @@ absl::Status PopulateEvent(io::cloudevents::v1::CloudEvent* event){
     GetUserInput("Would you like to enter data (y/n)", has_data);
     if (has_data=="y") {
         std::string data_type;
-        // TODO (#6): Support Any data
         GetUserInput("Enter data type (bytes/ string)", data_type);
         const static std::unordered_map<std::string,int> data_type_to_case{
             {"bytes",1},
@@ -92,7 +89,6 @@ int main(int argc, char* argv[]) {
     }
     
     // create an event
-    // TODO (#8): handle optional and extension attrs
     program_status = PopulateEvent(&event);
     if (!program_status.ok()) {
         OutputToInterface(program_status.ToString(), -1);

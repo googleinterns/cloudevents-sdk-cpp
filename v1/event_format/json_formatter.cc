@@ -98,7 +98,6 @@ cloudevents_absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
   CloudEvent cloud_event;
 
-  // TODO (#39): Should we try to infer CE Type from serialized_data?
   for (auto const& member : root.getMemberNames()) {
     if (auto set_metadata = CloudEventsUtil::SetMetadata(member,
       root[member].asString(), cloud_event); !set_metadata.ok()) {
