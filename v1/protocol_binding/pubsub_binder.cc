@@ -83,7 +83,7 @@ absl::Status PubsubBinder::UnbindMetadata(
 absl::Status PubsubBinder::UnbindData(
     const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
   // both CloudEvent.binary_data and Pubsub.payload uses base64 encoding
-  cloud_event.set_binary_data(pubsub_msg.data());
+  cloud_event.set_text_data(base64_decode(pubsub_msg.data()));
   return absl::OkStatus();
 }
 

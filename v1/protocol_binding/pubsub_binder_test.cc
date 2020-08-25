@@ -186,7 +186,7 @@ TEST_F(UnbindBinaryTest, Optional) {
 
 TEST_F(UnbindBinaryTest, Data) {
   (*pubsub_msg.mutable_attributes())["ce-opt"] = "5";
-  pubsub_msg.set_data("1010");
+  pubsub_msg.set_data("aGVsbG8=");
 
   StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
@@ -195,7 +195,7 @@ TEST_F(UnbindBinaryTest, Data) {
   ASSERT_EQ((*unbind).source(), "2");
   ASSERT_EQ((*unbind).spec_version(), "3");
   ASSERT_EQ((*unbind).type(), "4");
-  ASSERT_EQ((*unbind).binary_data(), "1010");
+  ASSERT_EQ((*unbind).text_data(), "hello");
 }
 
 TEST(Unbind, Structured_Invalid) {
