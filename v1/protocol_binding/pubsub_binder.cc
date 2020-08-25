@@ -3,9 +3,6 @@
 namespace cloudevents {
 namespace binding {
 
-using ::cloudevents_absl::StatusOr;
-using ::cloudevents_base64::base64_encode;
-using ::cloudevents_base64::base64_decode;
 using ::google::pubsub::v1::PubsubMessage;
 using ::io::cloudevents::v1::CloudEvent;
 using ::cloudevents::binder_util::BinderUtil;
@@ -20,7 +17,8 @@ inline static const std::string kPubsubContenttypeKey = "content-type";
 
 absl::Status PubsubBinder::BindMetadata(const std::string& key,
     const CeAttr& val, PubsubMessage& pubsub_msg) {
-  StatusOr<std::string> val_str = CloudEventsUtil::ToString(val);
+  cloudevents_absl::StatusOr<std::string> val_str =
+    CloudEventsUtil::ToString(val);
   if (!val_str.ok()) {
     return val_str.status();
   }
@@ -37,7 +35,8 @@ absl::Status PubsubBinder::BindDataBinary(const std::string& bin_data,
 
 absl::Status PubsubBinder::BindDataText(const std::string& text_data,
     PubsubMessage& pubsub_msg) {
-  StatusOr<std::string> encoded = base64_encode(text_data);
+  cloudevents_absl::StatusOr<std::string> encoded =
+    cloudevents_base64::base64_encode(text_data);
   if (!encoded.ok()) {
     return encoded.status();
   }
@@ -83,13 +82,14 @@ absl::Status PubsubBinder::UnbindMetadata(
 absl::Status PubsubBinder::UnbindData(
     const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
   // both CloudEvent.binary_data and Pubsub.payload uses base64 encoding
-  cloud_event.set_text_data(base64_decode(pubsub_msg.data()));
+  cloud_event.set_text_data(
+    cloudevents_base64::base64_decode(pubsub_msg.data()));
   return absl::OkStatus();
 }
 
 // _____ Specializations for Unbind Structured _____
 
-StatusOr<std::string> PubsubBinder::GetContentType(
+cloudevents_absl::StatusOr<std::string> PubsubBinder::GetContentType(
     const PubsubMessage& pubsub_msg) {
   google::protobuf::Map<std::string, std::string> attrs =
     pubsub_msg.attributes();
@@ -100,10 +100,10 @@ StatusOr<std::string> PubsubBinder::GetContentType(
   return ind -> second;
 }
 
-StatusOr<std::string> PubsubBinder::GetPayload(
+cloudevents_absl::StatusOr<std::string> PubsubBinder::GetPayload(
     const PubsubMessage& pubsub_msg) {
   // get payload and base64 decode
-  return base64_decode(pubsub_msg.data());
+  return cloudevents_base64::base64_decode(pubsub_msg.data());
 }
 
 }  // namespace binding
