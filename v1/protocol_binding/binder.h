@@ -188,6 +188,8 @@ class Binder {
     return *deserialization;
   }
 
+  virtual ~Binder(){};
+
  private:
   // The following operations are protocol-specific and
   // will be overriden for each supported ProtocolBinding
