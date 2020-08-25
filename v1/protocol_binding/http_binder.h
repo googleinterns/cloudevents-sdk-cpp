@@ -70,8 +70,9 @@ class HttpBinder: public Binder<
 };
 
 // _____ Concrete Binders _____
-class HttpReqBinder: public HttpBinder<true> {};
-class HttpResBinder: public HttpBinder<false> {};
+using HttpReqBinder = HttpBinder<true>;
+using HttpResBinder = HttpBinder<false>;
+
 
 }  // namespace binding
 }  // namespace cloudevents
