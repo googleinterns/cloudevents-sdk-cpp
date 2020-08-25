@@ -78,6 +78,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 
+// TODO (#61): Switch to official absl::StatusOr release when available
 namespace cloudevents_absl {
 
 // Returned StatusOr objects may not be ignored.
