@@ -2,6 +2,8 @@
 #define CLOUDEVENTSCPPSDK_V1_BINDING_PUBSUBBINDER_H
 
 #include "external/googleapis/google/pubsub/v1/pubsub.pb.h"
+#include "proto/cloud_event.pb.h"
+#include "third_party/statusor/statusor.h"
 #include "v1/protocol_binding/binder.h"
 
 namespace cloudevents {

@@ -1,5 +1,9 @@
 #include "pubsub_binder.h"
 
+#include "third_party/base64/base64.h"
+#include "v1/util/binder_util.h"
+#include "v1/util/cloud_events_util.h"
+
 namespace cloudevents {
 namespace binding {
 
