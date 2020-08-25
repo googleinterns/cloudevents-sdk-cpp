@@ -12,17 +12,60 @@ The PubsubMessage class (generated from protobuf) is based on [Google API](https
 **This is not an officially supported Google product.**
 
 # User Guide
-## Setup
-Install Bazel. Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
+More example use cases are available in header files as comments.
+The only files that you will directly import and use are in `//v1/protocol_binding/`.
 
-## Binding a CloudEvent to a Protocol-Message
-### BinaryContentMode
+## Setup
+### Install Bazel Build System
+Instuctions found in [Bazel documentation](https://docs.bazel.build/versions/master/install-ubuntu.html).
+
+### Import SDK as a Bazel package in WORKSPACE
+In `//WORKSPACE`
 ```
-// import the header for the binder of the protocol message you're working with
+# TODO (#63) : Update README to create Bazel target to master repo once merged
+
+git_repository(
+    name = "cloudevents_cpp_sdk",
+    commit = "20c9855c11bc66efcc6e086571477bb69870be1d",
+    remote = "https://github.com/michlee1337/cloudevents-sdk-cpp/tree/binder-all.v2",
+)
+
+```
+
+### Set up the build dependencies
+Specify any binders needed as a bazel target dependency.
+
+To use PubsubBinder:
+```
+cc_binary(
+    ...
+    deps = [
+        ...
+        "@cloudevents_cpp_sdk/protocol_binding:pubsub_binder_lib",
+    ],
+)
+```
+
+To use HttpReqBinder or HttpResBinder:
+```
+cc_binary(
+    ...
+    deps = [
+        ...
+        "@cloudevents_cpp_sdk/protocol_binding:http_binder_lib",
+    ],
+)
+```
+
+## Binding a CloudEvent to a Protocol-Message in Binary-ContentMode
+Import the header file and use XBinder
+```
+// import the header for the binder
 #include "//v1/protocol_binding/pubsub_binder.h"
- 
+
 using ::google::pubsub::v1::PubsubMessage;
-using ::cloudevents::binder::Binder
+using ::cloudevents::binder::PubsubBinder;
+using ::cloudevents_absl::StatusOr;
 
 // create a CloudEvent
 CloudEvent my_cloud_event;
@@ -33,23 +76,30 @@ my_cloud_event.set_type("my_type");
 my_cloud_event.set_binary_data("1010");
 
 // Initialize the binder
-Binder<PubsubMessage> pubsub_binder;
+PubsubBinder pubsub_binder;
 
 // Create the Message
-PubsubMessage usable_message = pubsub_binder.bind(my_cloud_event);
+StatusOr<PubsubMessage> bind = pubsub_binder.Bind(my_cloud_event);
+
+// Check no errors
+if (!bind.ok()) {
+  std::cerr << bind.status();
+}
+
+// unwrap message
+PubsubMessage usable_message = *bind;
 ```
 
-### StructuredContentMode
+## Binding a CloudEvent to a Protocol-Message in Structured-ContentMode
+Import the header file and use Format and XBinder
 ```
-// import the header for formats
-#include "//v1/event_format/format.h"
-
-// import the header for the binder of the protocol message you're working with
+// import the header for the binder
 #include "//v1/protocol_binding/pubsub_binder.h"
 
 using ::google::pubsub::v1::PubsubMessage;
-using ::cloudevents::binder::Binder
+using ::cloudevents::binder::PubsubBinder
 using ::cloudevents::format::Format
+using ::cloudevents_absl::StatusOr;
 
 // create a CloudEvent
 CloudEvent my_cloud_event;
@@ -59,11 +109,19 @@ my_cloud_event.set_spec_version("1.0");
 my_cloud_event.set_type("my_type");
 my_cloud_event.set_binary_data("1010");
 
-// Initialize the binder
-Binder<PubsubMessage> pubsub_binder;
+// initialize the binder
+PubsubBinder pubsub_binder;
 
-// Specify the EventFormat to be used and create the Message
-PubsubMessage usable_message = pubsub_binder.Bind(my_cloud_event, Format::kJson);
+// specify the EventFormat to be used and create the Message
+StatusOr<PubsubMessage> bind = pubsub_binder.Bind(my_cloud_event, Format::kJson);
+
+// check no errors
+if (!bind.ok()) {
+  std::cerr << bind.status();
+}
+
+// unwrap message
+PubsubMessage usable_message = *bind;
 ```
 
 ## Unbind a CloudEvent from a Protocol-Message
@@ -73,15 +131,24 @@ PubsubMessage usable_message = pubsub_binder.Bind(my_cloud_event, Format::kJson)
 
 using ::google::pubsub::v1::PubsubMessage;
 using ::cloudevents::binder::Binder
-using ::cloudevents::format::Format
+using ::cloudevents_absl::StatusOr;
 
-PubsubMessage my_pusub_msg; // how you get this message is out of scope for this SDK
+PubsubMessage my_pusub_msg = ...; // However you get this message
 
-// Initialize the binder
-Binder<PubsubMessage> pubsub_binder;
+// initialize the binder
+PubsubBinder pubsub_binder;
 
-// Create the CloudEvent
-CloudEvent my_cloud_event = pubsub_binder.Unbind(my_pusub_msg);
+// create the CloudEvent
+StatusOr<CloudEvent> unbind = pubsub_binder.Unbind(my_pusub_msg);
+
+// check no errors
+if (!unbind.ok()) {
+  std::cerr << unbind.status();
+}
+
+// unwrap cloudevent
+CloudEvent cloud_event = *unbind;
+
 ```
 
 # Samples
@@ -97,14 +164,3 @@ Run-able code samples are available in the `/samples` folder.
 All logic related to implementing version 1 of the CloudEvent spec can be found in `//v1`.
 - All logic for [Protocol Binding](https://github.com/cloudevents/spec/blob/master/spec.md#protocol-binding)s can be found in the subfolder `//v1/protocol_binding`.
 - All logic for [Event Format](https://github.com/cloudevents/spec/blob/master/spec.md#event-format)s can be found in the subfolder `//v1/event_format`.
-
-# Dependencies
-## Json
-Using [Nuxi NL's bazel setup] (https://github.com/NuxiNL/bazel-third-party) to setup a bazel target for jsoncpp
-
-## base64
-Using René Nyffenegger's [base64 encoding/ decoding lib](https://github.com/ReneNyffenegger/cpp-base64).
-
-## Abseil StatusOr
-Copying [Envoy's Abseil StatusOr setup](https://github.com/envoyproxy/envoy/tree/44eedc792ab64bba2358e0294b53294c6bc30526/third_party/statusor) temporarily until an official abseil release exists.
-
