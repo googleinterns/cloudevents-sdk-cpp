@@ -114,6 +114,10 @@ TEST_F(BindTest, BinaryReq_Optional) {
 TEST_F(BindTest, BinaryReq_BinData) {
   HttpReqBinder binder;
   ce.set_binary_data("1010");
+  std::string content_type_str = "text/plain";
+  CeAttr content_type;
+  content_type.set_ce_string(content_type_str);
+  (*ce.mutable_attributes())["datacontenttype"] = content_type;
 
   cloudevents_absl::StatusOr<HttpRequest> bind = binder.Bind(ce);
 
@@ -122,12 +126,17 @@ TEST_F(BindTest, BinaryReq_BinData) {
   ASSERT_EQ((*bind).base()["ce-source"], "2");
   ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
+  ASSERT_EQ((*bind).base()["content-type"], content_type_str);
   ASSERT_EQ((*bind).body(), "1010");
 }
 
 TEST_F(BindTest, BinaryReq_TextData) {
   HttpReqBinder binder;
   ce.set_text_data("hello");
+  std::string content_type_str = "text/plain";
+  CeAttr content_type;
+  content_type.set_ce_string(content_type_str);
+  (*ce.mutable_attributes())["datacontenttype"] = content_type;
 
   cloudevents_absl::StatusOr<HttpRequest> bind = binder.Bind(ce);
 
@@ -136,6 +145,7 @@ TEST_F(BindTest, BinaryReq_TextData) {
   ASSERT_EQ((*bind).base()["ce-source"], "2");
   ASSERT_EQ((*bind).base()["ce-specversion"], "3");
   ASSERT_EQ((*bind).base()["ce-type"], "4");
+  ASSERT_EQ((*bind).base()["content-type"], content_type_str);
   ASSERT_EQ((*bind).body(), "hello");
 }
 

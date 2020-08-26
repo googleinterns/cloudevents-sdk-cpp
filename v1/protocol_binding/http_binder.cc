@@ -1,7 +1,8 @@
 #include "http_binder.h"
 
+#include "third_party/statusor/statusor.h"
+#include "proto/cloud_event.pb.h"
 #include "v1/util/binder_util.h"
-#include "v1/util/cloud_events_util.h"
 
 namespace cloudevents {
 namespace binding {
@@ -27,6 +28,13 @@ absl::Status HttpBinder<IsReq>::BindMetadata(const std::string& key,
     CloudEventsUtil::ToString(val);
   if (!val_str.ok()) {
     return val_str.status();
+  }
+
+  // Replace ce-datacontenttype 
+  // https://github.com/cloudevents/spec/blob/v1.0/http-protocol-binding.md#311-http-content-type
+  if (key == "ce-datacontenttype") {
+    http_msg.base().set(kHttpContentKey, *val_str);
+    return absl::OkStatus();
   }
   http_msg.base().set(key, *val_str);
   return absl::OkStatus();
@@ -103,7 +111,7 @@ cloudevents_absl::StatusOr<std::string> HttpBinder<IsReq>::GetContentType(
     const message<IsReq, string_body>& http_msg) {
   auto iter = http_msg.base().find(kHttpContentKey);
   if (iter == http_msg.base().end()) {
-    // If kHttpContentKey not present, Binary-ContentMode
+    // If kHttpContentKey not present, cannot be Structured-ContentMode
     // cloudevents_absl::StatusOr<> requires explicit typecasting
     return std::string("");
   }
