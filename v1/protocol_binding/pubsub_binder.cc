@@ -101,7 +101,7 @@ cloudevents_absl::StatusOr<std::string> PubsubBinder::GetContentType(
   if (ind == attrs.end()) {
     return std::string("");
   }
-  return ind -> second;
+  return ind->second;
 }
 
 cloudevents_absl::StatusOr<std::string> PubsubBinder::GetPayload(
