@@ -23,11 +23,52 @@ namespace binding {
 //
 // To create a StructuredContentMode Message
 // pass an additional EventFormat parameter to Bind().
+//
+// Bind() returns a StatusOr<Message>, while
+// UnBind() returns a StatusOr<CloudEvent>.
+// These StatusOr<X> objects are unions between an
+// absl::Status and an X object.
+// The purpose of this is to provide a status when binding fails.
+//
+// Example of binding a CloudEvent to a Message in Binary-ContentMode:
+//
+//     StatusOr<Message> bind_binary = my_binder.Bind(my_cloud_event);
+//
+//     if (!bind_binary.ok()) {
+//       std::cerr << bind_binary.status();
+//     } else {
+//       Message my_message = *bind_binary;
+//       //     do something with the Message
+//     }
+//
+// Example of binding a CloudEvent to a Message in Structured-ContentMode:
+//
+//     StatusOr<Message> bind_structured = my_binder.Bind(my_cloud_event, Format::kFormatName);
+//
+//     if (!bind_structured.ok()) {
+//       std::cerr << bind_structured.status();
+//     } else {
+//       Message my_message = *bind_structured;
+//       //     do something with the Message
+//     }
+//
+// Example of unbinding a Message to a CloudEvent:
+//
+//     StatusOr<CloudEvent> unbind = my_binder.Unbind(my_message);
+//
+//     if (!unbind.ok()) {
+//       std::cerr << unbind.status();
+//     } else {
+//       CloudEvent my_cloud_event = *unbind;
+//       //     do something with the CloudEvent
+//     }
+//
 // Code samples available in README.md.
+
 template <typename Message>
 class Binder {
  public:
-  // Create Binary-ContentMode Message containing CloudEvent
+  // Create Binary-ContentMode Message containing CloudEvent.
   cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event) {
     if (auto valid = cloudevents::cloudevents_util::CloudEventsUtil::IsValid(
@@ -78,7 +119,7 @@ class Binder {
   }
 
   // Create Structured-ContentMode Message
-  // containing Format-serialized CloudEvents
+  // containing Format-serialized CloudEvents.
   cloudevents_absl::StatusOr<Message> Bind(
       const io::cloudevents::v1::CloudEvent& cloud_event,
       const cloudevents::format::Format& format) {
