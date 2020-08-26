@@ -6,10 +6,11 @@ namespace binder_util {
 constexpr char kMetadataPrefix[] = "ce-";
 constexpr char kContentTypePrefix[] = "application/cloudevents+";
 
-// length of prefix constants are made constexpr to avoid
-// multiple calls to strlen()
-constexpr size_t kMetadataPrefixLen = strlen(kMetadataPrefix);
-constexpr size_t kContentTypePrefixLen = strlen(kContentTypePrefix);
+// Length of prefix constants are made constexpr to avoid
+// multiple calls to sizeof().
+// Does not count the NULL character.
+constexpr size_t kMetadataPrefixLen = sizeof(kMetadataPrefix) - 1;
+constexpr size_t kContentTypePrefixLen = sizeof(kContentTypePrefix) - 1;
 
 constexpr char kErrNoPrefix[] = "Prefix is not present in the given value.";
 
