@@ -2,18 +2,26 @@
 
 #include <google/protobuf/util/time_util.h>
 
+#include <regex>
+
 namespace cloudevents {
 namespace cloudevents_util {
 
 using ::io::cloudevents::v1::CloudEvent;
-using ::io::cloudevents::v1::CloudEvent_CloudEventAttribute;
 using ::google::protobuf::Timestamp;
 using ::google::protobuf::util::TimeUtil;
+
+// Taken from https://tools.ietf.org/html/rfc3986#appendix-B
+// Adapted to only accept absolute URIs
+constexpr char kAbsUriRegex[] = R"(^(([^:/?#]+):)(//([^/?#]*))?([^?#]*)(\?([^#]*))?)";
 
 constexpr char kErrCeInvalid[] = "Given Cloud Event is missing required attributes.";
 constexpr char kErrTimeInvalid[] = "Given time is invalid because it does not comply to RFC 3339.";
 constexpr char kErrAttrNotSet[] = "Given Cloud Event attribute is not set.";
 constexpr char kErrAttrNotHandled[] = "A Cloud Event type is not handled.";
+constexpr char kErrInvalidDataschema[] = "The given value for Dataschema is not a valid absolute URI.";
+
+typedef ::io::cloudevents::v1::CloudEvent_CloudEventAttribute CeAttr;
 
 absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
   if (cloud_event.id().empty() ||
@@ -26,14 +34,14 @@ absl::Status CloudEventsUtil::IsValid(const CloudEvent& cloud_event) {
 }
 
 cloudevents_absl::StatusOr<
-    absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute>>
+    absl::flat_hash_map<std::string, CeAttr>>
     CloudEventsUtil::GetMetadata(const CloudEvent& cloud_event) {
   if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
     return is_valid;
   }
 
   // create absl::flat_hash_map from protobuf map of optional/ extensionattrs
-  absl::flat_hash_map<std::string, CloudEvent_CloudEventAttribute> attrs(
+  absl::flat_hash_map<std::string, CeAttr> attrs(
     (cloud_event.attributes()).begin(),
     cloud_event.attributes().end());
 
@@ -51,11 +59,10 @@ cloudevents_absl::StatusOr<
 
 absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
     const std::string& val, CloudEvent& cloud_event) {
-  // TODO (#39): Recognize URI and URI Reference types
   // CE Spec defines attribute as "specversion" while
   // proprietary proto defines it as "spec_version"
   // https://github.com/cloudevents/spec/blob/master/spec.md#specversion
-  if (key == "id") {
+  if (key == "id") {  // required attributes
     cloud_event.set_id(val);
   } else if (key == "source") {
     cloud_event.set_source(val);
@@ -63,19 +70,26 @@ absl::Status CloudEventsUtil::SetMetadata(const std::string& key,
     cloud_event.set_spec_version(val);
   } else if (key == "type") {
     cloud_event.set_type(val);
+  } else if (key == "dataschema") {  // optional attributes
+    // TODO (#60): Use external library to validate URIs.
+    std::regex uri_regex (kAbsUriRegex, std::regex::extended);
+
+    if (!std::regex_match(val, uri_regex)) {
+      return absl::InvalidArgumentError(kErrInvalidDataschema);
+    }
+    CeAttr abs_uri;
+    abs_uri.set_ce_uri(val);
+    (*cloud_event.mutable_attributes())[key] = abs_uri;
   } else if (key == "time") {
-    CloudEvent_CloudEventAttribute attr;
+    CeAttr time_str;
     Timestamp timestamp;
     if (!TimeUtil::FromString(val, &timestamp)) {
       return absl::InvalidArgumentError(kErrTimeInvalid);
     }
-    *attr.mutable_ce_timestamp() = timestamp;
-    (*cloud_event.mutable_attributes())[key] = attr;
-  } else {
-    // default assumes unrecognized attributes to be of type string
-    CloudEvent_CloudEventAttribute attr;
-    attr.set_ce_string(val);
-    (*cloud_event.mutable_attributes())[key] = attr;
+    *time_str.mutable_ce_timestamp() = timestamp;
+    (*cloud_event.mutable_attributes())[key] = time_str;
+  } else {  // default assumes type ce string
+    (*cloud_event.mutable_attributes())[key] = ToCeString(val);
   }
   return absl::OkStatus();
 }
@@ -86,34 +100,34 @@ absl::Status CloudEventsUtil::SetContentType(const std::string& val,
 }
 
 cloudevents_absl::StatusOr<std::string> CloudEventsUtil::ToString(
-    const CloudEvent_CloudEventAttribute& attr){
+    const CeAttr& attr){
   switch (attr.attr_oneof_case()) {
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBoolean:
+    case CeAttr::AttrOneofCase::kCeBoolean:
       // StatusOr requires explicit conversion
       return std::string(attr.ce_boolean() ? "true" : "false");
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeInteger:
+    case CeAttr::AttrOneofCase::kCeInteger:
       // skipping validity checks as protobuf generates int32 for sfixed32
       return std::to_string(attr.ce_integer());
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeString:
+    case CeAttr::AttrOneofCase::kCeString:
       return attr.ce_string();
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeBinary:
+    case CeAttr::AttrOneofCase::kCeBinary:
       return cloudevents_base64::base64_encode(attr.ce_binary());
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUri:
+    case CeAttr::AttrOneofCase::kCeUri:
       return attr.ce_uri();
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeUriReference:
+    case CeAttr::AttrOneofCase::kCeUriReference:
       return attr.ce_uri_reference();
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::kCeTimestamp:
+    case CeAttr::AttrOneofCase::kCeTimestamp:
       // protobuf also uses RFC3339 representation
       return TimeUtil::ToString(attr.ce_timestamp());
-    case CloudEvent_CloudEventAttribute::AttrOneofCase::ATTR_ONEOF_NOT_SET:
+    case CeAttr::AttrOneofCase::ATTR_ONEOF_NOT_SET:
       return absl::InvalidArgumentError(kErrAttrNotSet);
   }
   return absl::InternalError(kErrAttrNotHandled);
 }
 
-CloudEvent_CloudEventAttribute CloudEventsUtil::ToCeString(
+CeAttr CloudEventsUtil::ToCeString(
     const std::string& val) {
-  CloudEvent_CloudEventAttribute ce_str;
+  CeAttr ce_str;
   ce_str.set_ce_string(val);
   return ce_str;
 }

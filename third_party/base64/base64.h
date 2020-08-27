@@ -2,6 +2,7 @@
 //  base64 encoding and decoding with C++.
 //  Version: 2.rc.04 (release candidate)
 //
+// TODO (#51): Switch to MIT base64 lib for faster performance
 
 #ifndef BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A
 #define BASE64_H_C0CE2A47_D10E_42C9_A27C_C883944E704A

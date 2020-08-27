@@ -13,7 +13,6 @@ cc_library(
     deps = ["@com_google_absl//absl/status"]
 )
 
-#TODO (Michelle): fix tests
 cc_test(
    name = "statusor_test",
    srcs = ["statusor_test.cc"],

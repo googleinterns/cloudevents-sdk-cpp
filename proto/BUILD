@@ -20,5 +20,5 @@ proto_library(
 cc_proto_library(
   name = "pubsub_cc_proto",
   visibility = ["//visibility:public"],
-  deps = ["@googleapis//google/pubsub/v1:pubsub_proto"],
+  deps = ["@com_google_googleapis//google/pubsub/v1:pubsub_proto"],
 )
