@@ -39,12 +39,7 @@ absl::Status PubsubBinder::BindDataBinary(const std::string& bin_data,
 
 absl::Status PubsubBinder::BindDataText(const std::string& text_data,
     PubsubMessage& pubsub_msg) {
-  cloudevents_absl::StatusOr<std::string> encoded =
-    cloudevents_base64::base64_encode(text_data);
-  if (!encoded.ok()) {
-    return encoded.status();
-  }
-  pubsub_msg.set_data(*encoded);
+  pubsub_msg.set_data(text_data);
   return absl::OkStatus();
 }
 
@@ -86,8 +81,7 @@ absl::Status PubsubBinder::UnbindMetadata(
 absl::Status PubsubBinder::UnbindData(
     const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
   // both CloudEvent.binary_data and Pubsub.payload uses base64 encoding
-  cloud_event.set_text_data(
-    cloudevents_base64::base64_decode(pubsub_msg.data()));
+  cloud_event.set_binary_data(pubsub_msg.data());
   return absl::OkStatus();
 }
 

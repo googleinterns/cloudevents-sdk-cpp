@@ -104,7 +104,7 @@ TEST_F(BindTest, Binary_TextData) {
   ASSERT_EQ((*bind).attributes().at("ce-source"), "2");
   ASSERT_EQ((*bind).attributes().at("ce-specversion"), "3");
   ASSERT_EQ((*bind).attributes().at("ce-type"), "4");
-  ASSERT_EQ((*bind).data(), "aGVsbG8=");
+  ASSERT_EQ((*bind).data(), "hello");
 }
 
 TEST_F(BindTest, Structured_Required) {
@@ -185,7 +185,7 @@ TEST_F(UnbindBinaryTest, Optional) {
 
 TEST_F(UnbindBinaryTest, Data) {
   (*pubsub_msg.mutable_attributes())["ce-opt"] = "5";
-  pubsub_msg.set_data("aGVsbG8=");
+  pubsub_msg.set_data("hello");
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
@@ -194,7 +194,7 @@ TEST_F(UnbindBinaryTest, Data) {
   ASSERT_EQ((*unbind).source(), "2");
   ASSERT_EQ((*unbind).spec_version(), "3");
   ASSERT_EQ((*unbind).type(), "4");
-  ASSERT_EQ((*unbind).text_data(), "hello");
+  ASSERT_EQ((*unbind).binary_data(), "hello");
 }
 
 TEST(Unbind, Structured_Invalid) {
