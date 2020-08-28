@@ -304,7 +304,6 @@ TEST_F(BindTest, BinaryRes_Required) {
 
   cloudevents_absl::StatusOr<HttpResponse> bind = binder.Bind(ce);
 
-  std::cerr << bind.status();
   ASSERT_TRUE(bind.ok());
   ASSERT_EQ((*bind).base()["ce-id"], "1");
   ASSERT_EQ((*bind).base()["ce-source"], "2");

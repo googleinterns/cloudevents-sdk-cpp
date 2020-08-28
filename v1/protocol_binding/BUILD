@@ -73,3 +73,14 @@ cc_test(
        "@gtest//:gtest_main"
    ],
 )
+
+cc_test(
+   name = "integration_test",
+   srcs = ["integration_test.cc"],
+   deps = [
+       ":http_binder_lib",
+       ":pubsub_binder_lib",
+       "@gtest//:gtest",
+       "@gtest//:gtest_main"
+   ],
+)
