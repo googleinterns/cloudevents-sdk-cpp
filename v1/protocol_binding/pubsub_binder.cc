@@ -31,13 +31,17 @@ absl::Status PubsubBinder::BindMetadata(const std::string& key,
 
 absl::Status PubsubBinder::BindDataBinary(const std::string& bin_data,
     PubsubMessage& pubsub_msg) {
-  pubsub_msg.set_data(bin_data);
+  if (!bin_data.empty()) {
+    pubsub_msg.set_data(bin_data);
+  }
   return absl::OkStatus();
 }
 
 absl::Status PubsubBinder::BindDataText(const std::string& text_data,
     PubsubMessage& pubsub_msg) {
-  pubsub_msg.set_data(text_data);
+  if (!text_data.empty()) {
+    pubsub_msg.set_data(text_data);
+  }
   return absl::OkStatus();
 }
 
@@ -78,7 +82,9 @@ absl::Status PubsubBinder::UnbindMetadata(
 
 absl::Status PubsubBinder::UnbindData(
     const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
-  cloud_event.set_binary_data(pubsub_msg.data());
+  if (!pubsub_msg.data().empty()) {
+    cloud_event.set_binary_data(pubsub_msg.data());
+  }
   return absl::OkStatus();
 }
 
