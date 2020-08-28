@@ -29,7 +29,6 @@ cc_library(
         "//proto:cloud_event_cc_proto",
         "//proto:pubsub_cc_proto",
         "//third_party/statusor:statusor_lib",
-        "//third_party/base64:base64_lib",
         "//v1/util:binder_util_lib",
         "//v1/util:cloud_events_util_lib",
         ":binder_lib",

@@ -1,6 +1,5 @@
 #include "pubsub_binder.h"
 
-#include "third_party/base64/base64.h"
 #include "v1/util/binder_util.h"
 #include "v1/util/cloud_events_util.h"
 
@@ -32,7 +31,6 @@ absl::Status PubsubBinder::BindMetadata(const std::string& key,
 
 absl::Status PubsubBinder::BindDataBinary(const std::string& bin_data,
     PubsubMessage& pubsub_msg) {
-  // both CloudEvent.data and pubsub_msg.data are base64 encoded
   pubsub_msg.set_data(bin_data);
   return absl::OkStatus();
 }
@@ -80,7 +78,6 @@ absl::Status PubsubBinder::UnbindMetadata(
 
 absl::Status PubsubBinder::UnbindData(
     const PubsubMessage& pubsub_msg, CloudEvent& cloud_event) {
-  // both CloudEvent.binary_data and Pubsub.payload uses base64 encoding
   cloud_event.set_binary_data(pubsub_msg.data());
   return absl::OkStatus();
 }
@@ -100,8 +97,8 @@ cloudevents_absl::StatusOr<std::string> PubsubBinder::GetContentType(
 
 cloudevents_absl::StatusOr<std::string> PubsubBinder::GetPayload(
     const PubsubMessage& pubsub_msg) {
-  // get payload and base64 decode
-  return cloudevents_base64::base64_decode(pubsub_msg.data());
+  // get payload
+  return pubsub_msg.data();
 }
 
 }  // namespace binding

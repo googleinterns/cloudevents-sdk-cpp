@@ -209,7 +209,7 @@ TEST(Unbind, Structured_Invalid) {
 }
 
 TEST_F(UnbindStructuredTest, Required) {
-  pubsub_msg.set_data(cloudevents_base64::base64_encode(valid_payload));
+  pubsub_msg.set_data(valid_payload);
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
@@ -222,7 +222,7 @@ TEST_F(UnbindStructuredTest, Required) {
 
 TEST_F(UnbindStructuredTest, Optional) {
   valid_payload.insert(1, "\t\"opt\" : \"5\",\n");
-  pubsub_msg.set_data(cloudevents_base64::base64_encode(valid_payload));
+  pubsub_msg.set_data(valid_payload);
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
@@ -236,7 +236,7 @@ TEST_F(UnbindStructuredTest, Optional) {
 
 TEST_F(UnbindStructuredTest, BinData) {
   valid_payload.insert(1, "\t\"data_base64\" : \"1010\",\n");
-  pubsub_msg.set_data(cloudevents_base64::base64_encode(valid_payload));
+  pubsub_msg.set_data(valid_payload);
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
@@ -250,7 +250,7 @@ TEST_F(UnbindStructuredTest, BinData) {
 
 TEST_F(UnbindStructuredTest, TextData) {
   valid_payload.insert(1, "\t\"data\" : \"hello\",\n");
-  pubsub_msg.set_data(cloudevents_base64::base64_encode(valid_payload));
+  pubsub_msg.set_data(valid_payload);
 
   cloudevents_absl::StatusOr<CloudEvent> unbind = binder.Unbind(pubsub_msg);
 
