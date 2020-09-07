@@ -98,20 +98,21 @@ cloudevents_absl::StatusOr<CloudEvent> JsonFormatter::Deserialize(
 
   CloudEvent cloud_event;
 
+  if (root.isMember(kJsonTextKey) && root.isMember(kJsonBinaryKey)) {
+    return absl::InvalidArgumentError(kErrTwoPayloads);
+  }
+
   for (auto const& member : root.getMemberNames()) {
-    if (auto set_metadata = CloudEventsUtil::SetMetadata(member,
-      root[member].asString(), cloud_event); !set_metadata.ok()) {
-      return set_metadata;
+    if (member == kJsonTextKey) {
+      cloud_event.set_text_data(root[kJsonTextKey].asString());
+    } else if (member == kJsonBinaryKey) {
+      cloud_event.set_binary_data(root[kJsonBinaryKey].asString());
+    } else if (auto set_metadata = CloudEventsUtil::SetMetadata(member,
+        root[member].asString(), cloud_event); !set_metadata.ok()) {
+        return set_metadata;
     }
   }
 
-  if (root.isMember(kJsonTextKey) && root.isMember(kJsonBinaryKey)) {
-    return absl::InvalidArgumentError(kErrTwoPayloads);
-  } else if (root.isMember(kJsonTextKey)) {
-    cloud_event.set_text_data(root[kJsonTextKey].asString());
-  } else if (root.isMember(kJsonBinaryKey)) {
-    cloud_event.set_binary_data(root[kJsonBinaryKey].asString());
-  }
 
   if (auto is_valid = CloudEventsUtil::IsValid(cloud_event); !is_valid.ok()) {
     return is_valid;
